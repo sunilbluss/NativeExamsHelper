@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/menu_item_settings"
+        android:title="@string/toolbar_settings"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/menu_item_statistics"
+        android:title="@string/toolbar_statistics"
+        android:icon="@drawable/statistics"
+        app:showAsAction="ifRoom" />
+
+    <item android:id="@+id/menuitemdupa1"
+        android:title="Dupa 1"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/menuitemdupa2"
+        android:title="Dupa 2 prosze"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/menuitemdupa3"
+        android:title="happysad"
+        app:showAsAction="never"/>
+
+
+</menu>

@@ -4,18 +4,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <!--toolbar-->
         <include
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             layout="@layout/toolbar" />
 
+        <!--Normal content-->
+        <include
+            layout="@layout/activity_adding_exam_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
     </LinearLayout>
 
