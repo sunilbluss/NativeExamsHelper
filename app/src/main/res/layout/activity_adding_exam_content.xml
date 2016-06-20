@@ -1,25 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/adding_exam_content">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="No siema, sportowe swiry"
-        android:background="#000000"
-        android:textColor="@color/colorAccent" />
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/list_view_adding_exam_content"
-        android:background="#ff0"
-        >
-    </ListView>
+        android:background="#ff0" />
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
@@ -30,4 +22,4 @@
         android:src="@drawable/add_icon"
         app:layout_anchorGravity="bottom|right|end" />
 
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

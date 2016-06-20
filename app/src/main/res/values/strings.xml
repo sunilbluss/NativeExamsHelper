@@ -1,9 +1,20 @@
 <resources>
     <string name="app_name">ExamsHelper</string>
 
+    <string name="date_format">dd/MM/yyyy</string>
 
     <!--Toolbar menu constants-->
     <string name="toolbar_settings">Settings</string>
     <string name="toolbar_statistics">Statistics</string>
+
+
+    <!--Add new Exam-->
+    <string name="hint_add_exam_subject">Przedmiot</string>
+    <string name="hint_add_exam_extras">Zaliczenie</string>
+    <string name="button_text_add_exam">Dodaj</string>
+
+    <string name="empty_subject_add_exam">Musisz podac przedmiot</string>
+    <string name="empty_date_add_exam">Musisz podac date</string>
+
 
 </resources>

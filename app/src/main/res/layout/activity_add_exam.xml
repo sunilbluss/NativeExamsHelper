@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/add_exam_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.grudus.nativeexamshelper.activities.AddExamActivity">
+
+    <include layout="@layout/toolbar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            style="@style/ImageIconAddExamTheme"
+            android:src="@drawable/subject_icon" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/add_exam_subject_input"
+            android:textSize="30sp"
+            android:padding="10dp"
+            android:hint="@string/hint_add_exam_subject"
+            android:gravity="end"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            style="@style/ImageIconAddExamTheme"
+            android:src="@drawable/info_icon"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/add_exam_extras_input"
+            android:layout_gravity="center_horizontal"
+            android:textSize="30sp"
+            android:padding="10dp"
+            android:hint="@string/hint_add_exam_extras"
+            android:gravity="end"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            style="@style/ImageIconAddExamTheme"
+            android:src="@drawable/calendar_icon"/>
+
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/add_exam_date_input"
+            android:inputType="date"
+            android:layout_gravity="center_horizontal"
+            android:textSize="30sp"
+            android:padding="10dp"
+            android:focusable="false"
+            android:gravity="end"/>
+    </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/add_exam_button"
+        android:layout_gravity="end"
+        android:layout_margin="16dp"
+        android:background="?attr/colorPrimaryDark"
+        android:textColor="@color/settingsColor"
+        android:text="@string/button_text_add_exam"
+        android:textSize="18sp"/>
+
+
+
+</LinearLayout>
