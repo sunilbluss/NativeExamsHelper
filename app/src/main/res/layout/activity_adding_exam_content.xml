@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/list_view_adding_exam_content"
-        android:background="#ff0" />
+        android:background="#ffffff" />
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"

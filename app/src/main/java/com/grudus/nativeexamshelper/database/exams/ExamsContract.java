@@ -1,4 +1,4 @@
-package com.grudus.nativeexamshelper.database;
+package com.grudus.nativeexamshelper.database.exams;
 
 
 import android.provider.BaseColumns;

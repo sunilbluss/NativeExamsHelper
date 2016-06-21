@@ -7,6 +7,7 @@
     <string name="toolbar_settings">Ustawienia</string>
     <string name="toolbar_statistics">Statystyki</string>
     <string name="toolbar_delete_all">Usun wszystko</string>
+    <string name="toolbar_refresh_subjects">Odswiez przedmioty</string>
 
 
     <!--Add new Exam-->
@@ -16,6 +17,22 @@
 
     <string name="empty_subject_add_exam">Musisz podac przedmiot</string>
     <string name="empty_date_add_exam">Musisz podac date</string>
+
+
+    <!--Subjects list-->
+    <string-array name="default_subjects">
+        <item>Matematyka</item>
+        <item>Fizyka</item>
+        <item>Chemia</item>
+        <item>Polski</item>
+        <item>Angielski</item>
+        <item>Niemiecki</item>
+        <item>Geografia</item>
+        <item>Biologia</item>
+        <item>Informatyka</item>
+        <item>Religia</item>
+        <item>WF</item>
+    </string-array>
 
 
 </resources>

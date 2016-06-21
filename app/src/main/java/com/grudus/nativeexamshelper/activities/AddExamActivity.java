@@ -6,30 +6,25 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.grudus.nativeexamshelper.AddingExamMainActivity;
 import com.grudus.nativeexamshelper.DateHelper;
 import com.grudus.nativeexamshelper.ExceptionsHelper;
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.pojos.Exam;
+import com.grudus.nativeexamshelper.pojos.Subject;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.OnFocusChange;
 
 public class AddExamActivity extends AppCompatActivity {
 
@@ -46,6 +41,9 @@ public class AddExamActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_exam);
         ButterKnife.bind(this);
+
+        if (getIntent().getParcelableExtra("subject") != null)
+            setSelectedSubjectLabel((Subject) getIntent().getParcelableExtra("subject"));
     }
 
     @OnClick(R.id.add_exam_date_input)
@@ -55,9 +53,10 @@ public class AddExamActivity extends AppCompatActivity {
                 .show();
     }
 
-    @OnClick({R.id.add_exam_extras_input, R.id.add_exam_subject_input})
-    void infoInput() {
-//        Log.e("@@@@@@@@@@@@@@@@@@@@@", "ddduuuuppa");
+    @OnClick(R.id.add_exam_subject_input)
+    void openSubjectsListActivity() {
+        Intent intent = new Intent(this, SubjectsListActivity.class);
+        startActivity(intent);
     }
 
     @OnClick(R.id.add_exam_button)
@@ -65,7 +64,6 @@ public class AddExamActivity extends AppCompatActivity {
         String subject = subjectInput.getText().toString();
         if (subject.replaceAll("\\s+", "").isEmpty()) {
             Toast.makeText(this, getResources().getString(R.string.empty_subject_add_exam), Toast.LENGTH_SHORT).show();
-            setFocusAndShowKeyboard(subjectInput);
             return;
         }
         String date = dateInput.getText().toString();
@@ -106,10 +104,8 @@ public class AddExamActivity extends AppCompatActivity {
         dateInput.setText(DateHelper.getStringFromDate(calendar.getTime()));
     }
 
-    private void setFocusAndShowKeyboard(EditText editText) {
-        editText.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+    private void setSelectedSubjectLabel(Subject subject) {
+        subjectInput.setText(subject.getTitle());
     }
 
 }

@@ -15,8 +15,8 @@
         android:title="@string/toolbar_delete_all"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/menuitemdupa2"
-        android:title="Dupa 2 prosze"
+    <item android:id="@+id/menu_item_refresh_subjects"
+        android:title="@string/toolbar_refresh_subjects"
         app:showAsAction="never"/>
 
     <item android:id="@+id/menuitemdupa3"

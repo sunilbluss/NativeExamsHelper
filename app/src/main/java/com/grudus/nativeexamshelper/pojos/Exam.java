@@ -27,19 +27,6 @@ public class Exam implements Parcelable {
         this.date = date;
     }
 
-    public Exam(Parcel parcel) {
-        String[] data = new String[3];
-        parcel.readStringArray(data);
-        this.subject = data[0];
-        this.info = data[1];
-
-        try {
-            this.date = DateHelper.getDateFromString(data[2]);
-        } catch (ParseException e) {
-            ExceptionsHelper.printError(e);
-        }
-    }
-
     @NonNull
     public String getSubject() {
         return subject;
@@ -71,7 +58,6 @@ public class Exam implements Parcelable {
         this.date = date;
     }
 
-
     @Override
     public String toString() {
         return  subject + " exam from " + info + " on "
@@ -79,8 +65,20 @@ public class Exam implements Parcelable {
     }
 
 
-
 //  Parcelable stuff
+
+    public Exam(Parcel parcel) {
+        String[] data = new String[3];
+        parcel.readStringArray(data);
+        this.subject = data[0];
+        this.info = data[1];
+
+        try {
+            this.date = DateHelper.getDateFromString(data[2]);
+        } catch (ParseException e) {
+            ExceptionsHelper.printError(e);
+        }
+    }
 
     @Override
     public int describeContents() {
