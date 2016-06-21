@@ -11,8 +11,8 @@
         android:icon="@drawable/statistics"
         app:showAsAction="ifRoom" />
 
-    <item android:id="@+id/menuitemdupa1"
-        android:title="Dupa 1"
+    <item android:id="@+id/menu_item_deleteAll"
+        android:title="@string/toolbar_delete_all"
         app:showAsAction="never"/>
 
     <item android:id="@+id/menuitemdupa2"

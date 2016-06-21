@@ -1,24 +1,16 @@
 package com.grudus.nativeexamshelper.pojos;
 
 
-import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.DateHelper;
-import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.ExceptionsHelper;
 
-import java.io.Serializable;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 public class Exam implements Parcelable {
 
@@ -44,7 +36,7 @@ public class Exam implements Parcelable {
         try {
             this.date = DateHelper.getDateFromString(data[2]);
         } catch (ParseException e) {
-            for (StackTraceElement s : e.getStackTrace()) Log.e("______--------______", s.toString());
+            ExceptionsHelper.printError(e);
         }
     }
 
@@ -81,15 +73,14 @@ public class Exam implements Parcelable {
 
 
     @Override
-    // TODO: 6/20/16 change date format
     public String toString() {
         return  subject + " exam from " + info + " on "
-                + date;
+                + DateHelper.getStringFromDate(date);
     }
 
 
 
-
+//  Parcelable stuff
 
     @Override
     public int describeContents() {

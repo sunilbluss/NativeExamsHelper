@@ -15,12 +15,14 @@ import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.AddingExamMainActivity;
 import com.grudus.nativeexamshelper.DateHelper;
+import com.grudus.nativeexamshelper.ExceptionsHelper;
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.pojos.Exam;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
@@ -44,7 +46,6 @@ public class AddExamActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_exam);
         ButterKnife.bind(this);
-
     }
 
     @OnClick(R.id.add_exam_date_input)
@@ -56,11 +57,10 @@ public class AddExamActivity extends AppCompatActivity {
 
     @OnClick({R.id.add_exam_extras_input, R.id.add_exam_subject_input})
     void infoInput() {
-        Log.e("++++++++++++++++++++", "ddduuuuppa");
+//        Log.e("@@@@@@@@@@@@@@@@@@@@@", "ddduuuuppa");
     }
 
     @OnClick(R.id.add_exam_button)
-        // TODO: 6/20/16 change this "throws"
     void addExam()  {
         String subject = subjectInput.getText().toString();
         if (subject.replaceAll("\\s+", "").isEmpty()) {
@@ -71,20 +71,23 @@ public class AddExamActivity extends AppCompatActivity {
         String date = dateInput.getText().toString();
         if (date.replaceAll("\\s+", "").isEmpty()) {
             Toast.makeText(this, getResources().getString(R.string.empty_date_add_exam), Toast.LENGTH_SHORT).show();
-            setFocusAndShowKeyboard(dateInput);
             return;
         }
         String info = extrasInput.getText().toString();
+        Date correctDate;
+
         try {
-            Exam exam = new Exam(subject.trim(), info.trim(), DateHelper.getDateFromString(date));
+            correctDate = DateHelper.getDateFromString(date);
+        } catch (ParseException e) {
+            ExceptionsHelper.printError(e);
+            return;
+        }
+        Exam exam = new Exam(subject, info, correctDate);
 
         Intent goBackToExamsView = new Intent(getApplicationContext(), AddingExamMainActivity.class);
         goBackToExamsView.putExtra("newExam", exam);
-            goBackToExamsView.putExtra("reopen", true);
+        goBackToExamsView.putExtra("reopen", true);
         startActivity(goBackToExamsView);
-        } catch (ParseException e) {
-            for (StackTraceElement s : e.getStackTrace()) Log.e("_____-----____", s.toString());
-        }
     }
 
 
@@ -100,10 +103,7 @@ public class AddExamActivity extends AppCompatActivity {
 
 
     private void updateLabel() {
-        String myFormat = getResources().getString(R.string.date_format);
-        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
-
-        dateInput.setText(sdf.format(calendar.getTime()));
+        dateInput.setText(DateHelper.getStringFromDate(calendar.getTime()));
     }
 
     private void setFocusAndShowKeyboard(EditText editText) {
