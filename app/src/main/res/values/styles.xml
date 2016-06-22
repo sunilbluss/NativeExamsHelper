@@ -20,5 +20,15 @@
         <item name="android:layout_gravity">center</item>
         <item name="android:padding">@dimen/image_icon_adding_exam_padding</item>
     </style>
+    
+    <style name="AddButtonStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">end</item>
+        <item name="android:layout_margin">@dimen/add_button_margin</item>
+        <item name="android:background">?attr/colorPrimaryDark</item>
+        <item name="android:textColor">@color/settingsColor</item>
+        <item name="android:textSize">@dimen/add_button_text_size</item>
+    </style>
 
 </resources>

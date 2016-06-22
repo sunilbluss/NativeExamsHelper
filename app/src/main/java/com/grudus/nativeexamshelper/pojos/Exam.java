@@ -19,12 +19,13 @@ public class Exam implements Parcelable {
     private Date date;
 
     public Exam(@NonNull String subject, String info, @NonNull Date date) {
-        if (subject == null || date == null || subject.isEmpty())
-            throw new IllegalStateException("Subject and date cannot be null");
+        ExceptionsHelper.checkStringEmptiness("Subject cannot be empty", subject);
+        if (date == null) throw new NullPointerException("Date cannot be null");
 
         this.subject = subject;
         this.info = info;
         this.date = date;
+
     }
 
     @NonNull
@@ -33,8 +34,7 @@ public class Exam implements Parcelable {
     }
 
     public void setSubject(@NonNull String subject) {
-        if (subject == null || subject.isEmpty())
-            throw new IllegalStateException("Subject cannot be empty");
+        ExceptionsHelper.checkStringEmptiness("Subject cannot be null", subject);
         this.subject = subject;
     }
 

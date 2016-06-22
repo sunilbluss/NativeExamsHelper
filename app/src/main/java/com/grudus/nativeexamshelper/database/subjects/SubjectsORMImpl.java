@@ -80,8 +80,13 @@ public final class SubjectsORMImpl {
             c.close();
             return null;
         }
-        return new Subject(c.getString(SubjectsContract.SubjectEntry.TITLE_COLUMN_INDEX),
+
+        Subject subject = new Subject(c.getString(SubjectsContract.SubjectEntry.TITLE_COLUMN_INDEX),
                 c.getString(SubjectsContract.SubjectEntry.COLOR_COLUMN_INDEX));
+
+        c.close();
+
+        return subject;
 
     }
 

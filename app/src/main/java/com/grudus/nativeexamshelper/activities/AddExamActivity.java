@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -32,6 +33,7 @@ public class AddExamActivity extends AppCompatActivity {
     @BindView(R.id.add_exam_subject_input) EditText subjectInput;
     @BindView(R.id.add_exam_extras_input) EditText extrasInput;
     @BindView(R.id.add_exam_button) Button addExamButton;
+    @BindView(R.id.toolbar) Toolbar toolbar;
 
     private Calendar calendar = Calendar.getInstance();
 
@@ -44,6 +46,8 @@ public class AddExamActivity extends AppCompatActivity {
 
         if (getIntent().getParcelableExtra("subject") != null)
             setSelectedSubjectLabel((Subject) getIntent().getParcelableExtra("subject"));
+
+        toolbar.setTitle(getResources().getString(R.string.add_new_exam_toolbar_text));
     }
 
     @OnClick(R.id.add_exam_date_input)

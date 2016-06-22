@@ -17,8 +17,7 @@ public class DateHelper {
             .getResources().getString(R.string.date_format);
 
     public static Date getDateFromString(@NonNull String date) throws ParseException {
-        if (date == null || date.replaceAll("\\s+", "").isEmpty())
-            throw new IllegalStateException("Date cannot be null");
+        ExceptionsHelper.checkStringEmptiness("Date cannot be null", date);
         DateFormat format = new SimpleDateFormat(
                 dateFormat, Locale.ENGLISH);
         return format.parse(date);

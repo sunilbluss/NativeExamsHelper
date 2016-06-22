@@ -6,31 +6,22 @@
     <color name="settingsColor">#ffffff</color>
 
 
-    <color name="deepOrange">#e64a19</color>
     <color name="niceBlueColor">#4286F5</color>
-    <color name="lightGreen">#8bc34a</color>
-    <color name="lightBrown">#795548</color>
-    <color name="cyan">#0097a7</color>
-    <color name="green">#388e3c</color>
-    <color name="deepPurple">#EF6C00</color>
-    <color name="blueGrey">#455a64</color>
-    <color name="lightRed">#039BE5</color>
-    <color name="darkRed">#d32f2f</color>
-    <color name="darkBrown">#8BC34A</color>
+
 
 
     <string-array name="defaultSubjectsColors">
         <item>#e64a19</item>
         <item>#4286F5</item>
         <item>#8bc34a</item>
-        <item>#795548</item>
+        <item>#43A047</item>
         <item>#0097a7</item>
         <item>#f44336</item>
-        <item>#673Ab7</item>
+        <item>#2196F3</item>
         <item>#388e3c</item>
-        <item>#455a64</item>
+        <item>#0277BD</item>
         <item>#d32f2f</item>
-        <item>#5d4037</item>
+        <item>#689F38</item>
     </string-array>
 
 

@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/add_exam_subject_input"
-            android:textSize="30sp"
+            android:textSize="@dimen/add_text_view_text_size"
             android:padding="10dp"
             android:hint="@string/hint_add_exam_subject"
             android:focusable="false"
@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/add_exam_extras_input"
             android:layout_gravity="center_horizontal"
-            android:textSize="30sp"
+            android:textSize="@dimen/add_text_view_text_size"
             android:padding="10dp"
             android:hint="@string/hint_add_exam_extras"
             android:gravity="end"/>
@@ -68,22 +68,16 @@
             android:id="@+id/add_exam_date_input"
             android:inputType="date"
             android:layout_gravity="center_horizontal"
-            android:textSize="30sp"
+            android:textSize="@dimen/add_text_view_text_size"
             android:padding="10dp"
             android:focusable="false"
             android:gravity="end"/>
     </LinearLayout>
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/AddButtonStyle"
         android:id="@+id/add_exam_button"
-        android:layout_gravity="end"
-        android:layout_margin="16dp"
-        android:background="?attr/colorPrimaryDark"
-        android:textColor="@color/settingsColor"
-        android:text="@string/button_text_add_exam"
-        android:textSize="18sp"/>
+        android:text="@string/button_text_add_exam" />
 
 
 

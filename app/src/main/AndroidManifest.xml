@@ -16,7 +16,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.AddExamActivity" />
-        <activity android:name=".activities.SubjectsListActivity"></activity>
+        <activity android:name=".activities.SubjectsListActivity" />
+        <activity android:name=".activities.AddNewSubjectActivity"></activity>
     </application>
 
 </manifest>

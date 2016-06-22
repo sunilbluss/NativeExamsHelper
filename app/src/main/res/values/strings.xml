@@ -11,6 +11,7 @@
 
 
     <!--Add new Exam-->
+    <string name="add_new_exam_toolbar_text">Dodaj egzamin</string>
     <string name="hint_add_exam_subject">Przedmiot</string>
     <string name="hint_add_exam_extras">Zaliczenie</string>
     <string name="button_text_add_exam">Dodaj</string>
@@ -20,6 +21,8 @@
 
 
     <!--Subjects list-->
+    <string name="subject_list_toolbar_text">Wybierz przedmiot</string>
+
     <string-array name="default_subjects">
         <item>Matematyka</item>
         <item>Fizyka</item>
@@ -34,5 +37,9 @@
         <item>WF</item>
     </string-array>
 
+    <!--Add new subject-->
+    <string name="add_subject_toolbar_text">Dodaj przedmiot</string>
+    <string name="hint_subject_title">Przedmiot</string>
+    <string name="hint_subject_color">Kolor</string>
 
 </resources>

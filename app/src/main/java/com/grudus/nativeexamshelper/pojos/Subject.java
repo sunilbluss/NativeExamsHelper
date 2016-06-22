@@ -3,13 +3,17 @@ package com.grudus.nativeexamshelper.pojos;
 import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+
+import com.grudus.nativeexamshelper.ExceptionsHelper;
 
 public class Subject implements Parcelable {
 
     private String title;
     private String color;
 
-    public Subject(String title, String color) {
+    public Subject(@NonNull String title, @NonNull String color) {
+        ExceptionsHelper.checkStringEmptiness("Title and color cannot be empty", title, color);
         this.title = title;
         this.color = color;
     }
@@ -18,15 +22,18 @@ public class Subject implements Parcelable {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(@NonNull String title) {
+        ExceptionsHelper.checkStringEmptiness("Title cannot be empty", title);
         this.title = title;
     }
+
 
     public String getColor() {
         return color;
     }
 
-    public void setColor(String color) {
+    public void setColor(@NonNull String color) {
+        ExceptionsHelper.checkStringEmptiness("Color cannot be empty", color);
         this.color = color;
     }
 
@@ -35,7 +42,21 @@ public class Subject implements Parcelable {
         return "Subject (" + title + ") object";
     }
 
-//    Parcelable stuff
+    @Override
+    public boolean equals(Object object) {
+        if (object == null) return false;
+        if (object == this) return true;
+        if (this.getClass() != object.getClass()) return false;
+        Subject that = (Subject) object;
+        return that.getTitle().equalsIgnoreCase(this.getTitle());
+    }
+
+    @Override
+    public int hashCode() {
+        return title.hashCode();
+    }
+
+    //    Parcelable stuff
 
 
     public Subject(Parcel parcel) {
@@ -67,5 +88,7 @@ public class Subject implements Parcelable {
             return new Subject[size];
         }
     };
+
+
 
 }
