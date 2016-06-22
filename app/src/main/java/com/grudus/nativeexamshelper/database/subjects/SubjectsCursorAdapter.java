@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,7 @@ public class SubjectsCursorAdapter extends CursorAdapter {
         titleView.setText(titleText);
 
         int color = Color.parseColor(cursor.getString(SubjectsContract.SubjectEntry.COLOR_COLUMN_INDEX));
+
 
         GradientDrawable bgShape = (GradientDrawable) iconView.getBackground();
         bgShape.setColor(color);

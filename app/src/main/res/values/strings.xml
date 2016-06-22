@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">ExamsHelper</string>
-
     <string name="date_format">dd/MM/yyyy</string>
 
     <!--Toolbar menu constants-->
@@ -8,6 +7,7 @@
     <string name="toolbar_statistics">Statystyki</string>
     <string name="toolbar_delete_all">Usun wszystko</string>
     <string name="toolbar_refresh_subjects">Odswiez przedmioty</string>
+    <string name="toolbar_edit_subjects">Edytuj przedmioty</string>
 
 
     <!--Add new Exam-->
@@ -41,5 +41,9 @@
     <string name="add_subject_toolbar_text">Dodaj przedmiot</string>
     <string name="hint_subject_title">Przedmiot</string>
     <string name="hint_subject_color">Kolor</string>
+    <string name="warning_add_subject_empty">Musisz podac przedmiot</string>
+    <string name="warning_add_subject_badchar">Przedmiot musi zaczynac sie od litery</string>
+    <string name="warning_add_subject_subject_already_exists">Podany przedmiot już istnieje</string>
+    <string name="button_text_change_subject">Zmień</string>
 
 </resources>

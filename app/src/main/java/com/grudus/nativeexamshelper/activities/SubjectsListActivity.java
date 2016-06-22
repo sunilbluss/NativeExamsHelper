@@ -23,6 +23,8 @@ import butterknife.OnItemClick;
 
 public class SubjectsListActivity extends AppCompatActivity {
 
+    private final String TAG = "@@@" + this.getClass().getSimpleName();
+
     @BindView(R.id.subjects_list_view) ListView listView;
     @BindView(R.id.floating_button_add_subject) FloatingActionButton floatingActionButton;
     @BindView(R.id.toolbar) Toolbar toolbar;
@@ -30,12 +32,18 @@ public class SubjectsListActivity extends AppCompatActivity {
     private ExamsDbHelper examsDbHelper;
     private CursorAdapter cursorAdapter;
 
+    /* If true - after click on listview item it is possible to change color and title
+     *  otherwise - it's on selected mode (user is choosing exam subject)*/
+    private boolean isEditable;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(AddingExamMainActivity.TAG, "ON CREATE SLACTIVITY");
+        Log.d(TAG, "ON CREATE SLACTIVITY");
         setContentView(R.layout.activity_subjects_list);
         ButterKnife.bind(this);
+
+        isEditable = getIntent().getBooleanExtra("editable", false);
 
         toolbar.setTitle(getResources().getString(R.string.subject_list_toolbar_text));
         setSupportActionBar(toolbar);
@@ -45,7 +53,7 @@ public class SubjectsListActivity extends AppCompatActivity {
     }
 
     private void initDatabase() {
-        Log.d(AddingExamMainActivity.TAG, "Should init database SLActivity");
+        Log.d(TAG, "Should init database SLActivity");
         examsDbHelper = new ExamsDbHelper(this);
         examsDbHelper.openDB();
     }
@@ -58,14 +66,17 @@ public class SubjectsListActivity extends AppCompatActivity {
 
     @OnItemClick(R.id.subjects_list_view)
     public void setSubject(int index) {
-        Intent goBack = new Intent(this, AddExamActivity.class);
         Cursor c = (Cursor) cursorAdapter.getItem(index);
         Subject subject = new Subject(
                 c.getString(SubjectsContract.SubjectEntry.TITLE_COLUMN_INDEX),
                 c.getString(SubjectsContract.SubjectEntry.COLOR_COLUMN_INDEX));
 
-        goBack.putExtra("subject", subject);
-        startActivity(goBack);
+        Intent whereToGo = isEditable ? new Intent(this, AddNewSubjectActivity.class)
+                : new Intent(this, AddExamActivity.class);
+
+            whereToGo.putExtra("subject", subject);
+            startActivity(whereToGo);
+
     }
 
     @OnClick(R.id.floating_button_add_subject)

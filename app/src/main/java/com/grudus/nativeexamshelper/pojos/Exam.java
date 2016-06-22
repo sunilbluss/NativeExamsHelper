@@ -5,6 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.grudus.nativeexamshelper.DateHelper;
 import com.grudus.nativeexamshelper.ExceptionsHelper;
@@ -76,7 +77,7 @@ public class Exam implements Parcelable {
         try {
             this.date = DateHelper.getDateFromString(data[2]);
         } catch (ParseException e) {
-            ExceptionsHelper.printError(e);
+            Log.e("@@@Exam", "Exam: cannot parse date ", e);
         }
     }
 

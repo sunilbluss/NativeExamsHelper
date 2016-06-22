@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.grudus.nativeexamshelper.DateHelper;
 import com.grudus.nativeexamshelper.ExceptionsHelper;
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.pojos.Exam;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
@@ -28,6 +29,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class AddExamActivity extends AppCompatActivity {
+
+    private final String TAG = "@@@" + this.getClass().getSimpleName();
 
     @BindView(R.id.add_exam_date_input) EditText dateInput;
     @BindView(R.id.add_exam_subject_input) EditText subjectInput;
@@ -66,30 +69,41 @@ public class AddExamActivity extends AppCompatActivity {
     @OnClick(R.id.add_exam_button)
     void addExam()  {
         String subject = subjectInput.getText().toString();
-        if (subject.replaceAll("\\s+", "").isEmpty()) {
-            Toast.makeText(this, getResources().getString(R.string.empty_subject_add_exam), Toast.LENGTH_SHORT).show();
-            return;
-        }
         String date = dateInput.getText().toString();
-        if (date.replaceAll("\\s+", "").isEmpty()) {
-            Toast.makeText(this, getResources().getString(R.string.empty_date_add_exam), Toast.LENGTH_SHORT).show();
-            return;
-        }
+
+        if (!inputsAreCorrect(subject, date)) return;
+
         String info = extrasInput.getText().toString();
         Date correctDate;
 
         try {
             correctDate = DateHelper.getDateFromString(date);
         } catch (ParseException e) {
-            ExceptionsHelper.printError(e);
+            Log.e(TAG, "addExam: cannot convert date", e);
             return;
         }
         Exam exam = new Exam(subject, info, correctDate);
 
-        Intent goBackToExamsView = new Intent(getApplicationContext(), AddingExamMainActivity.class);
-        goBackToExamsView.putExtra("newExam", exam);
-        goBackToExamsView.putExtra("reopen", true);
-        startActivity(goBackToExamsView);
+        ExamsDbHelper db = new ExamsDbHelper(getApplicationContext());
+        db.openDB();
+        db.insertExam(exam);
+        db.closeDB();
+
+        Intent goBack = new Intent(getApplicationContext(), AddingExamMainActivity.class);
+        startActivity(goBack);
+    }
+
+    private boolean inputsAreCorrect(String subject, String date) {
+        if (subject.replaceAll("\\s+", "").isEmpty()) {
+            Toast.makeText(this, getResources().getString(R.string.empty_subject_add_exam), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (date.replaceAll("\\s+", "").isEmpty()) {
+            Toast.makeText(this, getResources().getString(R.string.empty_date_add_exam), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
     }
 
 

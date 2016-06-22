@@ -19,8 +19,8 @@
         android:title="@string/toolbar_refresh_subjects"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/menuitemdupa3"
-        android:title="happysad"
+    <item android:id="@+id/menu_item_edit_subjects"
+        android:title="@string/toolbar_edit_subjects"
         app:showAsAction="never"/>
 
 

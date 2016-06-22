@@ -18,6 +18,8 @@ import com.grudus.nativeexamshelper.pojos.Subject;
 
 public class ExamsDbHelper extends SQLiteOpenHelper {
 
+    public static final String TAG = "@@@ Main DB HELPER @@@";
+
     public static final String DATABASE_NAME = "ExamsHelper.db";
     public static final int DATABASE_VERSION = 5;
 
@@ -30,12 +32,12 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         examsORM = new ExamsORMImpl();
         subjectsORM = new SubjectsORMImpl();
-        Log.d(AddingExamMainActivity.TAG, "ExamsDbHelper() constructor");
+        Log.d(TAG, "ExamsDbHelper() constructor");
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.d(AddingExamMainActivity.TAG, "onCreate() ExamsDbHelper");
+        Log.d(TAG, "onCreate() ExamsDbHelper");
         db.execSQL(ExamsContract.ExamEntry.CREATE_TABLE_QUERY);
         db.execSQL(SubjectsContract.SubjectEntry.CREATE_TABLE_QUERY);
         subjectsORM.firstInsert(db);
@@ -51,14 +53,14 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public void openDB() {
         database = this.getWritableDatabase();
-        Log.d(AddingExamMainActivity.TAG, "Database is opened");
+        Log.d(TAG, "Database is opened");
     }
 
     public void closeDB() {
         if (database != null && database.isOpen())
             database.close();
         this.close();
-        Log.d(AddingExamMainActivity.TAG, "Database is closed");
+        Log.d(TAG, "Database is closed");
     }
 
 //    Subjects part ******************************
@@ -78,7 +80,11 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
     public void refreshSubjects() {
         database.delete(SubjectsContract.SubjectEntry.TABLE_NAME, null, null);
         subjectsORM.firstInsert(database);
-        Log.d(AddingExamMainActivity.TAG, "Subjects are fresh");
+        Log.d(TAG, "Subjects are fresh");
+    }
+
+    public void updateSubject(Subject old, Subject _new) {
+        subjectsORM.update(database, old, _new);
     }
 
     @Nullable
@@ -105,9 +111,9 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
     public void cleanAllExamRecords() {
         if (database != null && database.isOpen()) {
             database.delete(ExamsContract.ExamEntry.TABLE_NAME, null, null);
-            Log.d(AddingExamMainActivity.TAG, "All records was deleted");
+            Log.d(TAG, "All records was deleted");
         }
-        else Log.e(AddingExamMainActivity.TAG, "Database is not opened - cannot delete records");
+        else Log.e(TAG, "Database is not opened - cannot delete records");
     }
 
 }

@@ -28,6 +28,7 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/add_subject_title"
                 android:hint="@string/hint_subject_title"
                 android:gravity="end"
                 android:layout_gravity="center"
@@ -42,12 +43,14 @@
 
             <ImageView
                 style="@style/ImageIconAddExamTheme"
-                android:src="@drawable/color_icon" />
+                android:src="@drawable/color_icon"
+                android:id="@+id/add_subject_color_icon"/>
 
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_subject_color"
+                android:id="@+id/add_subject_color"
                 android:gravity="end"
                 android:layout_gravity="center"
                 android:textSize="@dimen/add_text_view_text_size"

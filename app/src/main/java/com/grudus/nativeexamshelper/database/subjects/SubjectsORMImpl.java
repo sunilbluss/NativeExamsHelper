@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.activities.AddingExamMainActivity;
+import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
 
@@ -111,5 +112,24 @@ public final class SubjectsORMImpl {
         contentValues.put(SubjectsContract.SubjectEntry.COLOR_COLUMN, subject.getColor());
 
         return db.insert(SubjectsContract.SubjectEntry.TABLE_NAME, null, contentValues);
+    }
+
+
+    public void update(SQLiteDatabase db, Subject old, Subject _new) {
+        if (findByTitle(db, old.getTitle()) == null) {
+            Log.e(ExamsDbHelper.TAG, "update: " + old + " doesn't exists");
+            return;
+        }
+
+        ContentValues cv = new ContentValues(2);
+        cv.put(SubjectsContract.SubjectEntry.TITLE_COLUMN, _new.getTitle());
+        cv.put(SubjectsContract.SubjectEntry.COLOR_COLUMN, _new.getColor());
+
+        db.update(SubjectsContract.SubjectEntry.TABLE_NAME,
+                cv,
+                SubjectsContract.SubjectEntry.TITLE_COLUMN + "=?",
+                new String[] {old.getTitle()});
+
+        Log.d(ExamsDbHelper.TAG, "Updated " + old + " to " + _new);
     }
 }

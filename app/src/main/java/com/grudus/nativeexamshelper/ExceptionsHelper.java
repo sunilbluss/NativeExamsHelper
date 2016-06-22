@@ -6,13 +6,6 @@ import android.util.Log;
 
 public class ExceptionsHelper {
 
-    public static final String TAG = "_______-------_______";
-
-    public static void printError(Exception e) {
-        for (StackTraceElement s : e.getStackTrace())
-            Log.e(TAG, s.toString());
-    }
-
     public static void checkStringEmptiness(@Nullable String message, String... strings) throws EmptyStringException {
         message = message == null ? EmptyStringException.DEFAULT_MESSAGE : message;
         for (String string : strings) {

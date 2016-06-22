@@ -6,11 +6,15 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import com.grudus.nativeexamshelper.ExceptionsHelper;
+import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.activities.AddingExamMainActivity;
 
 public class Subject implements Parcelable {
 
     private String title;
     private String color;
+
+    private static final String EMPTY = "grudus_sub_empty";
 
     public Subject(@NonNull String title, @NonNull String color) {
         ExceptionsHelper.checkStringEmptiness("Title and color cannot be empty", title, color);
@@ -18,13 +22,32 @@ public class Subject implements Parcelable {
         this.color = color;
     }
 
+    private Subject() {
+        this.color = String.format("#%06X", (0xFFFFFF
+                & AddingExamMainActivity.getMainApplicationContext()
+                .getResources().getColor(R.color.niceBlueColor)));
+        this.title = EMPTY;
+    }
+
     public String getTitle() {
         return title;
+    }
+
+    public static Subject empty() {
+        return new Subject();
+    }
+
+    public boolean isEmpty() {
+        return this.title.equals(EMPTY);
     }
 
     public void setTitle(@NonNull String title) {
         ExceptionsHelper.checkStringEmptiness("Title cannot be empty", title);
         this.title = title;
+    }
+
+    public Subject copy() {
+        return new Subject(title, color);
     }
 
 

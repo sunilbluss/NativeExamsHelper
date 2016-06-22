@@ -26,7 +26,7 @@ import butterknife.OnItemClick;
 
 public class AddingExamMainActivity extends AppCompatActivity {
 
-    public static final String TAG = "@@@@@@@@@@@@@@@@@@@@@";
+    public static final String TAG = "@@@ MAIN @@@";
 
 
     @BindView(R.id.toolbar) Toolbar toolbar;
@@ -50,8 +50,6 @@ public class AddingExamMainActivity extends AppCompatActivity {
 
         initDatabase();
 
-        if (getIntent().getBooleanExtra("reopen", false))
-            addExamToDatabase((Exam)getIntent().getParcelableExtra("newExam"));
 
         populateListView();
     }
@@ -77,16 +75,6 @@ public class AddingExamMainActivity extends AppCompatActivity {
         listView.setAdapter(cursorAdapter);
     }
 
-
-
-    private void addExamToDatabase(Exam exam) {
-        if (exam == null) {
-            Toast.makeText(this, "parcerableExtra is null", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        long l = examsDbHelper.insertExam(exam);
-        Log.d(TAG, exam + " inserted on row " + l);
-    }
 
     @OnClick(R.id.floating_button_add_exam)
     public void addExam() {
@@ -114,6 +102,12 @@ public class AddingExamMainActivity extends AppCompatActivity {
             Toast.makeText(this, "Przedmioty sa odswiezone", Toast.LENGTH_SHORT).show();
             examsDbHelper.refreshSubjects();
             return true;
+        }
+
+        if (item.getItemId() == R.id.menu_item_edit_subjects) {
+            Intent intent = new Intent(getApplicationContext(), SubjectsListActivity.class);
+            intent.putExtra("editable", true);
+            startActivity(intent);
         }
 
         Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
