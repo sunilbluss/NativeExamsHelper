@@ -25,6 +25,13 @@ public class SubjectsListActivity extends AppCompatActivity {
 
     private final String TAG = "@@@" + this.getClass().getSimpleName();
 
+    // info for AddNewSubjectActivity - when is 'true' then we are editing the existing subject
+    public static final String INTENT_EDITABLE_TAG = "editable";
+
+    // info for AddNewSubjectActivity - when is 'true' we are creating new subject, but we are still in
+    // 'edit subjects' mode
+    public static final String INTENT_EDIT_MODE_TAG = "editMode";
+
     @BindView(R.id.subjects_list_view) ListView listView;
     @BindView(R.id.floating_button_add_subject) FloatingActionButton floatingActionButton;
     @BindView(R.id.toolbar) Toolbar toolbar;
@@ -43,7 +50,8 @@ public class SubjectsListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_subjects_list);
         ButterKnife.bind(this);
 
-        isEditable = getIntent().getBooleanExtra("editable", false);
+        isEditable = getIntent().getBooleanExtra(INTENT_EDITABLE_TAG, false);
+        Log.i(TAG, "onCreate: is editable? " + isEditable);
 
         toolbar.setTitle(getResources().getString(R.string.subject_list_toolbar_text));
         setSupportActionBar(toolbar);
@@ -82,10 +90,20 @@ public class SubjectsListActivity extends AppCompatActivity {
     @OnClick(R.id.floating_button_add_subject)
     public void addSubject() {
         Intent openAddNewSubjectActivity = new Intent(getApplicationContext(), AddNewSubjectActivity.class);
+        openAddNewSubjectActivity.putExtra(INTENT_EDIT_MODE_TAG, isEditable);
         startActivity(openAddNewSubjectActivity);
     }
 
 
+    @Override
+    public void onBackPressed() {
+        Log.d(TAG, "onBackPressed: ");
+        if (isEditable) {
+            this.startActivity(new Intent(this, AddingExamMainActivity.class));
+            finish();
+        }
+        super.onBackPressed();
+    }
 
     @Override
     protected void onDestroy() {

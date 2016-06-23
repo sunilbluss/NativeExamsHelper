@@ -15,7 +15,7 @@ public class ExceptionsHelper {
     }
 
 
-    private static class EmptyStringException extends IllegalArgumentException {
+    public static class EmptyStringException extends IllegalArgumentException {
 
         public static final String DEFAULT_MESSAGE = "String argument cannot be empty";
 

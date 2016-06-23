@@ -56,6 +56,11 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         Log.d(TAG, "Database is opened");
     }
 
+    public void openDBReadOnly() {
+        database = this.getReadableDatabase();
+        Log.d(TAG, "openDBReadOnly: opened");
+    }
+
     public void closeDB() {
         if (database != null && database.isOpen())
             database.close();

@@ -43,7 +43,9 @@ public class AddNewSubjectActivity extends AppCompatActivity {
     private final int[] colorPickerInitVal = new int[3];
 
     private Subject subject, oldSubject;
+
     private boolean changingExisting;
+    private boolean addingNewButStillEditableMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,9 @@ public class AddNewSubjectActivity extends AppCompatActivity {
 
         subject = getIntent().getParcelableExtra("subject") == null
                 ? Subject.empty() : (Subject) getIntent().getParcelableExtra("subject");
+
+        addingNewButStillEditableMode = getIntent()
+                .getBooleanExtra(SubjectsListActivity.INTENT_EDIT_MODE_TAG, false);
 
         changingExisting = !subject.isEmpty();
 
@@ -127,7 +132,8 @@ public class AddNewSubjectActivity extends AppCompatActivity {
             return;
 
         Intent goBack = new Intent(getApplicationContext(), SubjectsListActivity.class);
-        goBack.putExtra("editable", changingExisting);
+        goBack.putExtra(SubjectsListActivity.INTENT_EDITABLE_TAG,
+                changingExisting || addingNewButStillEditableMode);
         startActivity(goBack);
 
     }

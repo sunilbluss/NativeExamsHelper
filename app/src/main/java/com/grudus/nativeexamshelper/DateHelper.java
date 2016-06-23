@@ -13,8 +13,10 @@ import java.util.Locale;
 
 public class DateHelper {
 
-    private static final String dateFormat = AddingExamMainActivity.getMainApplicationContext()
-            .getResources().getString(R.string.date_format);
+    private static final String DEFAULT_DATE_FORMAT = "dd/MM/yyyy";
+    private static final String dateFormat = AddingExamMainActivity.getMainApplicationContext() != null
+            ? AddingExamMainActivity.getMainApplicationContext().getResources().getString(R.string.date_format)
+            : DEFAULT_DATE_FORMAT;
 
     public static Date getDateFromString(@NonNull String date) throws ParseException {
         ExceptionsHelper.checkStringEmptiness("Date cannot be null", date);

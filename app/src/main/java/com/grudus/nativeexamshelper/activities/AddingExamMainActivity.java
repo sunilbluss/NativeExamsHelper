@@ -1,23 +1,35 @@
 package com.grudus.nativeexamshelper.activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.app.LauncherActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.SwipeDetector;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.exams.ExamsCursorAdapter;
 import com.grudus.nativeexamshelper.pojos.Exam;
+import com.grudus.nativeexamshelper.pojos.Subject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,16 +62,19 @@ public class AddingExamMainActivity extends AppCompatActivity {
 
         initDatabase();
 
-
         populateListView();
+
+
+
     }
 
     @OnItemClick(R.id.list_view_adding_exam_content)
-    public void goToExamPage(int index) {
+    public void goToExamPage(AdapterView<?> parent, final View view, int index, long id) {
         Toast.makeText(this, "Klikles w " + index, Toast.LENGTH_SHORT).show();
-        Log.d(TAG, cursorAdapter.getItem(index).toString());
+
     }
 
+    @Nullable
     public static Context getMainApplicationContext() {
         return mainApplicationContext;
     }
@@ -106,7 +121,7 @@ public class AddingExamMainActivity extends AppCompatActivity {
 
         if (item.getItemId() == R.id.menu_item_edit_subjects) {
             Intent intent = new Intent(getApplicationContext(), SubjectsListActivity.class);
-            intent.putExtra("editable", true);
+            intent.putExtra(SubjectsListActivity.INTENT_EDITABLE_TAG, true);
             startActivity(intent);
         }
 
