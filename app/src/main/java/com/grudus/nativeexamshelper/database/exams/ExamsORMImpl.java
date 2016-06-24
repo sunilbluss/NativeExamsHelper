@@ -5,7 +5,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.grudus.nativeexamshelper.DateHelper;
+import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.pojos.Exam;
 
 public final class ExamsORMImpl {

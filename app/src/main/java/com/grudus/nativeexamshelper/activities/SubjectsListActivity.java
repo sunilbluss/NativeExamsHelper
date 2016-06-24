@@ -99,7 +99,7 @@ public class SubjectsListActivity extends AppCompatActivity {
     public void onBackPressed() {
         Log.d(TAG, "onBackPressed: ");
         if (isEditable) {
-            this.startActivity(new Intent(this, AddingExamMainActivity.class));
+            this.startActivity(new Intent(this, ExamsMainActivity.class));
             finish();
         }
         super.onBackPressed();

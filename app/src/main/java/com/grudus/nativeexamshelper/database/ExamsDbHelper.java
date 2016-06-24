@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.grudus.nativeexamshelper.activities.AddingExamMainActivity;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
 import com.grudus.nativeexamshelper.database.exams.ExamsORMImpl;
 import com.grudus.nativeexamshelper.database.subjects.SubjectsContract;
@@ -53,7 +52,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public void openDB() {
         database = this.getWritableDatabase();
-        Log.d(TAG, "Database is opened");
+       // Log.d(TAG, "Database is opened");
     }
 
     public void openDBReadOnly() {
@@ -65,7 +64,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         if (database != null && database.isOpen())
             database.close();
         this.close();
-        Log.d(TAG, "Database is closed");
+       // Log.d(TAG, "Database is closed");
     }
 
 //    Subjects part ******************************

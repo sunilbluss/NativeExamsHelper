@@ -22,15 +22,11 @@
         </ListView>
 
         <android.support.design.widget.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/floating_button_add_subject"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="16dp"
-            android:src="@drawable/add_icon"
+            style="@style/FloatingActionButtonStyle"
             app:layout_anchorGravity="bottom|right|end"
             app:backgroundTint="@color/niceBlueColor"
-            android:tint="#ffffff"/>
+            android:id="@+id/floating_button_add_subject"
+            android:src="@drawable/add_icon" />
 
 
     </android.support.design.widget.CoordinatorLayout>

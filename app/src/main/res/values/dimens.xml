@@ -3,9 +3,22 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="image_icon_adding_exam_padding">10dp</dimen>
-    <dimen name="add_text_view_text_size">30sp</dimen>
+    <!-- Add subject/exam view -->
+    <dimen name="add_xxx_icon_padding">10dp</dimen>
+    <dimen name="add_xxx_edit_text_text_size">22sp</dimen>
+    <dimen name="add_xxx_edit_text_padding">10dp</dimen>
+    <dimen name="add_xxx_margin">16dp</dimen>
 
     <dimen name="add_button_margin">16dp</dimen>
-    <dimen name="add_button_text_size">18sp</dimen>
+    <dimen name="add_button_text_size">14sp</dimen>
+    <dimen name="add_button_padding">0dp</dimen>
+
+    <!-- Single item in list view-->
+    <dimen name="list_item_padding">18dp</dimen>
+    <dimen name="list_item_radius">40dp</dimen>
+    <dimen name="list_item_text_left_margin">15dp</dimen>
+    <dimen name="list_item_subject_text_size">20sp</dimen>
+
+    <dimen name="exam_item_date_text_size">12sp</dimen>
+
 </resources>

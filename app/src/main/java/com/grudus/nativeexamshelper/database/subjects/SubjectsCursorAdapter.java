@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +11,6 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.grudus.nativeexamshelper.R;
-import com.grudus.nativeexamshelper.activities.AddExamActivity;
-import com.grudus.nativeexamshelper.activities.AddingExamMainActivity;
 
 
 public class SubjectsCursorAdapter extends CursorAdapter {

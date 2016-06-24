@@ -5,7 +5,7 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.MediumTest;
 
-import com.grudus.nativeexamshelper.activities.AddingExamMainActivity;
+import com.grudus.nativeexamshelper.activities.ExamsMainActivity;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,8 +17,8 @@ public class AddingExamMainActivityTest {
 
 
     @Rule
-    public final ActivityTestRule<AddingExamMainActivity> main
-            = new ActivityTestRule<AddingExamMainActivity>(AddingExamMainActivity.class);
+    public final ActivityTestRule<ExamsMainActivity> main
+            = new ActivityTestRule<ExamsMainActivity>(ExamsMainActivity.class);
 
 
     // TODO: 23.06.16 I'll be back 

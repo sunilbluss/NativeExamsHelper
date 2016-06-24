@@ -9,10 +9,7 @@
     <include layout="@layout/toolbar" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_margin="@dimen/activity_horizontal_margin">
+        style="@style/UserInputLayoutStyle">
 
 
         <LinearLayout
@@ -26,13 +23,10 @@
 />
 
             <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/UserInputEditTextStyle"
                 android:id="@+id/add_subject_title"
-                android:hint="@string/hint_subject_title"
-                android:gravity="end"
-                android:layout_gravity="center"
-                android:textSize="@dimen/add_text_view_text_size"/>
+                android:hint="@string/hint_subject_title" />
+
         </LinearLayout>
 
 
@@ -47,13 +41,9 @@
                 android:id="@+id/add_subject_color_icon"/>
 
             <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/UserInputEditTextStyle"
                 android:hint="@string/hint_subject_color"
                 android:id="@+id/add_subject_color"
-                android:gravity="end"
-                android:layout_gravity="center"
-                android:textSize="@dimen/add_text_view_text_size"
                 android:focusable="false" />
         </LinearLayout>
 

@@ -1,4 +1,4 @@
-package com.grudus.nativeexamshelper;
+package com.grudus.nativeexamshelper.helpers;
 
 import android.util.Log;
 import android.view.MotionEvent;

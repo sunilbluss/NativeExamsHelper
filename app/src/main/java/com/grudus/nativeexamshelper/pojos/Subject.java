@@ -1,15 +1,13 @@
 package com.grudus.nativeexamshelper.pojos;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import com.grudus.nativeexamshelper.ExceptionsHelper;
+import com.grudus.nativeexamshelper.helpers.ExceptionsHelper;
 import com.grudus.nativeexamshelper.R;
-import com.grudus.nativeexamshelper.activities.AddNewSubjectActivity;
-import com.grudus.nativeexamshelper.activities.AddingExamMainActivity;
+import com.grudus.nativeexamshelper.activities.ExamsMainActivity;
 
 public class Subject implements Parcelable {
 
@@ -25,7 +23,7 @@ public class Subject implements Parcelable {
     }
 
     private Subject() {
-        Context context = AddingExamMainActivity.getMainApplicationContext();
+        Context context = ExamsMainActivity.getMainApplicationContext();
         if (context == null) this.color = "#4286F5";
         else this.color = String.format("#%06X", (0xFFFFFF
                 & context

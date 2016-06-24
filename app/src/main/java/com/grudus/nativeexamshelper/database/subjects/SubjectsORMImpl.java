@@ -7,17 +7,17 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.grudus.nativeexamshelper.R;
-import com.grudus.nativeexamshelper.activities.AddingExamMainActivity;
+import com.grudus.nativeexamshelper.activities.ExamsMainActivity;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
 
 public final class SubjectsORMImpl {
 
-    private static final String[] defaultSubjects = AddingExamMainActivity.getMainApplicationContext().getResources()
+    private static final String[] defaultSubjects = ExamsMainActivity.getMainApplicationContext().getResources()
             .getStringArray(R.array.default_subjects);
 
-    private static final String[] defaultColors = AddingExamMainActivity.getMainApplicationContext().getResources()
+    private static final String[] defaultColors = ExamsMainActivity.getMainApplicationContext().getResources()
             .getStringArray(R.array.defaultSubjectsColors);
 
     public boolean firstInsert(SQLiteDatabase db) {
@@ -28,7 +28,7 @@ public final class SubjectsORMImpl {
             firstValues[i].put(SubjectsContract.SubjectEntry.COLOR_COLUMN,
                     defaultColors[i]);
 
-            Log.i(AddingExamMainActivity.TAG, "Color is " + defaultColors[i]);
+            Log.i(ExamsMainActivity.TAG, "Color is " + defaultColors[i]);
         }
         int counter = 0;
 
@@ -44,7 +44,7 @@ public final class SubjectsORMImpl {
             db.endTransaction();
         }
 
-        Log.d(AddingExamMainActivity.TAG, "Inserted " + counter + " values");
+        Log.d(ExamsMainActivity.TAG, "Inserted " + counter + " values");
         return counter == firstValues.length;
     }
 

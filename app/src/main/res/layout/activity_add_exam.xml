@@ -10,6 +10,9 @@
     <include layout="@layout/toolbar" />
 
     <LinearLayout
+        style="@style/UserInputLayoutStyle">
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -19,14 +22,10 @@
             android:src="@drawable/subject_icon" />
 
         <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/UserInputEditTextStyle"
             android:id="@+id/add_exam_subject_input"
-            android:textSize="@dimen/add_text_view_text_size"
-            android:padding="10dp"
             android:hint="@string/hint_add_exam_subject"
-            android:focusable="false"
-            android:gravity="end"/>
+            android:focusable="false" />
 
     </LinearLayout>
 
@@ -40,15 +39,9 @@
             android:src="@drawable/info_icon"/>
 
         <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/UserInputEditTextStyle"
             android:id="@+id/add_exam_extras_input"
-            android:layout_gravity="center_horizontal"
-            android:textSize="@dimen/add_text_view_text_size"
-            android:padding="10dp"
-            android:hint="@string/hint_add_exam_extras"
-            android:gravity="end"/>
-
+            android:hint="@string/hint_add_exam_extras" />
 
     </LinearLayout>
 
@@ -63,15 +56,10 @@
 
 
         <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/UserInputEditTextStyle"
             android:id="@+id/add_exam_date_input"
-            android:inputType="date"
-            android:layout_gravity="center_horizontal"
-            android:textSize="@dimen/add_text_view_text_size"
-            android:padding="10dp"
-            android:focusable="false"
-            android:gravity="end"/>
+            android:hint="@string/hint_add_exam_date"
+            android:focusable="false" />
     </LinearLayout>
 
     <Button
@@ -80,5 +68,6 @@
         android:text="@string/button_text_add_exam" />
 
 
+    </LinearLayout>
 
 </LinearLayout>

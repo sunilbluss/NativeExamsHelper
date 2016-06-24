@@ -18,17 +18,51 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center</item>
-        <item name="android:padding">@dimen/image_icon_adding_exam_padding</item>
+        <item name="android:padding">@dimen/add_xxx_icon_padding</item>
     </style>
     
     <style name="AddButtonStyle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">end</item>
-        <item name="android:layout_margin">@dimen/add_button_margin</item>
+        <item name="android:layout_marginTop">@dimen/add_button_margin</item>
         <item name="android:background">?attr/colorPrimaryDark</item>
         <item name="android:textColor">@color/settingsColor</item>
         <item name="android:textSize">@dimen/add_button_text_size</item>
+        <item name="android:padding">@dimen/add_button_padding</item>
+    </style>
+
+    <style name="UserInputLayoutStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_margin">@dimen/add_xxx_margin</item>
+    </style>
+
+    <style name="UserInputEditTextStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/add_xxx_edit_text_text_size</item>
+        <item name="android:gravity">end</item>
+        <item name="android:padding">@dimen/add_xxx_edit_text_padding</item>
+    </style>
+
+    <style name="CircularTextView">
+        <item name="android:layout_width">@dimen/list_item_radius</item>
+        <item name="android:layout_height">@dimen/list_item_radius</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:textColor">#FFF</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/circular_listitem</item>
+    </style>
+    
+    <style name="FloatingActionButtonStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">bottom|end</item>
+        <item name="android:layout_margin">16dp</item>
+        <item name="android:tint">#ffffff</item>
     </style>
 
 </resources>

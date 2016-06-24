@@ -1,77 +1,77 @@
 package com.grudus.nativeexamshelper.activities;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.app.LauncherActivity;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
-import com.grudus.nativeexamshelper.SwipeDetector;
+import com.grudus.nativeexamshelper.activities.SubjectsListActivity;
+import com.grudus.nativeexamshelper.activities.sliding.AddingExamFragment;
+import com.grudus.nativeexamshelper.activities.sliding.ViewPagerAdapter;
+import com.grudus.nativeexamshelper.activities.sliding.goohub.SlidingTabLayout;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
-import com.grudus.nativeexamshelper.database.exams.ExamsCursorAdapter;
-import com.grudus.nativeexamshelper.pojos.Exam;
-import com.grudus.nativeexamshelper.pojos.Subject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.OnItemClick;
 
-public class AddingExamMainActivity extends AppCompatActivity {
+public class ExamsMainActivity extends AppCompatActivity  {
 
     public static final String TAG = "@@@ MAIN @@@";
 
 
     @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.floating_button_add_exam) FloatingActionButton floatingActionButton;
-    @BindView(R.id.list_view_adding_exam_content) ListView listView;
+    @BindView(R.id.view_pager) ViewPager viewPager;
+    @BindView(R.id.tabs) SlidingTabLayout slidingTabLayout;
 
     private static Context mainApplicationContext;
     private ExamsDbHelper examsDbHelper;
-
-    private ExamsCursorAdapter cursorAdapter;
-
+    private String[] tabs;
+    private ViewPagerAdapter viewPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "on create main");
         mainApplicationContext = this;
-        setContentView(R.layout.activity_adding_exam_main);
+        setContentView(R.layout.activity_main_exams);
         ButterKnife.bind(this);
+
         setSupportActionBar(toolbar);
 
-        initDatabase();
+        tabs = getResources().getStringArray(R.array.tab_titles);
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), tabs);
 
-        populateListView();
+        viewPager.setAdapter(viewPagerAdapter);
 
+        slidingTabLayout.setDistributeEvenly(true);
 
+        slidingTabLayout.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
+            @Override
+            public int getIndicatorColor(int position) {
+                return ContextCompat.getColor(getApplicationContext(), R.color.tabsScrollColor);
+            }
+        });
+
+        slidingTabLayout.setViewPager(viewPager);
+
+        Log.d(TAG, "onCreate: ");
 
     }
 
-    @OnItemClick(R.id.list_view_adding_exam_content)
-    public void goToExamPage(AdapterView<?> parent, final View view, int index, long id) {
-        Toast.makeText(this, "Klikles w " + index, Toast.LENGTH_SHORT).show();
 
+    private void initDatabase() {
+        examsDbHelper = new ExamsDbHelper(this);
+        examsDbHelper.openDB();
     }
 
     @Nullable
@@ -79,23 +79,7 @@ public class AddingExamMainActivity extends AppCompatActivity {
         return mainApplicationContext;
     }
 
-    private void initDatabase() {
-        examsDbHelper = new ExamsDbHelper(this);
-        examsDbHelper.openDB();
-    }
 
-    private void populateListView() {
-        Cursor c = examsDbHelper.selectAllFromExamsSortByDate();
-        cursorAdapter = new ExamsCursorAdapter(this, c, 0);
-        listView.setAdapter(cursorAdapter);
-    }
-
-
-    @OnClick(R.id.floating_button_add_exam)
-    public void addExam() {
-        Intent openAddExamActivity = new Intent(getApplicationContext(), AddExamActivity.class);
-        startActivity(openAddExamActivity);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -108,14 +92,18 @@ public class AddingExamMainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_item_deleteAll) {
             Toast.makeText(this, "Usunieto wszystko", Toast.LENGTH_SHORT).show();
-            examsDbHelper.cleanAllExamRecords();
-            cursorAdapter.swapCursor(examsDbHelper.selectAllFromExams());
+            initDatabase();
+
+            ((AddingExamFragment) viewPagerAdapter.getFragment(0)).removeAll();
+
             return true;
         }
 
         if (item.getItemId() == R.id.menu_item_refresh_subjects) {
             Toast.makeText(this, "Przedmioty sa odswiezone", Toast.LENGTH_SHORT).show();
+            initDatabase();
             examsDbHelper.refreshSubjects();
+            examsDbHelper.closeDB();
             return true;
         }
 
@@ -125,7 +113,7 @@ public class AddingExamMainActivity extends AppCompatActivity {
             startActivity(intent);
         }
 
-        Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
+        else Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
 
         return super.onOptionsItemSelected(item);
     }

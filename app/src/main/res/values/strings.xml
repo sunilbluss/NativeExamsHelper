@@ -9,11 +9,18 @@
     <string name="toolbar_refresh_subjects">Odswiez przedmioty</string>
     <string name="toolbar_edit_subjects">Edytuj przedmioty</string>
 
+    <!--Tabs -->
+    <string-array name="tab_titles">
+        <item>Nadchodzące</item>
+        <item>Napisane</item>
+    </string-array>
+
 
     <!--Add new Exam-->
     <string name="add_new_exam_toolbar_text">Dodaj egzamin</string>
     <string name="hint_add_exam_subject">Przedmiot</string>
     <string name="hint_add_exam_extras">Zaliczenie</string>
+    <string name="hint_add_exam_date">Data</string>
     <string name="button_text_add_exam">Dodaj</string>
 
     <string name="empty_subject_add_exam">Musisz podac przedmiot</string>
@@ -45,5 +52,8 @@
     <string name="warning_add_subject_badchar">Przedmiot musi zaczynac sie od litery</string>
     <string name="warning_add_subject_subject_already_exists">Podany przedmiot już istnieje</string>
     <string name="button_text_change_subject">Zmień</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

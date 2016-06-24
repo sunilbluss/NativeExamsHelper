@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="settingsColor">#ffffff</color>
+    <color name="tabsScrollColor">#ffffff</color>
 
 
     <color name="niceBlueColor">#4286F5</color>

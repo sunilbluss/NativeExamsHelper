@@ -1,20 +1,17 @@
 package com.grudus.nativeexamshelper.activities;
 
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.grudus.nativeexamshelper.DateHelper;
-import com.grudus.nativeexamshelper.ExceptionsHelper;
+import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.pojos.Exam;
@@ -89,7 +86,7 @@ public class AddExamActivity extends AppCompatActivity {
         db.insertExam(exam);
         db.closeDB();
 
-        Intent goBack = new Intent(getApplicationContext(), AddingExamMainActivity.class);
+        Intent goBack = new Intent(getApplicationContext(), ExamsMainActivity.class);
         startActivity(goBack);
     }
 

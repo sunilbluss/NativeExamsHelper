@@ -14,15 +14,20 @@
 
         <!--toolbar-->
         <include
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
             layout="@layout/toolbar" />
 
         <!--Normal content-->
-        <include
-            layout="@layout/activity_adding_exam_content"
+        <com.grudus.nativeexamshelper.activities.sliding.goohub.SlidingTabLayout
+            android:id="@+id/tabs"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"/>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
 
     </LinearLayout>
 

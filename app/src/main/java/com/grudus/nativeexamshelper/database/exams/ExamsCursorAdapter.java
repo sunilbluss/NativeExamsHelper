@@ -2,19 +2,16 @@ package com.grudus.nativeexamshelper.database.exams;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
-import com.grudus.nativeexamshelper.DateHelper;
+import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.R;
-import com.grudus.nativeexamshelper.activities.AddingExamMainActivity;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
@@ -32,7 +29,7 @@ public class ExamsCursorAdapter extends CursorAdapter {
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         return LayoutInflater.from(context)
-                .inflate(R.layout.list_item_adding_exam_content, parent, false);
+                .inflate(R.layout.list_item_exam, parent, false);
     }
 
     @Override

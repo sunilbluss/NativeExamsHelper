@@ -1,16 +1,17 @@
 package com.grudus.nativeexamshelper;
 
+import com.grudus.nativeexamshelper.helpers.ExceptionsHelper;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import static org.junit.Assert.*;
 
-/**
- * To work on unit tests, switch the Test Artifact in the Build Variants view.
- */
+@RunWith(JUnit4.class)
 public class SubjectUnitTest {
 
     private Subject subject;
