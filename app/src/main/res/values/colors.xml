@@ -2,10 +2,17 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#536DFE</color>
+    <!--<color name="textColorPrimary">#ff0000</color>-->
+
+    <color name="toolbar_text_theme">#ffffff</color>
     <color name="settingsColor">#ffffff</color>
     <color name="tabsScrollColor">#ffffff</color>
 
+    <color name="floating_button">@color/colorAccent</color>
+
+    <color name="button">@color/colorPrimary</color>
+    <color name="button_text">@color/settingsColor</color>
 
     <color name="niceBlueColor">#4286F5</color>
 
@@ -25,6 +32,14 @@
         <item>#689F38</item>
     </string-array>
 
+    <string-array name="gradesColors">
+        <item>#E53935</item>
+        <item>#EF6C00</item>
+        <item>#009688</item>
+        <item>#00796B</item>
+        <item>#558B2F</item>
+        <item>#33691E</item>
+    </string-array>
 
 
 

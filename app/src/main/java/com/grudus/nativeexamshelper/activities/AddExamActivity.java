@@ -1,11 +1,15 @@
 package com.grudus.nativeexamshelper.activities;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -48,6 +52,8 @@ public class AddExamActivity extends AppCompatActivity {
             setSelectedSubjectLabel((Subject) getIntent().getParcelableExtra("subject"));
 
         toolbar.setTitle(getResources().getString(R.string.add_new_exam_toolbar_text));
+        infoAfterEnter();
+
     }
 
     @OnClick(R.id.add_exam_date_input)
@@ -81,9 +87,15 @@ public class AddExamActivity extends AppCompatActivity {
         }
         Exam exam = new Exam(subject, info, correctDate);
 
-        ExamsDbHelper db = new ExamsDbHelper(getApplicationContext());
+        ExamsDbHelper db = ExamsDbHelper.getInstance(this);
         db.openDB();
-        db.insertExam(exam);
+
+        // exam was in the past
+        if (correctDate.getTime() < Calendar.getInstance().getTime().getTime()) {
+            db.examBecomesOld(exam);
+        }
+        else db.insertExam(exam);
+
         db.closeDB();
 
         Intent goBack = new Intent(getApplicationContext(), ExamsMainActivity.class);
@@ -117,10 +129,44 @@ public class AddExamActivity extends AppCompatActivity {
 
     private void updateLabel() {
         dateInput.setText(DateHelper.getStringFromDate(calendar.getTime()));
+        deleteFocus();
     }
 
     private void setSelectedSubjectLabel(Subject subject) {
         subjectInput.setText(subject.getTitle());
+    }
+
+    private void infoAfterEnter() {
+        extrasInput.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                    deleteFocus();
+                    return true;
+                }
+
+                return true;
+            }
+        });
+
+        extrasInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    deleteFocus();
+                }
+            }
+        });
+    }
+
+    private void deleteFocus() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+        findViewById(R.id.add_exam_layout).requestFocus();
     }
 
 }

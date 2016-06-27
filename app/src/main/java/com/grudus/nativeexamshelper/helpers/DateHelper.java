@@ -15,9 +15,11 @@ import java.util.Locale;
 public class DateHelper {
 
     private static final String DEFAULT_DATE_FORMAT = "dd/MM/yyyy";
-    private static final String dateFormat = ExamsMainActivity.getMainApplicationContext() != null
-            ? ExamsMainActivity.getMainApplicationContext().getResources().getString(R.string.date_format)
-            : DEFAULT_DATE_FORMAT;
+    private static String dateFormat = DEFAULT_DATE_FORMAT;
+
+    public static void setDateFormat(@NonNull String dateFormat) {
+        DateHelper.dateFormat = dateFormat;
+    }
 
     public static Date getDateFromString(@NonNull String date) throws ParseException {
         ExceptionsHelper.checkStringEmptiness("Date cannot be null", date);

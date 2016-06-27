@@ -2,7 +2,6 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -20,13 +19,14 @@
         <item name="android:layout_gravity">center</item>
         <item name="android:padding">@dimen/add_xxx_icon_padding</item>
     </style>
-    
-    <style name="AddButtonStyle">
+
+    <!--todo change, it is ugly-->
+    <style name="AddButtonStyle" parent="Widget.AppCompat.Button.Borderless.Colored">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">end</item>
         <item name="android:layout_marginTop">@dimen/add_button_margin</item>
-        <item name="android:background">?attr/colorPrimaryDark</item>
+        <item name="android:background">@color/button</item>
         <item name="android:textColor">@color/settingsColor</item>
         <item name="android:textSize">@dimen/add_button_text_size</item>
         <item name="android:padding">@dimen/add_button_padding</item>
@@ -52,17 +52,33 @@
         <item name="android:layout_height">@dimen/list_item_radius</item>
         <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textColor">#FFF</item>
-        <item name="android:textSize">28sp</item>
+        <item name="android:textSize">@dimen/list_item_circular_view_text_size</item>
         <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center</item>
         <item name="android:background">@drawable/circular_listitem</item>
     </style>
-    
+
+    <style name="TextRightToCircular">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/list_item_main_text_size</item>
+        <item name="android:layout_marginStart">@dimen/list_item_text_left_margin</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
     <style name="FloatingActionButtonStyle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">bottom|end</item>
         <item name="android:layout_margin">16dp</item>
         <item name="android:tint">#ffffff</item>
+    </style>
+
+    <style name="SubjectExamsInfoTextStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingBottom">@dimen/sse_grades_info_text_padding</item>
+        <item name="android:textSize">@dimen/sse_average_text_size</item>
     </style>
 
 </resources>

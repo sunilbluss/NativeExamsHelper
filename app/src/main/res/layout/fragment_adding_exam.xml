@@ -15,8 +15,7 @@
         style="@style/FloatingActionButtonStyle"
         android:id="@+id/floating_button_add_exam"
         android:src="@drawable/add_icon"
-        app:layout_anchorGravity="bottom|right|end"
-        app:backgroundTint="@color/niceBlueColor"
+        app:backgroundTint="@color/floating_button"
 />
 
 </android.support.design.widget.CoordinatorLayout>

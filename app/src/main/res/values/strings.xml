@@ -53,7 +53,16 @@
     <string name="warning_add_subject_subject_already_exists">Podany przedmiot już istnieje</string>
     <string name="button_text_change_subject">Zmień</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!--Single subject exams-->
+    <string name="sse_toolbar">Egzaminy</string>
+    <string name="sse_default_exam_info">Brak opisu</string>
+    <string name="sse_info_average">Średnia: </string>
+    <string name="sse_info_median">Mediana: </string>
+    <string name="sse_info_dominant">Dominanta: </string>
+    <string name="sse_info_passed">Zaliczone: </string>
+    <string name="sse_info_failed">Niezaliczone: </string>
+    <string name="sse_info_percent">Wynik: </string>
+
+
 
 </resources>

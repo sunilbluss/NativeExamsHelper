@@ -14,11 +14,20 @@
     <dimen name="add_button_padding">0dp</dimen>
 
     <!-- Single item in list view-->
-    <dimen name="list_item_padding">18dp</dimen>
+    <dimen name="list_item_circular_view_text_size">28sp</dimen>
+    <dimen name="list_item_margin">18dp</dimen>
     <dimen name="list_item_radius">40dp</dimen>
     <dimen name="list_item_text_left_margin">15dp</dimen>
-    <dimen name="list_item_subject_text_size">20sp</dimen>
+    <dimen name="list_item_main_text_size">20sp</dimen>
 
-    <dimen name="exam_item_date_text_size">12sp</dimen>
+    <dimen name="list_item_sub_text_size">12sp</dimen>
+
+    <!-- Single subject exams -->
+    <dimen name="sse_title_text_size">@dimen/list_item_main_text_size</dimen>
+    <dimen name="sse_average_text_size">14sp</dimen>
+    <dimen name="sse_subject_title_margin_top">25dp</dimen>
+    <dimen name="sse_grades_info_layout_margin">@dimen/activity_vertical_margin</dimen>
+    <dimen name="sse_grades_info_text_padding">10dp</dimen>
+    <dimen name="sse_line_margin">5dp</dimen>
 
 </resources>

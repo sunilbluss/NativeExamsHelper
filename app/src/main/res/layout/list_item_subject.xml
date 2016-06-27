@@ -6,17 +6,14 @@
     android:layout_width="match_parent"
     android:id="@+id/list_item_adding_exam"
     android:orientation="horizontal"
-    android:padding="@dimen/list_item_padding">
+    android:padding="@dimen/list_item_margin">
 
     <TextView
         style="@style/CircularTextView"
         android:id="@+id/list_item_subject_icon_text" />
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/list_item_subject_text_size"
-        android:layout_marginStart="@dimen/list_item_text_left_margin"
+        style="@style/TextRightToCircular"
         android:id="@+id/list_item_subject_text" />
 
 </LinearLayout>

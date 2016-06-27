@@ -1,5 +1,6 @@
 package com.grudus.nativeexamshelper.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -162,7 +164,7 @@ public class AddNewSubjectActivity extends AppCompatActivity {
             return false;
         }
 
-        ExamsDbHelper db = new ExamsDbHelper(this);
+        ExamsDbHelper db = ExamsDbHelper.getInstance(this);
         db.openDB();
         db.updateSubject(oldSubject, subject);
         db.closeDB();
@@ -175,7 +177,7 @@ public class AddNewSubjectActivity extends AppCompatActivity {
             Log.e(TAG, "addSubjectToDatabase: Subject is empty. Nie powinno sie zdarzyc");
             return false;
         }
-        ExamsDbHelper db = new ExamsDbHelper(this);
+        ExamsDbHelper db = ExamsDbHelper.getInstance(this);
         db.openDB();
 
         if (db.findSubjectByTitle(subject.getTitle()) != null) {
@@ -191,6 +193,15 @@ public class AddNewSubjectActivity extends AppCompatActivity {
 
         db.closeDB();
         return true;
+    }
+
+    private void deleteFocus() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+        findViewById(R.id.add_subject_layout).requestFocus();
     }
 
 

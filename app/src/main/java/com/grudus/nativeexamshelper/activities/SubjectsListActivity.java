@@ -61,8 +61,7 @@ public class SubjectsListActivity extends AppCompatActivity {
     }
 
     private void initDatabase() {
-        Log.d(TAG, "Should init database SLActivity");
-        examsDbHelper = new ExamsDbHelper(this);
+        examsDbHelper = ExamsDbHelper.getInstance(this);
         examsDbHelper.openDB();
     }
 
@@ -106,8 +105,9 @@ public class SubjectsListActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        examsDbHelper.closeDB();
+    protected void onPause() {
+        super.onPause();
+        if (examsDbHelper != null)
+            examsDbHelper.closeDB();
     }
 }

@@ -17,9 +17,15 @@ import android.widget.Toast;
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.activities.SubjectsListActivity;
 import com.grudus.nativeexamshelper.activities.sliding.AddingExamFragment;
+import com.grudus.nativeexamshelper.activities.sliding.OldExamsFragment;
 import com.grudus.nativeexamshelper.activities.sliding.ViewPagerAdapter;
 import com.grudus.nativeexamshelper.activities.sliding.goohub.SlidingTabLayout;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
+import com.grudus.nativeexamshelper.database.exams.ExamsORMImpl;
+import com.grudus.nativeexamshelper.database.subjects.SubjectsORMImpl;
+import com.grudus.nativeexamshelper.helpers.DateHelper;
+
+import java.text.DateFormat;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,26 +35,29 @@ public class ExamsMainActivity extends AppCompatActivity  {
     public static final String TAG = "@@@ MAIN @@@";
 
 
-    @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.view_pager) ViewPager viewPager;
     @BindView(R.id.tabs) SlidingTabLayout slidingTabLayout;
 
-    private static Context mainApplicationContext;
     private ExamsDbHelper examsDbHelper;
-    private String[] tabs;
     private ViewPagerAdapter viewPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "on create main");
-        mainApplicationContext = this;
         setContentView(R.layout.activity_main_exams);
         ButterKnife.bind(this);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        tabs = getResources().getStringArray(R.array.tab_titles);
+        viewPagerInit();
+
+        DateHelper.setDateFormat(getResources().getString(R.string.date_format));
+        Log.d(TAG, "onCreate: END");
+    }
+
+    private void viewPagerInit() {
+        String[] tabs = getResources().getStringArray(R.array.tab_titles);
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), tabs);
 
         viewPager.setAdapter(viewPagerAdapter);
@@ -63,22 +72,14 @@ public class ExamsMainActivity extends AppCompatActivity  {
         });
 
         slidingTabLayout.setViewPager(viewPager);
-
-        Log.d(TAG, "onCreate: ");
-
     }
 
 
     private void initDatabase() {
-        examsDbHelper = new ExamsDbHelper(this);
+        examsDbHelper = ExamsDbHelper.getInstance(this);
         examsDbHelper.openDB();
+        Log.d(TAG, "initDatabase method: ");
     }
-
-    @Nullable
-    public static Context getMainApplicationContext() {
-        return mainApplicationContext;
-    }
-
 
 
     @Override
@@ -95,6 +96,8 @@ public class ExamsMainActivity extends AppCompatActivity  {
             initDatabase();
 
             ((AddingExamFragment) viewPagerAdapter.getFragment(0)).removeAll();
+            ((OldExamsFragment) viewPagerAdapter.getFragment(1)).removeAll();
+            examsDbHelper.closeDB();
 
             return true;
         }
@@ -118,12 +121,11 @@ public class ExamsMainActivity extends AppCompatActivity  {
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (examsDbHelper != null) {
+    protected void onPause() {
+        super.onPause();
+        if (examsDbHelper != null)
             examsDbHelper.closeDB();
-        }
+
     }
 }

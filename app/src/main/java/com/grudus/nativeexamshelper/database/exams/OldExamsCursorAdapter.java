@@ -10,17 +10,20 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
-import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.activities.sliding.OldExamsFragment;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
+import com.grudus.nativeexamshelper.helpers.DateHelper;
+import com.grudus.nativeexamshelper.pojos.OldExam;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
+import java.util.Random;
 
-public class ExamsCursorAdapter extends CursorAdapter {
+public class OldExamsCursorAdapter extends CursorAdapter {
 
     private ExamsDbHelper dbHelper;
 
-    public ExamsCursorAdapter(Context context, Cursor c, int flags) {
+    public OldExamsCursorAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
         dbHelper = ExamsDbHelper.getInstance(context);
     }
@@ -29,19 +32,17 @@ public class ExamsCursorAdapter extends CursorAdapter {
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         return LayoutInflater.from(context)
-                .inflate(R.layout.list_item_exam, parent, false);
+                .inflate(R.layout.list_item_old_exam, parent, false);
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView subjectView = (TextView) view.findViewById(R.id.list_item_adding_exam_subject);
-        TextView dateView = (TextView) view.findViewById(R.id.list_item_adding_exam_date);
-        TextView iconView = (TextView) view.findViewById(R.id.list_item_icon_text);
+        TextView subjectView = (TextView) view.findViewById(R.id.list_item_old_exam_subject);
+//        TextView infoView = (TextView) view.findViewById(R.id.list_item_old_exam_info);
+        TextView iconView = (TextView) view.findViewById(R.id.list_item_old_exam_icon_text);
 
-        String subjectTitle = cursor.getString(ExamsContract.ExamEntry.SUBJECT_COLUMN_INDEX);
-        long dateLong = cursor.getLong(ExamsContract.ExamEntry.DATE_COLUMN_INDEX);
+        String subjectTitle = cursor.getString(ExamsContract.OldExamEntry.SUBJECT_COLUMN_INDEX);
 
-        String readableDate = DateHelper.getReadableDataFromLong(dateLong);
 
         dbHelper.openDB();
         Subject subjectObiect = dbHelper.findSubjectByTitle(subjectTitle);
@@ -53,8 +54,11 @@ public class ExamsCursorAdapter extends CursorAdapter {
             iconView.setBackground(bg);
         }
 
+//        if (info != null) infoView.setText(info);
+
         iconView.setText(subjectTitle.substring(0, 1).toUpperCase());
+
+
         subjectView.setText(subjectTitle);
-        dateView.setText(readableDate);
     }
 }

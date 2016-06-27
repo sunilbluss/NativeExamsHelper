@@ -23,11 +23,7 @@ public class Subject implements Parcelable {
     }
 
     private Subject() {
-        Context context = ExamsMainActivity.getMainApplicationContext();
-        if (context == null) this.color = "#4286F5";
-        else this.color = String.format("#%06X", (0xFFFFFF
-                & context
-                .getResources().getColor(R.color.niceBlueColor)));
+        this.color = "#4286F5";
         this.title = EMPTY;
     }
 

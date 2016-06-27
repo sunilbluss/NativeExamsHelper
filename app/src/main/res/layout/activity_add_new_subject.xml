@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.grudus.nativeexamshelper.activities.AddNewSubjectActivity"
+    android:id="@+id/add_subject_layout"
     android:orientation="vertical" >
 
     <include layout="@layout/toolbar" />
@@ -25,6 +26,8 @@
             <EditText
                 style="@style/UserInputEditTextStyle"
                 android:id="@+id/add_subject_title"
+                android:maxLines="1"
+                android:maxLength="@integer/add_xxx_max_chars"
                 android:hint="@string/hint_subject_title" />
 
         </LinearLayout>

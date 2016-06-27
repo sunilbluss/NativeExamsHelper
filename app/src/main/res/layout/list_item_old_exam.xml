@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="wrap_content"
@@ -10,7 +9,7 @@
 
     <TextView
         style="@style/CircularTextView"
-        android:id="@+id/list_item_icon_text"/>
+        android:id="@+id/list_item_old_exam_icon_text" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -22,15 +21,34 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="@dimen/list_item_main_text_size"
-            android:id="@+id/list_item_adding_exam_subject" />
+            android:id="@+id/list_item_old_exam_subject"
+            android:text="Nieocenione"/>
 
+        <!--todo delete?-->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="@dimen/list_item_sub_text_size"
-            android:id="@+id/list_item_adding_exam_date" />
+            android:id="@+id/list_item_old_exam_info" />
 
     </LinearLayout>
+
+    <!--<View-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="1" />-->
+
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:text="5"-->
+        <!--android:textSize="@dimen/list_item_circular_view_text_size"-->
+        <!--android:background="@color/niceBlueColor"-->
+        <!--android:gravity="center"-->
+        <!--android:textColor="@color/materialcolorpicker__white"-->
+        <!--android:paddingLeft="8dp"-->
+        <!--android:paddingRight="8dp"-->
+        <!--/>-->
 
 
 

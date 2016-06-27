@@ -23,8 +23,7 @@
 
         <android.support.design.widget.FloatingActionButton
             style="@style/FloatingActionButtonStyle"
-            app:layout_anchorGravity="bottom|right|end"
-            app:backgroundTint="@color/niceBlueColor"
+            app:backgroundTint="@color/floating_button"
             android:id="@+id/floating_button_add_subject"
             android:src="@drawable/add_icon" />
 

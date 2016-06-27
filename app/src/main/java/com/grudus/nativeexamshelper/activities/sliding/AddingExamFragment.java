@@ -17,7 +17,12 @@ import android.widget.Toast;
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.activities.AddExamActivity;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
+import com.grudus.nativeexamshelper.database.exams.ExamsContract;
 import com.grudus.nativeexamshelper.database.exams.ExamsCursorAdapter;
+import com.grudus.nativeexamshelper.pojos.Exam;
+
+import java.util.ArrayList;
+import java.util.Calendar;
 
 
 public class AddingExamFragment extends Fragment {
@@ -40,19 +45,11 @@ public class AddingExamFragment extends Fragment {
     public void removeAll() {
         if (examsDbHelper == null) return;
         examsDbHelper.openDB();
-        examsDbHelper.cleanAllExamRecords();
-        cursorAdapter.swapCursor(examsDbHelper.selectAllFromExamsSortByDate());
+        examsDbHelper.cleanAllRecords(ExamsContract.ExamEntry.TABLE_NAME);
+        cursorAdapter.changeCursor(examsDbHelper.selectAllFromExamsSortByDate());
         examsDbHelper.closeDB();
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            Log.d(TAG, "setUserVisibleHint: is visible");
-        }
-        else Log.d(TAG, "setUserVisibleHint: isn't visible");
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,9 +69,19 @@ public class AddingExamFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         initDatabase();
+//        updateDatabase();
         populateListView();
         closeDatabase();
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.w(TAG, "FRAGMENT 1 ON PAUSE");
+        closeDatabase();
+        cursorAdapter.changeCursor(null);
+    }
+
 
     private void setListeners() {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -96,19 +103,34 @@ public class AddingExamFragment extends Fragment {
 
 
     private void initDatabase() {
-        examsDbHelper = new ExamsDbHelper(getActivity());
+        if (examsDbHelper == null && getActivity() != null)
+            examsDbHelper = ExamsDbHelper.getInstance(getContext());
         examsDbHelper.openDB();
+        examsDbHelper.openDB();
+        Log.d(TAG, "initDatabase method ");
+    }
+
+
+    // move exams to oldExams if necessary
+    private void updateDatabase() {
+        initDatabase();
+        ArrayList<Exam> oldExams = examsDbHelper.selectAllFromExamsWhereDateIsSmallerThan(
+                Calendar.getInstance().getTimeInMillis()
+        );
+        if (oldExams == null) return;
+        for (Exam exam : oldExams) examsDbHelper.examBecomesOld(exam);
     }
 
     private void populateListView() {
-        Cursor c = examsDbHelper.selectAllFromExamsSortByDate();
-        cursorAdapter = new ExamsCursorAdapter(getActivity(), c, 0);
+        cursorAdapter = new ExamsCursorAdapter(getActivity(), examsDbHelper.selectAllFromExamsSortByDate(), 0);
         listView.setAdapter(cursorAdapter);
     }
 
     private void closeDatabase() {
         examsDbHelper.closeDB();
     }
+
+
 
 
 }
