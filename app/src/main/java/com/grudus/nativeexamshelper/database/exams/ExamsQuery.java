@@ -13,21 +13,21 @@ import com.grudus.nativeexamshelper.pojos.Exam;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class ExamsORMImpl {
+public class ExamsQuery {
 
 
-    public Cursor getAllRecordsAndSortByDate(SQLiteDatabase db) {
+    public static Cursor getAllRecordsAndSortByDate(SQLiteDatabase db) {
         return QueryHelper.getAllRecordsAndSortBy(db, ExamsContract.ExamEntry.TABLE_NAME
                 , ExamsContract.ExamEntry.ALL_COLUMNS, ExamsContract.ExamEntry.DATE_COLUMN);
     }
 
-    public Cursor getAllRecords(SQLiteDatabase db) {
+    public static Cursor getAllRecords(SQLiteDatabase db) {
         return QueryHelper.getAllRecordsAndSortBy(db, ExamsContract.ExamEntry.TABLE_NAME,
                 ExamsContract.ExamEntry.ALL_COLUMNS, null);
     }
 
     @Nullable
-    public ArrayList<Exam> getAllExamsOlderThan(SQLiteDatabase db, long time) {
+    public static ArrayList<Exam> getAllExamsOlderThan(SQLiteDatabase db, long time) {
         Cursor c = db.query(
                 ExamsContract.ExamEntry.TABLE_NAME,
                 ExamsContract.ExamEntry.ALL_COLUMNS,
@@ -55,7 +55,7 @@ public class ExamsORMImpl {
         return exams;
     }
 
-    public long insert(SQLiteDatabase db, Exam exam) {
+    public static long insert(SQLiteDatabase db, Exam exam) {
         ContentValues contentValues = new ContentValues(3);
         contentValues.put(ExamsContract.ExamEntry.SUBJECT_COLUMN, exam.getSubject());
         contentValues.put(ExamsContract.ExamEntry.INFO_COLUMN, exam.getInfo());
@@ -64,7 +64,7 @@ public class ExamsORMImpl {
         return db.insert(ExamsContract.ExamEntry.TABLE_NAME, null, contentValues);
     }
 
-    public boolean remove(SQLiteDatabase db, Exam exam) {
+    public static boolean remove(SQLiteDatabase db, Exam exam) {
         final String WHERE = ExamsContract.ExamEntry.SUBJECT_COLUMN + "=? AND "
                 + ExamsContract.ExamEntry.DATE_COLUMN + "=? ";
         return db.delete(ExamsContract.ExamEntry.TABLE_NAME,

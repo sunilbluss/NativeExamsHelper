@@ -1,9 +1,7 @@
 package com.grudus.nativeexamshelper.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -15,17 +13,12 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
-import com.grudus.nativeexamshelper.activities.SubjectsListActivity;
 import com.grudus.nativeexamshelper.activities.sliding.AddingExamFragment;
 import com.grudus.nativeexamshelper.activities.sliding.OldExamsFragment;
 import com.grudus.nativeexamshelper.activities.sliding.ViewPagerAdapter;
 import com.grudus.nativeexamshelper.activities.sliding.goohub.SlidingTabLayout;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
-import com.grudus.nativeexamshelper.database.exams.ExamsORMImpl;
-import com.grudus.nativeexamshelper.database.subjects.SubjectsORMImpl;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
-
-import java.text.DateFormat;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

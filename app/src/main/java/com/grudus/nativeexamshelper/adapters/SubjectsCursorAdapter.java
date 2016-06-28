@@ -1,4 +1,4 @@
-package com.grudus.nativeexamshelper.database.subjects;
+package com.grudus.nativeexamshelper.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -11,6 +11,7 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.database.subjects.SubjectsContract;
 
 
 public class SubjectsCursorAdapter extends CursorAdapter {

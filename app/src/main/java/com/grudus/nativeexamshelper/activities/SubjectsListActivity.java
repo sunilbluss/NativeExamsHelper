@@ -13,7 +13,7 @@ import android.widget.ListView;
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.subjects.SubjectsContract;
-import com.grudus.nativeexamshelper.database.subjects.SubjectsCursorAdapter;
+import com.grudus.nativeexamshelper.adapters.SubjectsCursorAdapter;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
 import butterknife.BindView;

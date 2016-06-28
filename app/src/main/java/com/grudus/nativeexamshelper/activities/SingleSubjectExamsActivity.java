@@ -2,17 +2,20 @@ package com.grudus.nativeexamshelper.activities;
 
 import android.database.Cursor;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.widget.CursorAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
-import com.grudus.nativeexamshelper.database.subjects.SingleSubjectExamsCursorAdapter;
+import com.grudus.nativeexamshelper.adapters.SingleSubjectExamsCursorAdapter;
+import com.grudus.nativeexamshelper.helpers.ColorHelper;
 import com.grudus.nativeexamshelper.pojos.OldExam;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
@@ -30,6 +33,9 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
     @BindView(R.id.list_view_single_subject_exams)
     ListView listView;
 
+    @BindView(R.id.sse_info_layout)
+    LinearLayout infoLayout;
+
     private CursorAdapter cursorAdapter;
     private String subjectTitle;
     private ExamsDbHelper dbHelper;
@@ -45,16 +51,21 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(getString(R.string.sse_toolbar));
-//        changeColors(subject.getColor());
+        changeColors(toolbar, subject.getColor());
         setSupportActionBar(toolbar);
 
 
         populateList();
-        populateInfo();
+        updateStatistics();
+        initListeners();
     }
 
-    private void populateInfo() {
-        String[] numbers = calculate();
+    private void initListeners() {
+
+    }
+
+    private void updateStatistics() {
+        String[] numbers = calculateAllStatistics();
         ((TextView) findViewById(R.id.sse_title)).setText(subjectTitle);
         ((TextView) findViewById(R.id.sse_info_average)).setText(getString(R.string.sse_info_average) + numbers[0]);
         ((TextView) findViewById(R.id.sse_info_median)).setText(getString(R.string.sse_info_median) + numbers[1]);
@@ -64,7 +75,7 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.sse_info_percent)).setText(getString(R.string.sse_info_percent) + numbers[5]);
     }
 
-    private String[] calculate() {
+    private String[] calculateAllStatistics() {
         String[] results = new String[6];
         int counter = 0;
         double sum = 0;
@@ -79,7 +90,7 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
 
         do {
             grade = c.getDouble(ExamsContract.OldExamEntry.GRADE_COLUMN_INDEX);
-            if (grade == OldExam.POSSIBLE_GRADES[0]) continue;
+            if (grade == OldExam.getEmptyGrade()) continue;
             if (dominant == -1) dominant = grade;
 
             if (dominant == grade) oneGradeCounter++;
@@ -113,6 +124,7 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
         return results;
     }
 
+
     private void populateList() {
         dbHelper = ExamsDbHelper.getInstance(this);
         dbHelper.openDBReadOnly();
@@ -128,20 +140,15 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
     }
 
 
-//    private void changeColors(String color) {
-//        toolbar.setBackgroundColor(Color.parseColor(color));
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            getWindow().setStatusBarColor(getStatusBarColor(Color.parseColor(color)));
-//        }
-//    }
-
-    private int getStatusBarColor(int color) {
-        return color;
+    private void changeColors(Toolbar toolbar, String color) {
+        toolbar.setBackgroundColor(Color.parseColor(color));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            int intColor = ColorHelper.getNearestResColor(Color.parseColor(color), getResources().getStringArray(R.array.statusBarColors));
+            getWindow().setStatusBarColor(intColor);
+            getWindow().setNavigationBarColor(intColor);
+        }
     }
 
-    private int max3(int a, int b, int c) {
-        return Math.max(Math.max(a, b), c);
-    }
 
 }
 

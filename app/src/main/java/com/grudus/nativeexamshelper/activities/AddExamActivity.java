@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -21,7 +20,6 @@ import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.pojos.Exam;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -42,6 +40,16 @@ public class AddExamActivity extends AppCompatActivity {
     private Calendar calendar = Calendar.getInstance();
 
 
+    private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.MONTH, monthOfYear);
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            updateDateView();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,13 +60,13 @@ public class AddExamActivity extends AppCompatActivity {
             setSelectedSubjectLabel((Subject) getIntent().getParcelableExtra("subject"));
 
         toolbar.setTitle(getResources().getString(R.string.add_new_exam_toolbar_text));
-        infoAfterEnter();
+        setListenerToDeleteTextViewFocus();
 
     }
 
     @OnClick(R.id.add_exam_date_input)
-    void dateInput() {
-        new DatePickerDialog(AddExamActivity.this, date, calendar.get(Calendar.YEAR),
+    void showDatePicker() {
+        new DatePickerDialog(AddExamActivity.this, datePickerListener, calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
                 .show();
     }
@@ -76,22 +84,17 @@ public class AddExamActivity extends AppCompatActivity {
 
         if (!inputsAreCorrect(subject, date)) return;
 
+        Date correctDate = DateHelper.tryToGetDateFromString(date);
+        if (correctDate == null) return;
         String info = extrasInput.getText().toString();
-        Date correctDate;
 
-        try {
-            correctDate = DateHelper.getDateFromString(date);
-        } catch (ParseException e) {
-            Log.e(TAG, "addExam: cannot convert date", e);
-            return;
-        }
         Exam exam = new Exam(subject, info, correctDate);
 
         ExamsDbHelper db = ExamsDbHelper.getInstance(this);
         db.openDB();
 
         // exam was in the past
-        if (correctDate.getTime() < Calendar.getInstance().getTime().getTime()) {
+        if (examWasInThePast(correctDate)) {
             db.examBecomesOld(exam);
         }
         else db.insertExam(exam);
@@ -99,8 +102,15 @@ public class AddExamActivity extends AppCompatActivity {
         db.closeDB();
 
         Intent goBack = new Intent(getApplicationContext(), ExamsMainActivity.class);
+        // new subject has been added, so there is no reason to keep previous activities in stack
+        goBack.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(goBack);
     }
+
+    private static boolean examWasInThePast(Date date) {
+        return date.getTime() < Calendar.getInstance().getTime().getTime();
+    }
+
 
     private boolean inputsAreCorrect(String subject, String date) {
         if (subject.replaceAll("\\s+", "").isEmpty()) {
@@ -116,18 +126,7 @@ public class AddExamActivity extends AppCompatActivity {
     }
 
 
-    private DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            calendar.set(Calendar.YEAR, year);
-            calendar.set(Calendar.MONTH, monthOfYear);
-            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-            updateLabel();
-        }
-    };
-
-
-    private void updateLabel() {
+    private void updateDateView() {
         dateInput.setText(DateHelper.getStringFromDate(calendar.getTime()));
         deleteFocus();
     }
@@ -136,7 +135,7 @@ public class AddExamActivity extends AppCompatActivity {
         subjectInput.setText(subject.getTitle());
     }
 
-    private void infoAfterEnter() {
+    private void setListenerToDeleteTextViewFocus() {
         extrasInput.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {

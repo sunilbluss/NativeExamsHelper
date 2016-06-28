@@ -19,17 +19,17 @@
 
 
     <string-array name="defaultSubjectsColors">
-        <item>#e64a19</item>
-        <item>#4286F5</item>
-        <item>#8bc34a</item>
-        <item>#43A047</item>
-        <item>#0097a7</item>
         <item>#f44336</item>
+        <item>#E91E63</item>
+        <item>#9C27B0</item>
+        <item>#673AB7</item>
+        <item>#3F51B5</item>
         <item>#2196F3</item>
-        <item>#388e3c</item>
-        <item>#0277BD</item>
-        <item>#d32f2f</item>
-        <item>#689F38</item>
+        <item>#03A9F4</item>
+        <item>#00BCD4</item>
+        <item>#009688</item>
+        <item>#4CAF50</item>
+        <item>#8BC34A</item>
     </string-array>
 
     <string-array name="gradesColors">
@@ -41,6 +41,68 @@
         <item>#33691E</item>
     </string-array>
 
+    <string-array name="toolBarColors">
+        <item>#f44336</item>
+        <item>#E91E63</item>
+        <item>#9C27B0</item>
+        <item>#673AB7</item>
+        <item>#3F51B5</item>
+        <item>#2196F3</item>
+        <item>#03A9F4</item>
+        <item>#00BCD4</item>
+        <item>#009688</item>
+        <item>#4CAF50</item>
+        <item>#8BC34A</item>
+        <item>#CDDC39</item>
+        <item>#FFEB3B</item>
+        <item>#FFC107</item>
+        <item>#FF9800</item>
+        <item>#FF5722</item>
+        <item>#795548</item>
+        <item>#9E9E9E</item>
+        <item>#607D8B</item>
+    </string-array>
+
+    <string-array name="statusBarColors">
+        <item>#d32f2f</item>
+        <item>#C2185B</item>
+        <item>#7B1FA2</item>
+        <item>#512DA8</item>
+        <item>#303F9F</item>
+        <item>#1976D2</item>
+        <item>#0288D1</item>
+        <item>#0097A7</item>
+        <item>#00796B</item>
+        <item>#388E3C</item>
+        <item>#689F38</item>
+        <item>#AFB42B</item>
+        <item>#FBC02D</item>
+        <item>#FFA000</item>
+        <item>#F57C00</item>
+        <item>#E64A19</item>
+        <item>#5D4037</item>
+        <item>#616161</item>
+        <item>#455A64</item>
+    </string-array>
+    <!--<color name="statusBar1">#d32f2f</color>-->
+    <!--<color name="statusBar2">#C2185B</color>-->
+    <!--<color name="statusBar3">#7B1FA2</color>-->
+    <!--<color name="statusBar4">#512DA8</color>-->
+    <!--<color name="statusBar5">#303F9F</color>-->
+    <!--<color name="statusBar6">#1976D2</color>-->
+    <!--<color name="statusBar7">#0288D1</color>-->
+    <!--<color name="statusBar8">#0097A7</color>-->
+    <!--<color name="statusBar9">#00796B</color>-->
+    <!--<color name="statusBar10">#388E3C</color>-->
+    <!--<color name="statusBar11">#689F38</color>-->
+    <!--<color name="statusBar12">#AFB42B</color>-->
+    <!--<color name="statusBar13">#FBC02D</color>-->
+    <!--<color name="statusBar14">#FFA000</color>-->
+    <!--<color name="statusBar15">#F57C00</color>-->
+    <!--<color name="statusBar16">#E64A19</color>-->
+    <!--<color name="statusBar17">#5D4037</color>-->
+    <!--<color name="statusBar18">#616161</color>-->
+    <!--<color name="statusBar19">#455A64</color>-->
 
 
 </resources>

@@ -1,4 +1,4 @@
-package com.grudus.nativeexamshelper.database.exams;
+package com.grudus.nativeexamshelper.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.activities.sliding.OldExamsFragment;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
+import com.grudus.nativeexamshelper.database.exams.ExamsContract;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.pojos.OldExam;
 import com.grudus.nativeexamshelper.pojos.Subject;

@@ -17,12 +17,19 @@ public class Subject implements Parcelable {
     private static final String EMPTY = "grudus_sub_empty";
 
     public Subject(@NonNull String title, @NonNull String color) {
-        ExceptionsHelper.checkStringEmptiness("Title and color cannot be empty", title, color);
+        if (ExceptionsHelper.stringsAreEmpty(title, color)) {
+            setDefaultValues();
+            return;
+        }
         this.title = title;
         this.color = color;
     }
 
     private Subject() {
+        setDefaultValues();
+    }
+
+    private void setDefaultValues() {
         this.color = "#4286F5";
         this.title = EMPTY;
     }
@@ -40,7 +47,7 @@ public class Subject implements Parcelable {
     }
 
     public void setTitle(@NonNull String title) {
-        ExceptionsHelper.checkStringEmptiness("Title cannot be empty", title);
+        if (ExceptionsHelper.stringsAreEmpty(title)) return;
         this.title = title;
     }
 
@@ -54,7 +61,7 @@ public class Subject implements Parcelable {
     }
 
     public void setColor(@NonNull String color) {
-        ExceptionsHelper.checkStringEmptiness("Color cannot be empty", color);
+        if (ExceptionsHelper.stringsAreEmpty(color)) return;
         this.color = color;
     }
 

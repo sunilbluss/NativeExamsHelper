@@ -7,28 +7,27 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.activities.ExamsMainActivity;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.QueryHelper;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
 
-public final class SubjectsORMImpl {
+public final class SubjectsQuery {
 
     private static String[] defaultSubjects = new String[0];
 
     private static String[] defaultColors = new String[0];
 
     public static void setDefaultSubjects(@NonNull String[] defaultSubjects) {
-        SubjectsORMImpl.defaultSubjects = defaultSubjects;
+        SubjectsQuery.defaultSubjects = defaultSubjects;
     }
 
     public static void setDefaultColors(@NonNull String[] defaultColors) {
-        SubjectsORMImpl.defaultColors = defaultColors;
+        SubjectsQuery.defaultColors = defaultColors;
     }
 
-    public boolean firstInsert(SQLiteDatabase db) {
+    public static boolean firstInsert(SQLiteDatabase db) {
         ContentValues[] firstValues = new ContentValues[defaultSubjects.length];
         for (int i = 0; i < firstValues.length; i++) {
             firstValues[i] = new ContentValues(2);
@@ -56,18 +55,18 @@ public final class SubjectsORMImpl {
         return counter == firstValues.length;
     }
 
-    public Cursor getAllRecords(SQLiteDatabase db) {
+    public static Cursor getAllRecords(SQLiteDatabase db) {
         return QueryHelper.getAllRecordsAndSortBy(db, SubjectsContract.SubjectEntry.TABLE_NAME,
                 SubjectsContract.SubjectEntry.ALL_COLUMNS, null);
     }
 
-    public Cursor getAllRecordsAndSortByTitle(SQLiteDatabase db) {
+    public static Cursor getAllRecordsAndSortByTitle(SQLiteDatabase db) {
         return QueryHelper.getAllRecordsAndSortBy(db, SubjectsContract.SubjectEntry.TABLE_NAME,
                 SubjectsContract.SubjectEntry.ALL_COLUMNS, SubjectsContract.SubjectEntry.TITLE_COLUMN);
     }
 
     @Nullable
-    public Subject findByTitle(SQLiteDatabase db, String title) {
+    public static Subject findByTitle(SQLiteDatabase db, String title) {
         Cursor c = db
                 .query(
                         SubjectsContract.SubjectEntry.TABLE_NAME,
@@ -94,7 +93,7 @@ public final class SubjectsORMImpl {
 
     }
 
-    public long insert(SQLiteDatabase db, Subject subject) {
+    public static long insert(SQLiteDatabase db, Subject subject) {
         ContentValues contentValues = new ContentValues(2);
         contentValues.put(SubjectsContract.SubjectEntry.TITLE_COLUMN, subject.getTitle());
         contentValues.put(SubjectsContract.SubjectEntry.COLOR_COLUMN, subject.getColor());
@@ -103,7 +102,7 @@ public final class SubjectsORMImpl {
     }
 
 
-    public void update(SQLiteDatabase db, Subject old, Subject _new) {
+    public static void update(SQLiteDatabase db, Subject old, Subject _new) {
         if (findByTitle(db, old.getTitle()) == null) {
             Log.e(ExamsDbHelper.TAG, "update: " + old + " doesn't exists");
             return;
@@ -121,7 +120,7 @@ public final class SubjectsORMImpl {
         Log.d(ExamsDbHelper.TAG, "Updated " + old + " to " + _new);
     }
 
-    public Cursor findSubjectsWithGradesAndSortBy(SQLiteDatabase db, @Nullable String sort) {
+    public static Cursor findSubjectsWithGradesAndSortBy(SQLiteDatabase db, @Nullable String sort) {
         Cursor c = db.query(
                 SubjectsContract.SubjectEntry.TABLE_NAME,
                 SubjectsContract.SubjectEntry.ALL_COLUMNS,
@@ -135,7 +134,7 @@ public final class SubjectsORMImpl {
         return c;
     }
 
-    public int setSubjectHasGrade(SQLiteDatabase db, Subject subject, boolean hasGrade) {
+    public static int setSubjectHasGrade(SQLiteDatabase db, Subject subject, boolean hasGrade) {
         ContentValues cv = new ContentValues(3);
         cv.put(SubjectsContract.SubjectEntry.TITLE_COLUMN, subject.getTitle());
         cv.put(SubjectsContract.SubjectEntry.COLOR_COLUMN, subject.getColor());
@@ -145,6 +144,17 @@ public final class SubjectsORMImpl {
                 cv,
                 SubjectsContract.SubjectEntry.TITLE_COLUMN + " = ?",
                 new String[] {subject.getTitle()}
+        );
+    }
+
+    public static void resetGrades(SQLiteDatabase db)  {
+        ContentValues cv = new ContentValues(1);
+        cv.put(SubjectsContract.SubjectEntry.HAS_GRADE_COLUMN, 0);
+        db.update(
+                SubjectsContract.SubjectEntry.TABLE_NAME,
+                cv,
+                null,
+                null
         );
     }
 }

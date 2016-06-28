@@ -10,16 +10,15 @@ import android.util.Log;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
-import com.grudus.nativeexamshelper.database.exams.ExamsORMImpl;
-import com.grudus.nativeexamshelper.database.exams.OldExamsORMImpl;
+import com.grudus.nativeexamshelper.database.exams.ExamsQuery;
+import com.grudus.nativeexamshelper.database.exams.OldExamsQuery;
 import com.grudus.nativeexamshelper.database.subjects.SubjectsContract;
-import com.grudus.nativeexamshelper.database.subjects.SubjectsORMImpl;
+import com.grudus.nativeexamshelper.database.subjects.SubjectsQuery;
 import com.grudus.nativeexamshelper.pojos.Exam;
 import com.grudus.nativeexamshelper.pojos.OldExam;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class ExamsDbHelper extends SQLiteOpenHelper {
@@ -34,16 +33,9 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     private static ExamsDbHelper instance;
 
-    private ExamsORMImpl examsORM;
-    private SubjectsORMImpl subjectsORM;
-    private OldExamsORMImpl oldExamsORM;
-
     private ExamsDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
-        examsORM = new ExamsORMImpl();
-        subjectsORM = new SubjectsORMImpl();
-        oldExamsORM = new OldExamsORMImpl();
         Log.d(TAG, "ExamsDbHelper() constructor");
     }
 
@@ -59,10 +51,10 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         db.execSQL(ExamsContract.ExamEntry.CREATE_TABLE_QUERY);
         db.execSQL(SubjectsContract.SubjectEntry.CREATE_TABLE_QUERY);
         db.execSQL(ExamsContract.OldExamEntry.CREATE_TABLE_QUERY);
-        oldExamsORM.randomInsert(db);
-        SubjectsORMImpl.setDefaultSubjects(context.getResources().getStringArray(R.array.default_subjects));
-        SubjectsORMImpl.setDefaultColors(context.getResources().getStringArray(R.array.defaultSubjectsColors));
-        subjectsORM.firstInsert(db);
+        OldExamsQuery.randomInsert(db);
+        SubjectsQuery.setDefaultSubjects(context.getResources().getStringArray(R.array.default_subjects));
+        SubjectsQuery.setDefaultColors(context.getResources().getStringArray(R.array.defaultSubjectsColors));
+        SubjectsQuery.firstInsert(db);
     }
 
     @Override
@@ -103,79 +95,83 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 //    Subjects part ******************************
 
     public Cursor selectAllFromSubjects() {
-        return subjectsORM.getAllRecords(database);
+        return SubjectsQuery.getAllRecords(database);
     }
 
     public Cursor selectAllFromSubjectsSortByTitle() {
-        return subjectsORM.getAllRecordsAndSortByTitle(database);
+        return SubjectsQuery.getAllRecordsAndSortByTitle(database);
     }
 
     public long insertSubject(Subject subject) {
-        return subjectsORM.insert(database, subject);
+        return SubjectsQuery.insert(database, subject);
     }
 
     public void refreshSubjects() {
         database.delete(SubjectsContract.SubjectEntry.TABLE_NAME, null, null);
-        SubjectsORMImpl.setDefaultColors(context.getResources().getStringArray(R.array.defaultSubjectsColors));
-        SubjectsORMImpl.setDefaultSubjects(context.getResources().getStringArray(R.array.default_subjects));
-        subjectsORM.firstInsert(database);
+        SubjectsQuery.setDefaultColors(context.getResources().getStringArray(R.array.defaultSubjectsColors));
+        SubjectsQuery.setDefaultSubjects(context.getResources().getStringArray(R.array.default_subjects));
+        SubjectsQuery.firstInsert(database);
         Log.d(TAG, "Subjects are fresh");
     }
 
     public void updateSubject(Subject old, Subject _new) {
-        subjectsORM.update(database, old, _new);
+        SubjectsQuery.update(database, old, _new);
     }
 
     public int setSubjectHasGrade(Subject subject, boolean hasGrade) {
-        return subjectsORM.setSubjectHasGrade(database, subject, hasGrade);
+        return SubjectsQuery.setSubjectHasGrade(database, subject, hasGrade);
     }
 
     @Nullable
     public Subject findSubjectByTitle(String title) {
-        return subjectsORM.findByTitle(database, title);
+        return SubjectsQuery.findByTitle(database, title);
+    }
+
+    public void resetSubjectGrades() {
+        SubjectsQuery.resetGrades(database);
     }
 
 //    Exams part *********************************
 
     public Cursor selectAllFromExams() {
-        return examsORM.getAllRecords(database);
+        return ExamsQuery.getAllRecords(database);
     }
 
     public Cursor selectAllFromExamsSortByDate() {
-       return examsORM.getAllRecordsAndSortByDate(database);
+       return ExamsQuery.getAllRecordsAndSortByDate(database);
     }
 
     public long insertExam(Exam exam) {
-        return examsORM.insert(database, exam);
+        return ExamsQuery.insert(database, exam);
     }
 
     @Nullable
     public ArrayList<Exam> selectAllFromExamsWhereDateIsSmallerThan(long dateInMillis) {
-        return examsORM.getAllExamsOlderThan(database, dateInMillis);
+        return ExamsQuery.getAllExamsOlderThan(database, dateInMillis);
     }
 
 
 //    Old exams part *****************************
     public Cursor selectAllFromOldExams() {
-        return oldExamsORM.getAllRecordsAndSortBy(database, null);
+        return OldExamsQuery.getAllRecordsAndSortBy(database, null);
     }
 
     public Cursor selectAllFromOldExamsSortByDate() {
-        return oldExamsORM.getAllRecordsAndSortBy(database, ExamsContract.OldExamEntry.DATE_COLUMN);
+        return OldExamsQuery.getAllRecordsAndSortBy(database, ExamsContract.OldExamEntry.DATE_COLUMN);
     }
 
     public Cursor selectAllFromOldExamsSortByGrade() {
-        return oldExamsORM.getAllRecordsAndSortBy(database, ExamsContract.OldExamEntry.GRADE_COLUMN);
+        return OldExamsQuery.getAllRecordsAndSortBy(database, ExamsContract.OldExamEntry.GRADE_COLUMN);
     }
 
     public Cursor getSubjectsWithGrade() {
-        return subjectsORM.findSubjectsWithGradesAndSortBy(database, null);
+        return SubjectsQuery.findSubjectsWithGradesAndSortBy(database, null);
     }
 
-    public Cursor getSubjectGrades(String subjectTitle) {return oldExamsORM.findGradesAndSortBy(database, subjectTitle, null);}
+    public Cursor getSubjectGrades(String subjectTitle) {return OldExamsQuery.findGradesAndSortBy(database, subjectTitle, null);}
 
     public Cursor getOrderedSubjectGrades(String subjectTitle) {
-        return oldExamsORM.findGradesAndSortBy(database, subjectTitle, ExamsContract.OldExamEntry.GRADE_COLUMN);
+        return OldExamsQuery.findGradesAndSortBy(database, subjectTitle, ExamsContract.OldExamEntry.GRADE_COLUMN);
     }
 
 
@@ -183,17 +179,17 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         Subject subject = findSubjectByTitle(exam.getSubject());
         if (subject == null) return -1L;
 
-        examsORM.remove(database, exam);
+        ExamsQuery.remove(database, exam);
 
         // TODO: 25.06.16 debug only
         double grade = OldExam.POSSIBLE_GRADES[new Random().nextInt(OldExam.POSSIBLE_GRADES.length)];
         setSubjectHasGrade(subject, grade != OldExam.POSSIBLE_GRADES[0]);
 
-        return oldExamsORM.insert(database, new OldExam(subject, exam.getInfo(), grade, exam.getDate()));
+        return OldExamsQuery.insert(database, new OldExam(subject, exam.getInfo(), grade, exam.getDate()));
     }
 
     public boolean notAssessedSubjectExists() {
-        return oldExamsORM.notAssessedSubjectExists(database);
+        return OldExamsQuery.notAssessedSubjectExists(database);
     }
 
 

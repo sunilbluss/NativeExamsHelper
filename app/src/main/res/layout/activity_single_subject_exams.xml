@@ -8,79 +8,89 @@
 
     <include layout="@layout/toolbar" />
 
-    <TextView
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:id="@+id/sse_title"
-        android:text="Matematyka"
-        android:textSize="@dimen/sse_title_text_size"
-        android:layout_gravity="center_horizontal"
-        android:textAllCaps="true"
-        android:layout_marginTop="@dimen/sse_subject_title_margin_top"
-        android:layout_marginBottom="@dimen/sse_subject_title_margin_top"
-        />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="@dimen/sse_grades_info_layout_margin">
+        android:orientation="vertical"
+        android:id="@+id/sse_info_layout">
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:id="@+id/sse_title"
+            android:text="Matematyka"
+            android:textSize="@dimen/sse_title_text_size"
+            android:layout_gravity="center_horizontal"
+            android:textAllCaps="true"
+            android:layout_marginTop="@dimen/sse_subject_title_margin_top"
+            android:layout_marginBottom="@dimen/sse_subject_title_margin_top"
+            />
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_weight="1">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="@dimen/sse_grades_info_layout_margin">
 
-            <TextView
-                style="@style/SubjectExamsInfoTextStyle"
-                android:id="@+id/sse_info_average"
-                android:text="Średnia ocen: 4.67" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="1">
 
-            <TextView
-                style="@style/SubjectExamsInfoTextStyle"
-                android:id="@+id/sse_info_median"
-                android:text="Mediana ocen: 4.6"/>
+                <TextView
+                    style="@style/SubjectExamsInfoTextStyle"
+                    android:id="@+id/sse_info_average"
+                    android:text="Średnia ocen: 4.67" />
 
-            <TextView
-                style="@style/SubjectExamsInfoTextStyle"
-                android:id="@+id/sse_info_dominant"
-                android:text="Dominanta: 3.5"/>
+                <TextView
+                    style="@style/SubjectExamsInfoTextStyle"
+                    android:id="@+id/sse_info_median"
+                    android:text="Mediana ocen: 4.6"/>
 
+                <TextView
+                    style="@style/SubjectExamsInfoTextStyle"
+                    android:id="@+id/sse_info_dominant"
+                    android:text="Dominanta: 3.5"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="1">
+
+                <TextView
+                    style="@style/SubjectExamsInfoTextStyle"
+                    android:id="@+id/sse_info_passed"
+                    android:text="Zaliczonych: 12"/>
+
+                <TextView
+                    style="@style/SubjectExamsInfoTextStyle"
+                    android:id="@+id/sse_info_failed"
+                    android:text="Niezaliczonych: 3"/>
+
+                <TextView
+                    style="@style/SubjectExamsInfoTextStyle"
+                    android:id="@+id/sse_info_percent"
+                    android:text="Zaliczenia: 80%" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_weight="1">
-
-            <TextView
-                style="@style/SubjectExamsInfoTextStyle"
-                android:id="@+id/sse_info_passed"
-                android:text="Zaliczonych: 12"/>
-
-            <TextView
-                style="@style/SubjectExamsInfoTextStyle"
-                android:id="@+id/sse_info_failed"
-                android:text="Niezaliczonych: 3"/>
-
-            <TextView
-                style="@style/SubjectExamsInfoTextStyle"
-                android:id="@+id/sse_info_percent"
-                android:text="Zaliczenia: 80%" />
-
-        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/materialcolorpicker__grey"
+            android:layout_marginTop="@dimen/sse_line_margin"
+            android:layout_marginBottom="@dimen/sse_line_margin"/>
 
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/materialcolorpicker__grey"
-        android:layout_marginTop="@dimen/sse_line_margin"
-        android:layout_marginBottom="@dimen/sse_line_margin"/>
+
 
     <ListView
         android:layout_width="match_parent"

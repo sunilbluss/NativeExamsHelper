@@ -1,4 +1,4 @@
-package com.grudus.nativeexamshelper.database.subjects;
+package com.grudus.nativeexamshelper.adapters;
 
 import android.content.Context;
 import android.database.Cursor;

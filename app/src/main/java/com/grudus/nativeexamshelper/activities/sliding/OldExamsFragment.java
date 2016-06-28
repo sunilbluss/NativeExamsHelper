@@ -18,7 +18,7 @@ import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.activities.SingleSubjectExamsActivity;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
-import com.grudus.nativeexamshelper.database.exams.OldExamsCursorAdapter;
+import com.grudus.nativeexamshelper.adapters.OldExamsCursorAdapter;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
 /**
@@ -71,7 +71,8 @@ public class OldExamsFragment extends Fragment {
         ExamsDbHelper db = ExamsDbHelper.getInstance(getContext());
         db.openDB();
         db.cleanAllRecords(ExamsContract.OldExamEntry.TABLE_NAME);
-        cursorAdapter.changeCursor(db.selectAllFromOldExams());
+        db.resetSubjectGrades();
+        cursorAdapter.changeCursor(null);
         db.closeDB();
     }
 

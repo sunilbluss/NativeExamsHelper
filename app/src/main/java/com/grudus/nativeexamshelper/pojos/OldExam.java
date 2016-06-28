@@ -18,31 +18,31 @@ public class OldExam {
     public static final double[] POSSIBLE_GRADES = {0, 1, 1.25, 1.75, 2, 2.25, 2.75, 3, 3.25, 3.75, 4, 4.25, 4.75, 5, 5.25, 5.75, 6};
 
     public OldExam(@NonNull Subject subject, String info, double grade, @NonNull Date date) {
-        if (!isInRange(grade)) {
-            Log.e("@@@", "OldExam: " + grade + "isn't in range", new IllegalArgumentException());
-            this.grade = POSSIBLE_GRADES[0];
-        }
         this.subject = subject;
         this.info = info;
-        this.grade = grade;
+        this.grade = isInRange(grade) ? grade : getEmptyGrade();
         this.date = date;
     }
 
 
     public OldExam(@NonNull Subject subject, String info, @NonNull Date date) {
-        this(subject, info, POSSIBLE_GRADES[0], date);
+        this(subject, info, getEmptyGrade(), date);
+    }
 
+    public static double getEmptyGrade() {
+        return POSSIBLE_GRADES[0];
     }
 
     private boolean isInRange(double grade) {
         for (double d : POSSIBLE_GRADES)
             if (grade == d)
                 return true;
+        Log.e("@@@", "OldExam: " + grade + "isn't in range", new IllegalArgumentException());
         return false;
     }
 
     public boolean hasGrade() {
-        return grade != POSSIBLE_GRADES[0];
+        return grade != getEmptyGrade();
     }
 
 

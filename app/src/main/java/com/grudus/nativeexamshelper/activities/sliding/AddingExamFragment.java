@@ -1,7 +1,6 @@
 package com.grudus.nativeexamshelper.activities.sliding;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -18,7 +17,7 @@ import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.activities.AddExamActivity;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
-import com.grudus.nativeexamshelper.database.exams.ExamsCursorAdapter;
+import com.grudus.nativeexamshelper.adapters.ExamsCursorAdapter;
 import com.grudus.nativeexamshelper.pojos.Exam;
 
 import java.util.ArrayList;
@@ -77,7 +76,6 @@ public class AddingExamFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        Log.w(TAG, "FRAGMENT 1 ON PAUSE");
         closeDatabase();
         cursorAdapter.changeCursor(null);
     }
@@ -105,7 +103,6 @@ public class AddingExamFragment extends Fragment {
     private void initDatabase() {
         if (examsDbHelper == null && getActivity() != null)
             examsDbHelper = ExamsDbHelper.getInstance(getContext());
-        examsDbHelper.openDB();
         examsDbHelper.openDB();
         Log.d(TAG, "initDatabase method ");
     }

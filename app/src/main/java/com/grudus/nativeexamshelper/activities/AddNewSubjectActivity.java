@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
+import com.grudus.nativeexamshelper.helpers.ExceptionsHelper;
 import com.grudus.nativeexamshelper.pojos.Subject;
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker;
 
@@ -46,7 +47,7 @@ public class AddNewSubjectActivity extends AppCompatActivity {
 
     private Subject subject, oldSubject;
 
-    private boolean changingExisting;
+    private boolean changingExistingSubjectMode;
     private boolean addingNewButStillEditableMode;
 
     @Override
@@ -58,24 +59,31 @@ public class AddNewSubjectActivity extends AppCompatActivity {
         toolbar.setTitle(getResources().getString(R.string.add_subject_toolbar_text));
         setSupportActionBar(toolbar);
 
+        getDataFromIntent();
+
+        setSubjectInfoToView();
+        changeButtonTextIfChangingExistingSubject();
+    }
+
+    private void getDataFromIntent() {
         subject = getIntent().getParcelableExtra("subject") == null
                 ? Subject.empty() : (Subject) getIntent().getParcelableExtra("subject");
 
         addingNewButStillEditableMode = getIntent()
                 .getBooleanExtra(SubjectsListActivity.INTENT_EDIT_MODE_TAG, false);
 
-        changingExisting = !subject.isEmpty();
+        changingExistingSubjectMode = !subject.isEmpty();
+    }
 
-        if (changingExisting) {
+    private void changeButtonTextIfChangingExistingSubject() {
+        if (changingExistingSubjectMode) {
             button.setText(getString(R.string.button_text_change_subject));
             oldSubject = subject.copy();
         }
-
-        setSubjectInfoToView();
     }
 
     private void setSubjectInfoToView() {
-        boolean empty = subject.isEmpty();
+        boolean empty = !changingExistingSubjectMode;
         int color = empty ? ContextCompat.getColor(getApplicationContext(), R.color.niceBlueColor)
                 : Color.parseColor(subject.getColor());
 
@@ -83,6 +91,10 @@ public class AddNewSubjectActivity extends AppCompatActivity {
             titleInput.setText(subject.getTitle());
         }
 
+        updateColorPickerInitValAndSetIconColor(color);
+    }
+
+    private void updateColorPickerInitValAndSetIconColor(int color) {
         colorPickerInitVal[0] = Color.red(color);
         colorPickerInitVal[1] = Color.green(color);
         colorPickerInitVal[2] = Color.blue(color);
@@ -103,17 +115,13 @@ public class AddNewSubjectActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                colorPickerInitVal[0] = colorPicker.getRed();
-                colorPickerInitVal[1] = colorPicker.getGreen();
-                colorPickerInitVal[2] = colorPicker.getBlue();
-
                 int color = colorPicker.getColor();
-                String hexColor = String.format("#%06X", (0xFFFFFF & color));
+                updateColorPickerInitValAndSetIconColor(color);
 
+                String hexColor = String.format("#%06X", (0xFFFFFF & color));
                 colorPicker.dismiss();
 
                 subject.setColor(hexColor);
-                colorIcon.setColorFilter(color);
             }
         });
 
@@ -127,7 +135,7 @@ public class AddNewSubjectActivity extends AppCompatActivity {
 
         subject.setTitle(title);
 
-        if (changingExisting)
+        if (changingExistingSubjectMode)
             updateSubject();
 
         else if (!addSubjectToDatabase())
@@ -135,13 +143,13 @@ public class AddNewSubjectActivity extends AppCompatActivity {
 
         Intent goBack = new Intent(getApplicationContext(), SubjectsListActivity.class);
         goBack.putExtra(SubjectsListActivity.INTENT_EDITABLE_TAG,
-                changingExisting || addingNewButStillEditableMode);
+                changingExistingSubjectMode || addingNewButStillEditableMode);
         startActivity(goBack);
 
     }
 
     private boolean titleIsCorrect(String title) {
-        if (title.replaceAll("\\s+", "").isEmpty()) {
+        if (ExceptionsHelper.stringsAreEmpty(title)) {
             Toast.makeText(getApplicationContext(),
                     getResources().getString(R.string.warning_add_subject_empty),
                     Toast.LENGTH_SHORT).show();

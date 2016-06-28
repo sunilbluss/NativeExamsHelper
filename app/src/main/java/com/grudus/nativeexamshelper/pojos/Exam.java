@@ -20,13 +20,10 @@ public class Exam implements Parcelable {
     private Date date;
 
     public Exam(@NonNull String subject, String info, @NonNull Date date) {
-        ExceptionsHelper.checkStringEmptiness("Subject cannot be empty", subject);
-        if (date == null) throw new NullPointerException("Date cannot be null");
-
+        if (ExceptionsHelper.stringsAreEmpty(subject)) return;
         this.subject = subject;
         this.info = info;
         this.date = date;
-
     }
 
     @NonNull
@@ -35,7 +32,7 @@ public class Exam implements Parcelable {
     }
 
     public void setSubject(@NonNull String subject) {
-        ExceptionsHelper.checkStringEmptiness("Subject cannot be null", subject);
+        if (ExceptionsHelper.stringsAreEmpty(subject)) return;
         this.subject = subject;
     }
 
@@ -54,8 +51,6 @@ public class Exam implements Parcelable {
     }
 
     public void setDate(@NonNull Date date) {
-        if (date == null)
-            throw new IllegalStateException("Date cannot be null");
         this.date = date;
     }
 
@@ -73,12 +68,7 @@ public class Exam implements Parcelable {
         parcel.readStringArray(data);
         this.subject = data[0];
         this.info = data[1];
-
-        try {
-            this.date = DateHelper.getDateFromString(data[2]);
-        } catch (ParseException e) {
-            Log.e("@@@Exam", "Exam: cannot parse date ", e);
-        }
+        this.date = DateHelper.tryToGetDateFromString(data[2]);
     }
 
     @Override

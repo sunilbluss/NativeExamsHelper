@@ -6,12 +6,20 @@ import android.util.Log;
 
 public class ExceptionsHelper {
 
-    public static void checkStringEmptiness(@Nullable String message, String... strings) throws EmptyStringException {
-        message = message == null ? EmptyStringException.DEFAULT_MESSAGE : message;
+    private static final String TAG = "@@@ExceptionsHelper";
+
+    public static boolean stringsAreEmpty(String... strings) {
         for (String string : strings) {
-            if (string == null) throw new EmptyStringException(message);
-            if (string.replaceAll("\\s+", "").isEmpty()) throw new EmptyStringException(message);
+            if (string == null) {
+                Log.e(TAG, "stringsAreEmpty: ", new EmptyStringException("null"));
+                return true;
+            }
+            if (string.replaceAll("\\s+", "").isEmpty()) {
+                Log.e(TAG, "stringsAreEmpty: ", new EmptyStringException("empty"));
+                return true;
+            }
         }
+        return false;
     }
 
 

@@ -8,28 +8,20 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.QueryHelper;
-import com.grudus.nativeexamshelper.database.subjects.SubjectsORMImpl;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
-import com.grudus.nativeexamshelper.pojos.Exam;
 import com.grudus.nativeexamshelper.pojos.OldExam;
-import com.grudus.nativeexamshelper.pojos.Subject;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-public class OldExamsORMImpl extends QueryHelper {
+public class OldExamsQuery {
 
 
-    public Cursor getAllRecordsAndSortBy(SQLiteDatabase db, @Nullable String sort) {
+    public static Cursor getAllRecordsAndSortBy(SQLiteDatabase db, @Nullable String sort) {
         return QueryHelper.getAllRecordsAndSortBy(db, ExamsContract.OldExamEntry.TABLE_NAME,
                 ExamsContract.OldExamEntry.ALL_COLUMNS, sort);
     }
 
 
-    public long insert(SQLiteDatabase db, OldExam exam) {
+    public static long insert(SQLiteDatabase db, OldExam exam) {
         ContentValues contentValues = new ContentValues(4);
         contentValues.put(ExamsContract.OldExamEntry.SUBJECT_COLUMN, exam.getSubject().getTitle());
         contentValues.put(ExamsContract.OldExamEntry.INFO_COLUMN, exam.getInfo());
@@ -39,7 +31,7 @@ public class OldExamsORMImpl extends QueryHelper {
         return db.insert(ExamsContract.OldExamEntry.TABLE_NAME, null, contentValues);
     }
 
-    public void randomInsert(SQLiteDatabase db) {
+    public static void randomInsert(SQLiteDatabase db) {
         ContentValues cv = new ContentValues(4);
         cv.put(ExamsContract.OldExamEntry.SUBJECT_COLUMN, "Matematyka");
         cv.put(ExamsContract.OldExamEntry.INFO_COLUMN, "Pochodne");
@@ -48,7 +40,7 @@ public class OldExamsORMImpl extends QueryHelper {
         db.insert(ExamsContract.OldExamEntry.TABLE_NAME, null, cv);
     }
 
-    public Cursor findSubjectsWithGrades(SQLiteDatabase db) {
+    public static Cursor findSubjectsWithGrades(SQLiteDatabase db) {
         Cursor c = db.query(
                 ExamsContract.OldExamEntry.TABLE_NAME,
                 ExamsContract.OldExamEntry.ALL_COLUMNS,
@@ -62,7 +54,7 @@ public class OldExamsORMImpl extends QueryHelper {
         return c;
     }
 
-    public boolean notAssessedSubjectExists(SQLiteDatabase db) {
+    public static boolean notAssessedSubjectExists(SQLiteDatabase db) {
         long subjects = DatabaseUtils.queryNumEntries(
                 db,
                 ExamsContract.OldExamEntry.TABLE_NAME,
@@ -72,7 +64,7 @@ public class OldExamsORMImpl extends QueryHelper {
         return subjects != 0;
     }
 
-    public Cursor findGradesAndSortBy(SQLiteDatabase db, @NonNull String subjectTitle, @Nullable String sort) {
+    public static Cursor findGradesAndSortBy(SQLiteDatabase db, @NonNull String subjectTitle, @Nullable String sort) {
         Cursor c = db.query(
                 ExamsContract.OldExamEntry.TABLE_NAME,
                 ExamsContract.OldExamEntry.ALL_COLUMNS,
