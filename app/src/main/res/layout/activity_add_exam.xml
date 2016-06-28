@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/add_exam_layout"
     android:layout_width="match_parent"
@@ -9,69 +9,65 @@
     android:focusableInTouchMode="true"
     tools:context="com.grudus.nativeexamshelper.activities.AddExamActivity">
 
-    <LinearLayout
+    <include layout="@layout/toolbar" />
+
+    <RelativeLayout
         style="@style/UserInputLayoutStyle">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                style="@style/ImageIconAddExamTheme"
-                android:src="@drawable/subject_icon" />
-
-            <EditText
-                style="@style/UserInputEditTextStyle"
-                android:id="@+id/add_exam_subject_input"
-                android:hint="@string/hint_add_exam_subject"
-                android:focusable="false" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                style="@style/ImageIconAddExamTheme"
-                android:src="@drawable/info_icon"/>
-
-            <EditText
-                style="@style/UserInputEditTextStyle"
-                android:id="@+id/add_exam_extras_input"
-                android:hint="@string/hint_add_exam_extras"
-                android:maxLines="1"
-                android:maxLength="@integer/add_xxx_max_chars"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                style="@style/ImageIconAddExamTheme"
-                android:src="@drawable/calendar_icon"/>
 
 
-            <EditText
-                style="@style/UserInputEditTextStyle"
-                android:id="@+id/add_exam_date_input"
-                android:hint="@string/hint_add_exam_date"
-                android:focusable="false" />
-        </LinearLayout>
+        <ImageView
+            style="@style/ImageIconAddExamTheme"
+            android:src="@drawable/subject_icon"
+            android:id="@+id/add_exam_image_view_1"/>
+
+        <EditText
+            style="@style/UserInputEditTextStyle"
+            android:id="@+id/add_exam_subject_input"
+            android:hint="@string/hint_add_exam_subject"
+            android:focusable="false"
+            android:layout_toEndOf="@id/add_exam_image_view_1" />
+
+
+        <ImageView
+            style="@style/ImageIconAddExamTheme"
+            android:src="@drawable/info_icon"
+            android:layout_below="@id/add_exam_image_view_1"
+            android:id="@+id/add_exam_image_view_2"/>
+
+        <EditText
+            style="@style/UserInputEditTextStyle"
+            android:id="@+id/add_exam_extras_input"
+            android:hint="@string/hint_add_exam_extras"
+            android:maxLines="1"
+            android:maxLength="@integer/add_xxx_max_chars"
+            android:layout_below="@id/add_exam_subject_input"
+            android:layout_toEndOf="@id/add_exam_image_view_1"/>
+
+
+        <ImageView
+            style="@style/ImageIconAddExamTheme"
+            android:src="@drawable/calendar_icon"
+            android:layout_below="@id/add_exam_image_view_2"
+            android:id="@+id/add_exam_image_view_3"/>
+
+
+        <EditText
+            style="@style/UserInputEditTextStyle"
+            android:id="@+id/add_exam_date_input"
+            android:hint="@string/hint_add_exam_date"
+            android:focusable="false"
+            android:layout_below="@id/add_exam_extras_input"
+            android:layout_toEndOf="@id/add_exam_image_view_3"/>
 
         <Button
             style="@style/AddButtonStyle"
             android:id="@+id/add_exam_button"
-            android:text="@string/button_text_add_exam" />
+            android:text="@string/button_text_add_exam"
+            android:layout_below="@id/add_exam_date_input"
+            android:layout_alignParentEnd="true"/>
 
 
-    </LinearLayout>
-
-    <include layout="@layout/toolbar" />
+    </RelativeLayout>
 
 </LinearLayout>

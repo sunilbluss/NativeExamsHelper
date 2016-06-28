@@ -63,6 +63,8 @@
     <string name="sse_info_failed">Niezaliczone: </string>
     <string name="sse_info_percent">Wynik: </string>
 
+    <!--list items-->
+    <string name="list_item_old_exam_no_grades">Nieocenione</string>
 
 
 </resources>

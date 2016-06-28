@@ -9,52 +9,45 @@
 
     <include layout="@layout/toolbar" />
 
-    <LinearLayout
+    <RelativeLayout
         style="@style/UserInputLayoutStyle">
 
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+        <ImageView
+            style="@style/ImageIconAddExamTheme"
+            android:src="@drawable/info_icon"
+            android:id="@+id/add_subject_icon1"/>
 
-            <ImageView
-                style="@style/ImageIconAddExamTheme"
-                android:src="@drawable/info_icon"
-/>
-
-            <EditText
-                style="@style/UserInputEditTextStyle"
-                android:id="@+id/add_subject_title"
-                android:maxLines="1"
-                android:maxLength="@integer/add_xxx_max_chars"
-                android:hint="@string/hint_subject_title" />
-
-        </LinearLayout>
+        <EditText
+            style="@style/UserInputEditTextStyle"
+            android:id="@+id/add_subject_title"
+            android:maxLines="1"
+            android:maxLength="@integer/add_xxx_max_chars"
+            android:hint="@string/hint_subject_title"
+            android:layout_toEndOf="@id/add_subject_icon1"/>
 
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+        <ImageView
+            style="@style/ImageIconAddExamTheme"
+            android:src="@drawable/color_icon"
+            android:id="@+id/add_subject_color_icon"
+            android:layout_below="@id/add_subject_icon1"/>
 
-            <ImageView
-                style="@style/ImageIconAddExamTheme"
-                android:src="@drawable/color_icon"
-                android:id="@+id/add_subject_color_icon"/>
-
-            <EditText
-                style="@style/UserInputEditTextStyle"
-                android:hint="@string/hint_subject_color"
-                android:id="@+id/add_subject_color"
-                android:focusable="false" />
-        </LinearLayout>
+        <EditText
+            style="@style/UserInputEditTextStyle"
+            android:hint="@string/hint_subject_color"
+            android:id="@+id/add_subject_color"
+            android:focusable="false"
+            android:layout_below="@id/add_subject_title"
+            android:layout_toEndOf="@id/add_subject_color_icon"/>
 
         <Button
             style="@style/AddButtonStyle"
             android:id="@+id/add_subject_button"
-            android:text="@string/button_text_add_exam"/>
+            android:text="@string/button_text_add_exam"
+            android:layout_below="@id/add_subject_color"
+            android:layout_alignParentEnd="true"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>
