@@ -80,6 +80,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingBottom">@dimen/sse_grades_info_text_padding</item>
         <item name="android:textSize">@dimen/sse_average_text_size</item>
+        <item name="android:textColor">@color/materialcolorpicker__white</item>
     </style>
 
 </resources>

@@ -1,4 +1,4 @@
-package com.grudus.nativeexamshelper.activities.sliding.goohub;
+package com.grudus.nativeexamshelper.activities.sliding;
 
 /*
  * Copyright 2014 Google Inc. All rights reserved.
@@ -25,6 +25,8 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import com.grudus.nativeexamshelper.activities.sliding.SlidingTabLayout;
 
 class SlidingTabStrip extends LinearLayout {
 

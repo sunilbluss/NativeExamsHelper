@@ -1,4 +1,4 @@
-package com.grudus.nativeexamshelper.activities.sliding;
+package com.grudus.nativeexamshelper.activities.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;

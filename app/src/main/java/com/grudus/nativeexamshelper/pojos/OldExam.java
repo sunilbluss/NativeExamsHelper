@@ -33,6 +33,8 @@ public class OldExam {
         return POSSIBLE_GRADES[0];
     }
 
+    public static double getFirstPassedGrade() {return POSSIBLE_GRADES[3];}
+
     private boolean isInRange(double grade) {
         for (double d : POSSIBLE_GRADES)
             if (grade == d)

@@ -59,6 +59,7 @@
     <string name="sse_info_average">Średnia: </string>
     <string name="sse_info_median">Mediana: </string>
     <string name="sse_info_dominant">Dominanta: </string>
+    <string name="sse_info_lack_dominant">brak</string>
     <string name="sse_info_passed">Zaliczone: </string>
     <string name="sse_info_failed">Niezaliczone: </string>
     <string name="sse_info_percent">Wynik: </string>
