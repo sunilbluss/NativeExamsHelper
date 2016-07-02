@@ -1,10 +1,13 @@
-package com.grudus.nativeexamshelper.activities.sliding;
+package com.grudus.nativeexamshelper.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
 import android.view.ViewGroup;
+
+import com.grudus.nativeexamshelper.activities.fragments.AddingExamFragment;
+import com.grudus.nativeexamshelper.activities.fragments.OldExamsFragment;
 
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {

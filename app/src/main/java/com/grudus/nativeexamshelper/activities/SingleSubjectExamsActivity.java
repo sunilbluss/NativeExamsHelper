@@ -5,16 +5,16 @@ import android.graphics.Color;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.widget.CursorAdapter;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.adapters.SingleSubjectExamsAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
-import com.grudus.nativeexamshelper.adapters.SingleSubjectExamsCursorAdapter;
 import com.grudus.nativeexamshelper.helpers.ColorHelper;
 import com.grudus.nativeexamshelper.pojos.OldExam;
 import com.grudus.nativeexamshelper.pojos.Subject;
@@ -30,13 +30,13 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
     private final String TAG = "@@@" + this.getClass().getSimpleName();
 
 
-    @BindView(R.id.list_view_single_subject_exams)
-    ListView listView;
+    @BindView(R.id.recycler_view_single_subject_exams)
+    RecyclerView recyclerView;
 
     @BindView(R.id.sse_info_layout)
     LinearLayout infoLayout;
 
-    private CursorAdapter cursorAdapter;
+    private SingleSubjectExamsAdapter adapter;
     private String subjectTitle;
     private ExamsDbHelper dbHelper;
 
@@ -50,15 +50,31 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
         subjectTitle = subject.getTitle();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(getString(R.string.sse_toolbar));
-        changeColors(toolbar, subject.getColor());
+        toolbar.setTitle(subjectTitle);
+//        changeColors(toolbar, subject.getColor());
         setSupportActionBar(toolbar);
 
+        openDatabase();
+        initRecyclerView();
 
-        populateList();
+
         updateStatistics();
         initListeners();
     }
+
+    private void openDatabase() {
+        dbHelper = ExamsDbHelper.getInstance(this);
+        dbHelper.openDBReadOnly();
+    }
+
+    private void initRecyclerView() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new SingleSubjectExamsAdapter(this, dbHelper.getSubjectGrades(subjectTitle));
+        recyclerView.setAdapter(adapter);
+//        adapter.closeCursor();
+    }
+
+
 
     private void initListeners() {
 
@@ -66,7 +82,7 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
 
     private void updateStatistics() {
         String[] numbers = calculateAllStatistics();
-        ((TextView) findViewById(R.id.sse_title)).setText(subjectTitle);
+//        ((TextView) findViewById(R.id.sse_title)).setText(subjectTitle);
         ((TextView) findViewById(R.id.sse_info_average)).setText(getString(R.string.sse_info_average) + numbers[0]);
         ((TextView) findViewById(R.id.sse_info_median)).setText(getString(R.string.sse_info_median) + numbers[1]);
         ((TextView) findViewById(R.id.sse_info_dominant)).setText(getString(R.string.sse_info_dominant) + numbers[2]);
@@ -74,6 +90,7 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.sse_info_failed)).setText(getString(R.string.sse_info_failed) + numbers[4]);
         ((TextView) findViewById(R.id.sse_info_percent)).setText(getString(R.string.sse_info_percent) + numbers[5]);
     }
+
 
     private String[] calculateAllStatistics() {
         String[] results = new String[6];
@@ -124,19 +141,11 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
         return results;
     }
 
-
-    private void populateList() {
-        dbHelper = ExamsDbHelper.getInstance(this);
-        dbHelper.openDBReadOnly();
-        cursorAdapter = new SingleSubjectExamsCursorAdapter(this, dbHelper.getSubjectGrades(subjectTitle), 0);
-        listView.setAdapter(cursorAdapter);
-    }
-
     @Override
     protected void onPause() {
         super.onPause();
         if (dbHelper != null) dbHelper.closeDB();
-        if (cursorAdapter != null) cursorAdapter.changeCursor(null);
+        adapter.closeCursor();
     }
 
 

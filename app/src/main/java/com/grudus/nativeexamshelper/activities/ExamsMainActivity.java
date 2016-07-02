@@ -13,10 +13,10 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
-import com.grudus.nativeexamshelper.activities.sliding.AddingExamFragment;
-import com.grudus.nativeexamshelper.activities.sliding.OldExamsFragment;
-import com.grudus.nativeexamshelper.activities.sliding.ViewPagerAdapter;
-import com.grudus.nativeexamshelper.activities.sliding.goohub.SlidingTabLayout;
+import com.grudus.nativeexamshelper.activities.fragments.AddingExamFragment;
+import com.grudus.nativeexamshelper.activities.fragments.OldExamsFragment;
+import com.grudus.nativeexamshelper.adapters.ViewPagerAdapter;
+import com.grudus.nativeexamshelper.activities.sliding.SlidingTabLayout;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
 

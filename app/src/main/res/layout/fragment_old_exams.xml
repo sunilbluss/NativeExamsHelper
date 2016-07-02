@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.grudus.nativeexamshelper.activities.sliding.OldExamsFragment">
+    tools:context=".activities.fragments.OldExamsFragment">
 
     <include layout="@layout/list_item_old_exam" />
 
