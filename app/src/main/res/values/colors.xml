@@ -4,7 +4,6 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#536DFE</color>
     <color name="colorHighlight">#bdbdbd</color>
-    <!--<color name="textColorPrimary">#ff0000</color>-->
 
     <color name="toolbar_text_theme">#ffffff</color>
     <color name="settingsColor">#ffffff</color>
@@ -16,6 +15,7 @@
     <color name="button_text">@color/settingsColor</color>
 
     <color name="niceBlueColor">#4286F5</color>
+
 
 
 
@@ -85,25 +85,6 @@
         <item>#616161</item>
         <item>#455A64</item>
     </string-array>
-    <!--<color name="statusBar1">#d32f2f</color>-->
-    <!--<color name="statusBar2">#C2185B</color>-->
-    <!--<color name="statusBar3">#7B1FA2</color>-->
-    <!--<color name="statusBar4">#512DA8</color>-->
-    <!--<color name="statusBar5">#303F9F</color>-->
-    <!--<color name="statusBar6">#1976D2</color>-->
-    <!--<color name="statusBar7">#0288D1</color>-->
-    <!--<color name="statusBar8">#0097A7</color>-->
-    <!--<color name="statusBar9">#00796B</color>-->
-    <!--<color name="statusBar10">#388E3C</color>-->
-    <!--<color name="statusBar11">#689F38</color>-->
-    <!--<color name="statusBar12">#AFB42B</color>-->
-    <!--<color name="statusBar13">#FBC02D</color>-->
-    <!--<color name="statusBar14">#FFA000</color>-->
-    <!--<color name="statusBar15">#F57C00</color>-->
-    <!--<color name="statusBar16">#E64A19</color>-->
-    <!--<color name="statusBar17">#5D4037</color>-->
-    <!--<color name="statusBar18">#616161</color>-->
-    <!--<color name="statusBar19">#455A64</color>-->
 
 
 </resources>

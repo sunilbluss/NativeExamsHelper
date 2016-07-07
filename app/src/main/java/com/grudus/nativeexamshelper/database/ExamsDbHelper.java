@@ -131,6 +131,10 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         SubjectsQuery.resetGrades(database);
     }
 
+    public void removeSubject(String subjectTitle) {
+        SubjectsQuery.removeSubject(database, subjectTitle);
+    }
+
 //    Exams part *********************************
 
     public Cursor selectAllFromExams() {
@@ -191,6 +195,5 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
     public boolean notAssessedSubjectExists() {
         return OldExamsQuery.notAssessedSubjectExists(database);
     }
-
 
 }

@@ -5,23 +5,24 @@ import android.database.Cursor;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.widget.CursorAdapter;
-import android.widget.ListView;
+import android.view.View;
 
+import com.grudus.nativeexamshelper.activities.touchhelpers.ItemRemoveCallback;
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.adapters.SubjectsAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
-import com.grudus.nativeexamshelper.database.subjects.SubjectsContract;
-import com.grudus.nativeexamshelper.adapters.SubjectsCursorAdapter;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.OnItemClick;
 
-public class SubjectsListActivity extends AppCompatActivity {
+public class SubjectsListActivity extends AppCompatActivity implements SubjectsAdapter.ItemClickListener {
 
     private final String TAG = "@@@" + this.getClass().getSimpleName();
 
@@ -32,12 +33,13 @@ public class SubjectsListActivity extends AppCompatActivity {
     // 'edit subjects' mode
     public static final String INTENT_EDIT_MODE_TAG = "editMode";
 
-    @BindView(R.id.subjects_list_view) ListView listView;
+    @BindView(R.id.subjects_recycler_view) RecyclerView recyclerView;
     @BindView(R.id.floating_button_add_subject) FloatingActionButton floatingActionButton;
     @BindView(R.id.toolbar) Toolbar toolbar;
 
     private ExamsDbHelper examsDbHelper;
-    private CursorAdapter cursorAdapter;
+    private SubjectsAdapter adapter;
+    private ItemTouchHelper itemTouchHelper;
 
     /* If true - after click on listview item it is possible to change color and title
      *  otherwise - it's on selected mode (user is choosing exam subject)*/
@@ -58,6 +60,14 @@ public class SubjectsListActivity extends AppCompatActivity {
 
         initDatabase();
         populateList();
+        
+        initSwipeListener();
+    }
+
+    private void initSwipeListener() {
+        ItemRemoveCallback itemRemoveCallback = new ItemRemoveCallback(0, ItemTouchHelper.RIGHT, this);
+        itemTouchHelper = new ItemTouchHelper(itemRemoveCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
     private void initDatabase() {
@@ -67,24 +77,24 @@ public class SubjectsListActivity extends AppCompatActivity {
 
     private void populateList() {
         Cursor c = examsDbHelper.selectAllFromSubjectsSortByTitle();
-        cursorAdapter = new SubjectsCursorAdapter(this, c, 0);
-        listView.setAdapter(cursorAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        adapter = new SubjectsAdapter(c, this, this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setHasFixedSize(true);
+
     }
 
-    @OnItemClick(R.id.subjects_list_view)
-    public void setSubject(int index) {
-        Cursor c = (Cursor) cursorAdapter.getItem(index);
-        Subject subject = new Subject(
-                c.getString(SubjectsContract.SubjectEntry.TITLE_COLUMN_INDEX),
-                c.getString(SubjectsContract.SubjectEntry.COLOR_COLUMN_INDEX));
+    @Override
+    public void itemClicked(View v, int position) {
+        Subject subject = adapter.getItem(position);
 
         Intent whereToGo = isEditable ? new Intent(this, AddNewSubjectActivity.class)
                 : new Intent(this, AddExamActivity.class);
 
-            whereToGo.putExtra("subject", subject);
-            startActivity(whereToGo);
-
+        whereToGo.putExtra("subject", subject);
+        startActivity(whereToGo);
     }
+
 
     @OnClick(R.id.floating_button_add_subject)
     public void addSubject() {
@@ -109,5 +119,7 @@ public class SubjectsListActivity extends AppCompatActivity {
         super.onPause();
         if (examsDbHelper != null)
             examsDbHelper.closeDB();
+        adapter.closeCursor();
     }
+
 }

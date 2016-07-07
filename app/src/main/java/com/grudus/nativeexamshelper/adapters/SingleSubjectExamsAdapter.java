@@ -19,7 +19,7 @@ import com.grudus.nativeexamshelper.helpers.DateHelper;
 
 public class SingleSubjectExamsAdapter extends RecyclerView.Adapter<SingleSubjectExamsAdapter.SingleSubjectExamsViewHolder> {
 
-    private Context context;
+    private final Context context;
     private Cursor cursor;
     private static String defaultInfo;
 

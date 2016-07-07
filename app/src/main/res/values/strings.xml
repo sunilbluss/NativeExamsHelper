@@ -29,6 +29,7 @@
 
     <!--Subjects list-->
     <string name="subject_list_toolbar_text">Wybierz przedmiot</string>
+    <string name="subject_list_delete_text">Usuń</string>
 
     <string-array name="default_subjects">
         <item>Matematyka</item>

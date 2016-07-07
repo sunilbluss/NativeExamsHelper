@@ -157,4 +157,12 @@ public final class SubjectsQuery {
                 null
         );
     }
+
+    public static void removeSubject(SQLiteDatabase db, String subjectTitle) {
+        db.delete(
+                SubjectsContract.SubjectEntry.TABLE_NAME,
+                SubjectsContract.SubjectEntry.TITLE_COLUMN + "=?",
+                new String[] {subjectTitle}
+        );
+    }
 }

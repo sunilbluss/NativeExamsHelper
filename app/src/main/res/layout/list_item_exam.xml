@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:id="@+id/list_item_adding_exam"
+    android:id="@+id/list_item_adding_exam_linear"
     android:orientation="horizontal"
     android:padding="@dimen/list_item_margin">
 
