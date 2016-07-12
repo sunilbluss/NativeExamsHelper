@@ -1,25 +1,28 @@
 package com.grudus.nativeexamshelper.activities;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.grudus.nativeexamshelper.helpers.CalendarDialogHelper;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
+import com.grudus.nativeexamshelper.helpers.TimeDialogHelper;
+import com.grudus.nativeexamshelper.helpers.TimeHelper;
 import com.grudus.nativeexamshelper.pojos.Exam;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -34,21 +37,12 @@ public class AddExamActivity extends AppCompatActivity {
     @BindView(R.id.add_exam_date_input) EditText dateInput;
     @BindView(R.id.add_exam_subject_input) EditText subjectInput;
     @BindView(R.id.add_exam_extras_input) EditText extrasInput;
+    @BindView(R.id.add_exam_time_input) EditText timeInput;
     @BindView(R.id.add_exam_button) Button addExamButton;
     @BindView(R.id.toolbar) Toolbar toolbar;
 
-    private Calendar calendar = Calendar.getInstance();
-
-
-    private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            calendar.set(Calendar.YEAR, year);
-            calendar.set(Calendar.MONTH, monthOfYear);
-            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-            updateDateView();
-        }
-    };
+    private CalendarDialogHelper calendarDialog;
+    private TimeDialogHelper timeDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,13 +56,46 @@ public class AddExamActivity extends AppCompatActivity {
         toolbar.setTitle(getResources().getString(R.string.add_new_exam_toolbar_text));
         setListenerToDeleteTextViewFocus();
 
+        calendarDialog = new CalendarDialogHelper(this, new CalendarDialogHelper.AfterDateSetListener() {
+            @Override
+            public void afterDateSet() {
+                updateDateView();
+            }
+        });
+
+        timeDialog = new TimeDialogHelper(this, new TimeDialogHelper.AfterTimeSetListener() {
+            @Override
+            public void afterTimeSet() {
+                updateTimeView();
+            }
+        });
+
+
+    }
+
+    private void updateDateView() {
+        dateInput.setText(DateHelper.getStringFromDate(calendarDialog.getDate()));
+        deleteFocus();
+    }
+
+    private void updateTimeView() {
+        String textToDisplay = TimeHelper.getFormattedTime(
+                timeDialog.getHour(),
+                timeDialog.getMinute()
+        );
+
+        timeInput.setText(textToDisplay);
+        deleteFocus();
     }
 
     @OnClick(R.id.add_exam_date_input)
     void showDatePicker() {
-        new DatePickerDialog(AddExamActivity.this, datePickerListener, calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
-                .show();
+        calendarDialog.showDialog();
+    }
+
+    @OnClick(R.id.add_exam_time_input)
+    void showTimePicker() {
+        timeDialog.showDialog();
     }
 
     @OnClick(R.id.add_exam_subject_input)
@@ -84,8 +111,8 @@ public class AddExamActivity extends AppCompatActivity {
 
         if (!inputsAreCorrect(subject, date)) return;
 
-        Date correctDate = DateHelper.tryToGetDateFromString(date);
-        if (correctDate == null) return;
+        Date correctDate = getDateWithTime();
+
         String info = extrasInput.getText().toString();
 
         Exam exam = new Exam(subject, info, correctDate);
@@ -93,10 +120,11 @@ public class AddExamActivity extends AppCompatActivity {
         ExamsDbHelper db = ExamsDbHelper.getInstance(this);
         db.openDB();
 
-        // exam was in the past
+
         if (examWasInThePast(correctDate)) {
             db.examBecomesOld(exam);
         }
+
         else db.insertExam(exam);
 
         db.closeDB();
@@ -106,6 +134,14 @@ public class AddExamActivity extends AppCompatActivity {
         goBack.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(goBack);
     }
+
+    private Date getDateWithTime() {
+        Calendar temp = calendarDialog.getCalendar();
+        temp.add(Calendar.HOUR_OF_DAY, timeDialog.getHour());
+        temp.add(Calendar.MINUTE, timeDialog.getMinute());
+        return temp.getTime();
+    }
+
 
     private static boolean examWasInThePast(Date date) {
         return date.getTime() < Calendar.getInstance().getTime().getTime();
@@ -123,12 +159,6 @@ public class AddExamActivity extends AppCompatActivity {
             return false;
         }
         return true;
-    }
-
-
-    private void updateDateView() {
-        dateInput.setText(DateHelper.getStringFromDate(calendar.getTime()));
-        deleteFocus();
     }
 
     private void setSelectedSubjectLabel(Subject subject) {

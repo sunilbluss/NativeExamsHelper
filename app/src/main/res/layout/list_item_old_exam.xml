@@ -18,6 +18,7 @@
         android:textSize="@dimen/list_item_main_text_size"
         android:id="@+id/list_item_old_exam_subject"
         android:layout_marginStart="@dimen/list_item_text_left_margin"
-        android:text="@string/list_item_old_exam_no_grades"/>
+        android:text="@string/list_item_old_exam_no_grades"
+        android:transitionName="@string/transition_list_item_to_toolbar"/>
 
 </LinearLayout>

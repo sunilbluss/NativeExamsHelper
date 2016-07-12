@@ -50,8 +50,7 @@ public class GradeStatisticsCalculator {
 
         do {
             tempGrade = sortedGradesCursor.getDouble(gradesColumnDatabaseIndex);
-            // TODO: 04.07.16 debug only
-            if (tempGrade == OldExam.getEmptyGrade()) continue;
+
             if (previousGrade == -1) previousGrade = tempGrade;
 
             if (tempGrade > previousGrade) {

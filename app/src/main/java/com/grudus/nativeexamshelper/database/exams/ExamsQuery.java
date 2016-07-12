@@ -11,10 +11,42 @@ import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.pojos.Exam;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 
 public class ExamsQuery {
 
+    public static Cursor getAllIncomingExamsAndSortByDate(SQLiteDatabase db) {
+        long time = System.currentTimeMillis();
+        Cursor c = db.query(
+                ExamsContract.ExamEntry.TABLE_NAME,
+                ExamsContract.ExamEntry.ALL_COLUMNS,
+                ExamsContract.ExamEntry.DATE_COLUMN + ">?",
+                new String[] {time + ""},
+                null,
+                null,
+                ExamsContract.ExamEntry.DATE_COLUMN
+                );
+
+        c.moveToFirst();
+        return c;
+    }
+
+    public static Cursor getAllExamsOlderThan(SQLiteDatabase db, long time) {
+        Cursor c = db.query(
+                ExamsContract.ExamEntry.TABLE_NAME,
+                ExamsContract.ExamEntry.ALL_COLUMNS,
+                ExamsContract.ExamEntry.DATE_COLUMN + "<?",
+                new String[] {time + ""},
+                null,
+                null,
+                null
+        );
+
+        c.moveToFirst();
+        return c;
+    }
 
     public static Cursor getAllRecordsAndSortByDate(SQLiteDatabase db) {
         return QueryHelper.getAllRecordsAndSortBy(db, ExamsContract.ExamEntry.TABLE_NAME
@@ -27,22 +59,10 @@ public class ExamsQuery {
     }
 
     @Nullable
-    public static ArrayList<Exam> getAllExamsOlderThan(SQLiteDatabase db, long time) {
-        Cursor c = db.query(
-                ExamsContract.ExamEntry.TABLE_NAME,
-                ExamsContract.ExamEntry.ALL_COLUMNS,
-                ExamsContract.ExamEntry.DATE_COLUMN + "<?",
-                new String[] {time + ""},
-                null,
-                null,
-                null
-        );
-        if (c == null) return null;
-        if (!c.moveToFirst()) {
-            c.close();
-            return null;
-        }
-        ArrayList<Exam> exams = new ArrayList<>();
+    public static ArrayList<Exam> getAllExamsOlderThanAsArray(SQLiteDatabase db, long time) {
+        Cursor c = getAllExamsOlderThan(db, time);
+
+        ArrayList<Exam> exams =  new ArrayList<>();
         do {
             exams.add(new Exam(
                     c.getString(ExamsContract.ExamEntry.SUBJECT_COLUMN_INDEX),

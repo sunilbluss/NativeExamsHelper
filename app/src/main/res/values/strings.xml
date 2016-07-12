@@ -8,6 +8,7 @@
     <string name="toolbar_delete_all">Usun wszystko</string>
     <string name="toolbar_refresh_subjects">Odswiez przedmioty</string>
     <string name="toolbar_edit_subjects">Edytuj przedmioty</string>
+    <string name="toolbar_change_theme">Zmień motyw</string>
 
     <!--Tabs -->
     <string-array name="tab_titles">
@@ -21,6 +22,7 @@
     <string name="hint_add_exam_subject">Przedmiot</string>
     <string name="hint_add_exam_extras">Zaliczenie</string>
     <string name="hint_add_exam_date">Data</string>
+    <string name="hint_add_exam_time">Godzina</string>
     <string name="button_text_add_exam">Dodaj</string>
 
     <string name="empty_subject_add_exam">Musisz podac przedmiot</string>
@@ -68,5 +70,7 @@
     <!--list items-->
     <string name="list_item_old_exam_no_grades">Nieocenione</string>
 
+    <!--transitions -->
+    <string name="transition_list_item_to_toolbar">listItemToToolbar</string>
 
 </resources>

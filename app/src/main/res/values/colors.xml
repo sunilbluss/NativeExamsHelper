@@ -4,6 +4,8 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#536DFE</color>
     <color name="colorHighlight">#bdbdbd</color>
+    <color name="textColor">#ffffff</color>
+    <color name="backgroundColor">#ffffff</color>
 
     <color name="toolbar_text_theme">#ffffff</color>
     <color name="settingsColor">#ffffff</color>
@@ -15,6 +17,13 @@
     <color name="button_text">@color/settingsColor</color>
 
     <color name="niceBlueColor">#4286F5</color>
+    
+    <!--DARK THEME-->
+    <color name="dark_colorPrimaryDark">#212121</color>
+    <color name="dark_colorPrimary">#424242</color>
+    <color name="dark_backgroundColor">#616161</color>
+   <color name="dark_colorAccent">#f0f</color>
+
 
 
 

@@ -15,6 +15,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="?attr/listItemTextColor"
         android:textSize="@dimen/list_item_main_text_size"
         android:id="@+id/list_item_adding_exam_subject"
         android:layout_toEndOf="@id/list_item_icon_text"
@@ -23,6 +24,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="?attr/listItemTextColor"
         android:textSize="@dimen/list_item_sub_text_size"
         android:id="@+id/list_item_adding_exam_date"
         android:layout_below="@id/list_item_adding_exam_subject"

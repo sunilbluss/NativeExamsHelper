@@ -20,6 +20,7 @@ import com.grudus.nativeexamshelper.helpers.GradeStatisticsCalculator;
 import com.grudus.nativeexamshelper.helpers.StatisticsTextFormatter;
 import com.grudus.nativeexamshelper.pojos.OldExam;
 import com.grudus.nativeexamshelper.pojos.Subject;
+import com.grudus.nativeexamshelper.pojos.grades.Grades;
 
 import java.text.DecimalFormat;
 
@@ -102,7 +103,7 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
 
 
     private void calculateAllStatistics() {
-        GradeStatisticsCalculator calculator = new GradeStatisticsCalculator(OldExam.getFirstPassedGrade());
+        GradeStatisticsCalculator calculator = new GradeStatisticsCalculator(Grades.getFirstPassedGrade());
         calculator.setUpDatabaseData(dbHelper.getOrderedSubjectGrades(subjectTitle), ExamsContract.OldExamEntry.GRADE_COLUMN_INDEX);
         calculator.calculateFromDatabase();
         setUpStatisticsTextFormatter(calculator);

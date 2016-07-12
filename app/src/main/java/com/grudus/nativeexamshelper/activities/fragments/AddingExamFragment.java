@@ -45,7 +45,7 @@ public class AddingExamFragment extends Fragment {
         if (examsDbHelper == null) return;
         examsDbHelper.openDB();
         examsDbHelper.cleanAllRecords(ExamsContract.ExamEntry.TABLE_NAME);
-        cursorAdapter.changeCursor(examsDbHelper.selectAllFromExamsSortByDate());
+        cursorAdapter.changeCursor(examsDbHelper.getAllIncomingExamsSortByDate());
         examsDbHelper.closeDB();
     }
 
@@ -119,7 +119,7 @@ public class AddingExamFragment extends Fragment {
     }
 
     private void populateListView() {
-        cursorAdapter = new ExamsCursorAdapter(getActivity(), examsDbHelper.selectAllFromExamsSortByDate(), 0);
+        cursorAdapter = new ExamsCursorAdapter(getActivity(), examsDbHelper.getAllIncomingExamsSortByDate(), 0);
         listView.setAdapter(cursorAdapter);
     }
 

@@ -1,11 +1,13 @@
 package com.grudus.nativeexamshelper.activities;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,9 +21,13 @@ import com.grudus.nativeexamshelper.adapters.ViewPagerAdapter;
 import com.grudus.nativeexamshelper.activities.sliding.SlidingTabLayout;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
+import com.grudus.nativeexamshelper.helpers.ThemeHelper;
+
+import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.internal.Utils;
 
 public class ExamsMainActivity extends AppCompatActivity  {
 
@@ -36,17 +42,29 @@ public class ExamsMainActivity extends AppCompatActivity  {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ThemeHelper.onActivityCreateSetTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_exams);
         ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            getWindow().setSharedElementExitTransition(TransitionInflater.from(this).inflateTransition(R.transition.list_item_to_toolbar));
+//        }
+
+        setUpToolbar();
 
         viewPagerInit();
 
+        Log.d(TAG, "onCreate: System " + System.currentTimeMillis() + ", calendar: " +
+                Calendar.getInstance().getTime().getTime());
+
         DateHelper.setDateFormat(getResources().getString(R.string.date_format));
-        Log.d(TAG, "onCreate: END");
+    }
+
+    private void setUpToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
     }
 
     private void viewPagerInit() {
@@ -107,6 +125,10 @@ public class ExamsMainActivity extends AppCompatActivity  {
             Intent intent = new Intent(getApplicationContext(), SubjectsListActivity.class);
             intent.putExtra(SubjectsListActivity.INTENT_EDITABLE_TAG, true);
             startActivity(intent);
+        }
+
+        if (item.getItemId() == R.id.menu_item_change_theme) {
+            ThemeHelper.changeToTheme(this, ThemeHelper.nextTheme());
         }
 
         else Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();

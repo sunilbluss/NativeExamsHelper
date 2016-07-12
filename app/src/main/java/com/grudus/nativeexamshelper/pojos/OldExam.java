@@ -1,10 +1,13 @@
 package com.grudus.nativeexamshelper.pojos;
 
 
+import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.grudus.nativeexamshelper.helpers.DateHelper;
+import com.grudus.nativeexamshelper.pojos.grades.GradeException;
+import com.grudus.nativeexamshelper.pojos.grades.Grades;
 
 import java.util.Date;
 
@@ -15,36 +18,12 @@ public class OldExam {
     private double grade;
     private Date date;
 
-    public static final double[] POSSIBLE_GRADES = {0, 1, 1.25, 1.75, 2, 2.25, 2.75, 3, 3.25, 3.75, 4, 4.25, 4.75, 5, 5.25, 5.75, 6};
-
     public OldExam(@NonNull Subject subject, String info, double grade, @NonNull Date date) {
+        if (!Grades.isInRange(grade)) throw new GradeException();
         this.subject = subject;
         this.info = info;
-        this.grade = isInRange(grade) ? grade : getEmptyGrade();
+        this.grade = grade;
         this.date = date;
-    }
-
-
-    public OldExam(@NonNull Subject subject, String info, @NonNull Date date) {
-        this(subject, info, getEmptyGrade(), date);
-    }
-
-    public static double getEmptyGrade() {
-        return POSSIBLE_GRADES[0];
-    }
-
-    public static double getFirstPassedGrade() {return POSSIBLE_GRADES[3];}
-
-    private boolean isInRange(double grade) {
-        for (double d : POSSIBLE_GRADES)
-            if (grade == d)
-                return true;
-        Log.e("@@@", "OldExam: " + grade + "isn't in range", new IllegalArgumentException());
-        return false;
-    }
-
-    public boolean hasGrade() {
-        return grade != getEmptyGrade();
     }
 
 
@@ -68,7 +47,8 @@ public class OldExam {
         return grade;
     }
 
-    public void setGrade(float grade) {
+    public void setGrade(double grade) {
+        if (!Grades.isInRange(grade)) throw new GradeException();
         this.grade = grade;
     }
 

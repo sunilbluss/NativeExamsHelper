@@ -17,6 +17,7 @@ import com.grudus.nativeexamshelper.database.subjects.SubjectsQuery;
 import com.grudus.nativeexamshelper.pojos.Exam;
 import com.grudus.nativeexamshelper.pojos.OldExam;
 import com.grudus.nativeexamshelper.pojos.Subject;
+import com.grudus.nativeexamshelper.pojos.grades.Grades;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -69,19 +70,19 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
     public void openDB() {
         if (database == null || !database.isOpen())
             database = this.getWritableDatabase();
-        Log.d(TAG, "Database is opened");
+//        Log.d(TAG, "Database is opened");
     }
 
     public void openDBReadOnly() {
         database = this.getReadableDatabase();
-        Log.d(TAG, "openDBReadOnly: opened");
+//        Log.d(TAG, "openDBReadOnly: opened");
     }
 
     public void closeDB() {
         if (database != null && database.isOpen())
             database.close();
         this.close();
-        Log.d(TAG, "Database is closed");
+//        Log.d(TAG, "Database is closed");
     }
 
     public void cleanAllRecords(String tableName) {
@@ -145,13 +146,21 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
        return ExamsQuery.getAllRecordsAndSortByDate(database);
     }
 
+    public Cursor getAllIncomingExamsSortByDate() {
+        return ExamsQuery.getAllIncomingExamsAndSortByDate(database);
+    }
+
     public long insertExam(Exam exam) {
         return ExamsQuery.insert(database, exam);
     }
 
+    public Cursor getExamsOlderThan(long time) {
+        return ExamsQuery.getAllExamsOlderThan(database, time);
+    }
+
     @Nullable
     public ArrayList<Exam> selectAllFromExamsWhereDateIsSmallerThan(long dateInMillis) {
-        return ExamsQuery.getAllExamsOlderThan(database, dateInMillis);
+        return ExamsQuery.getAllExamsOlderThanAsArray(database, dateInMillis);
     }
 
 
@@ -183,17 +192,21 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         Subject subject = findSubjectByTitle(exam.getSubject());
         if (subject == null) return -1L;
 
-        ExamsQuery.remove(database, exam);
-
         // TODO: 25.06.16 debug only
-        double grade = OldExam.POSSIBLE_GRADES[new Random().nextInt(OldExam.POSSIBLE_GRADES.length)];
-        setSubjectHasGrade(subject, grade != OldExam.POSSIBLE_GRADES[0]);
+        // set random value as grade
+        if (new Random().nextBoolean()) {
+            ExamsQuery.remove(database, exam);
 
-        return OldExamsQuery.insert(database, new OldExam(subject, exam.getInfo(), grade, exam.getDate()));
+            double grade = Grades.getRandomGrade();
+            setSubjectHasGrade(subject, true);
+            return OldExamsQuery.insert(database, new OldExam(subject, exam.getInfo(), grade, exam.getDate()));
+        }
+        // mark exam as ungraded
+        else {
+            return insertExam(exam);
+        }
+
     }
 
-    public boolean notAssessedSubjectExists() {
-        return OldExamsQuery.notAssessedSubjectExists(database);
-    }
 
 }

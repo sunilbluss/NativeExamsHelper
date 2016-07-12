@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.transition.Fade;
 import android.transition.TransitionManager;
@@ -18,6 +20,7 @@ import android.widget.ListView;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.activities.SingleSubjectExamsActivity;
+import com.grudus.nativeexamshelper.activities.UngradedExamsActivity;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
 import com.grudus.nativeexamshelper.adapters.OldExamsCursorAdapter;
@@ -32,6 +35,7 @@ public class OldExamsFragment extends Fragment {
 
     private ListView listView;
     private CursorAdapter cursorAdapter;
+    private View header;
 
 
     public OldExamsFragment() {}
@@ -51,7 +55,6 @@ public class OldExamsFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         populateList();
         setOnItemClickListener();
-        Log.d(TAG, "FRAGMENT 2 ACTIVITY CREATED");
     }
 
 
@@ -61,8 +64,14 @@ public class OldExamsFragment extends Fragment {
 
 
         cursorAdapter = new OldExamsCursorAdapter(getActivity(), db.getSubjectsWithGrade(), 0);
+        setHeader();
         listView.setAdapter(cursorAdapter);
         db.closeDB();
+    }
+
+    private void setHeader() {
+        header = getLayoutInflater(null).inflate(R.layout.list_item_old_exam, null);
+        listView.addHeaderView(header);
     }
 
     private void initViews(View view) {
@@ -89,7 +98,7 @@ public class OldExamsFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Cursor c = (Cursor) cursorAdapter.getItem(position);
+                Cursor c = (Cursor) cursorAdapter.getItem(position - listView.getHeaderViewsCount());
                 String subjectTitle = c.getString(ExamsContract.OldExamEntry.SUBJECT_COLUMN_INDEX);
                 ExamsDbHelper db = ExamsDbHelper.getInstance(getContext());
 
@@ -106,6 +115,18 @@ public class OldExamsFragment extends Fragment {
                 intent.putExtra(SingleSubjectExamsActivity.INTENT_SUBJECT_TAG, subject);
                 startActivity(intent);
                 c.close();
+            }
+        });
+
+        // TODO: 11.07.16 add animations
+        header.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                ActivityOptionsCompat anim = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
+//                        header, getString(R.string.transition_list_item_to_toolbar));
+                startActivity(new Intent(getActivity(), UngradedExamsActivity.class)
+//                        , anim.toBundle()
+                );
             }
         });
     }

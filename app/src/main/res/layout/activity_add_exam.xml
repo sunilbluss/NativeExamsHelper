@@ -14,8 +14,6 @@
     <RelativeLayout
         style="@style/UserInputLayoutStyle">
 
-
-
         <ImageView
             style="@style/ImageIconAddExamTheme"
             android:src="@drawable/subject_icon"
@@ -32,7 +30,7 @@
         <ImageView
             style="@style/ImageIconAddExamTheme"
             android:src="@drawable/info_icon"
-            android:layout_below="@id/add_exam_image_view_1"
+            android:layout_below="@id/add_exam_subject_input"
             android:id="@+id/add_exam_image_view_2"/>
 
         <EditText
@@ -48,7 +46,7 @@
         <ImageView
             style="@style/ImageIconAddExamTheme"
             android:src="@drawable/calendar_icon"
-            android:layout_below="@id/add_exam_image_view_2"
+            android:layout_below="@id/add_exam_extras_input"
             android:id="@+id/add_exam_image_view_3"/>
 
 
@@ -60,12 +58,29 @@
             android:layout_below="@id/add_exam_extras_input"
             android:layout_toEndOf="@id/add_exam_image_view_3"/>
 
+        <ImageView
+            style="@style/ImageIconAddExamTheme"
+            android:src="@drawable/time_icon"
+            android:layout_below="@id/add_exam_date_input"
+            android:id="@+id/add_exam_image_view_4"/>
+
+        <EditText
+            style="@style/UserInputEditTextStyle"
+            android:id="@+id/add_exam_time_input"
+            android:hint="@string/hint_add_exam_time"
+            android:focusable="false"
+            android:layout_below="@id/add_exam_date_input"
+            android:layout_toEndOf="@id/add_exam_image_view_4"/>
+
+
+
         <Button
-            style="@style/AddButtonStyle"
+            style="?attr/buttonStyle"
             android:id="@+id/add_exam_button"
             android:text="@string/button_text_add_exam"
-            android:layout_below="@id/add_exam_date_input"
+            android:layout_below="@id/add_exam_time_input"
             android:layout_alignParentEnd="true"/>
+
 
 
     </RelativeLayout>

@@ -23,5 +23,8 @@
         android:title="@string/toolbar_edit_subjects"
         app:showAsAction="never"/>
 
+    <item android:id="@+id/menu_item_change_theme"
+        android:title="@string/toolbar_change_theme" />
+
 
 </menu>

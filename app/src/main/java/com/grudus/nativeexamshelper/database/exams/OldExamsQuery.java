@@ -40,29 +40,6 @@ public class OldExamsQuery {
         db.insert(ExamsContract.OldExamEntry.TABLE_NAME, null, cv);
     }
 
-    public static Cursor findSubjectsWithGrades(SQLiteDatabase db) {
-        Cursor c = db.query(
-                ExamsContract.OldExamEntry.TABLE_NAME,
-                ExamsContract.OldExamEntry.ALL_COLUMNS,
-                ExamsContract.OldExamEntry.GRADE_COLUMN + " != ?",
-                new String[] {OldExam.POSSIBLE_GRADES[0] + ""},
-                null,
-                null,
-                null
-        );
-        if (c != null) c.moveToFirst();
-        return c;
-    }
-
-    public static boolean notAssessedSubjectExists(SQLiteDatabase db) {
-        long subjects = DatabaseUtils.queryNumEntries(
-                db,
-                ExamsContract.OldExamEntry.TABLE_NAME,
-                ExamsContract.OldExamEntry.GRADE_COLUMN + " = ?",
-                new String[] {OldExam.POSSIBLE_GRADES[0] + ""}
-        );
-        return subjects != 0;
-    }
 
     public static Cursor findGradesAndSortBy(SQLiteDatabase db, @NonNull String subjectTitle, @Nullable String sort) {
         Cursor c = db.query(
