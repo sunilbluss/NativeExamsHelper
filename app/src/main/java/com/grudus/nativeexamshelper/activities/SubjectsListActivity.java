@@ -14,6 +14,7 @@ import android.view.View;
 
 import com.grudus.nativeexamshelper.activities.touchhelpers.ItemRemoveCallback;
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.adapters.ItemClickListener;
 import com.grudus.nativeexamshelper.adapters.SubjectsAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.pojos.Subject;
@@ -22,7 +23,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class SubjectsListActivity extends AppCompatActivity implements SubjectsAdapter.ItemClickListener {
+public class SubjectsListActivity extends AppCompatActivity implements ItemClickListener {
 
     private final String TAG = "@@@" + this.getClass().getSimpleName();
 

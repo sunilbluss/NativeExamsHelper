@@ -120,12 +120,7 @@ public class AddExamActivity extends AppCompatActivity {
         ExamsDbHelper db = ExamsDbHelper.getInstance(this);
         db.openDB();
 
-
-        if (examWasInThePast(correctDate)) {
-            db.examBecomesOld(exam);
-        }
-
-        else db.insertExam(exam);
+        db.insertExam(exam);
 
         db.closeDB();
 

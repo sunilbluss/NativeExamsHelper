@@ -1,27 +1,30 @@
 package com.grudus.nativeexamshelper.activities;
 
-import android.os.Build;
+import android.content.DialogInterface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.transition.TransitionInflater;
+import android.view.View;
+import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.adapters.ItemClickListener;
 import com.grudus.nativeexamshelper.adapters.UngradedExamsAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
-
-import java.util.ArrayList;
-import java.util.Arrays;
+import com.grudus.nativeexamshelper.dialogs.SelectGradeDialog;
+import com.grudus.nativeexamshelper.pojos.Exam;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class UngradedExamsActivity extends AppCompatActivity {
+public class UngradedExamsActivity extends AppCompatActivity implements ItemClickListener {
     
     @BindView(R.id.recycler_view_ungraded_exams)
     RecyclerView recyclerView;
 
+
+    private UngradedExamsAdapter adapter;
     private ExamsDbHelper dbHelper;
 
     @Override
@@ -45,7 +48,9 @@ public class UngradedExamsActivity extends AppCompatActivity {
 
     private void initRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new UngradedExamsAdapter(dbHelper.getExamsOlderThan(System.currentTimeMillis())));
+        adapter = new UngradedExamsAdapter(dbHelper.getExamsOlderThan(System.currentTimeMillis()), this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setHasFixedSize(true);
     }
 
 
@@ -53,5 +58,22 @@ public class UngradedExamsActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         dbHelper.closeDB();
+    }
+
+
+    @Override
+    public void itemClicked(View v, final int position) {
+        final SelectGradeDialog dialog = new SelectGradeDialog();
+        dialog.setListener(new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int which) {
+                Toast.makeText(UngradedExamsActivity.this, dialog.getSelectedGrade() + "", Toast.LENGTH_SHORT).show();
+
+                Exam exam = adapter.getExamByPosition(position);
+                dbHelper.examBecomesOld(exam, dialog.getSelectedGrade());
+                adapter.examHasGrade(position, dbHelper.getExamsOlderThan(System.currentTimeMillis()));
+            }
+        });
+        dialog.show(getFragmentManager(), "tag");
     }
 }

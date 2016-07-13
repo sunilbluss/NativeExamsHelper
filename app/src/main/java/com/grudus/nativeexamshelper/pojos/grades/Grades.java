@@ -30,6 +30,15 @@ public class Grades {
         return currentGrade.getGrades();
     }
 
+    public static String[] getAllPossibleGradesAsStrings() {
+        String[] grades = new String[currentGrade.getGrades().length];
+        for (int i = 0; i < currentGrade.getGrades().length; i++) {
+            grades[i] = (int) (currentGrade.getGrades()[i] + 0.5)
+                    + (currentGrade.getGrades()[i] % 1 == 0.25 ? "+" : (currentGrade.getGrades()[i] % 1 == 0.75 ? "-" : ""));
+        }
+        return grades;
+    }
+
     public static boolean isInRange(double grade) {
         return currentGrade.isInRange(grade);
     }

@@ -17,6 +17,7 @@ import com.grudus.nativeexamshelper.database.subjects.SubjectsQuery;
 import com.grudus.nativeexamshelper.pojos.Exam;
 import com.grudus.nativeexamshelper.pojos.OldExam;
 import com.grudus.nativeexamshelper.pojos.Subject;
+import com.grudus.nativeexamshelper.pojos.grades.Grade;
 import com.grudus.nativeexamshelper.pojos.grades.Grades;
 
 import java.util.ArrayList;
@@ -188,23 +189,16 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
     }
 
 
-    public long examBecomesOld(Exam exam) {
+    public long examBecomesOld(Exam exam, double grade) {
         Subject subject = findSubjectByTitle(exam.getSubject());
         if (subject == null) return -1L;
+        if (grade == Grade.EMPTY_GRADE) return -1L;
 
-        // TODO: 25.06.16 debug only
-        // set random value as grade
-        if (new Random().nextBoolean()) {
-            ExamsQuery.remove(database, exam);
+        ExamsQuery.remove(database, exam);
 
-            double grade = Grades.getRandomGrade();
-            setSubjectHasGrade(subject, true);
-            return OldExamsQuery.insert(database, new OldExam(subject, exam.getInfo(), grade, exam.getDate()));
-        }
-        // mark exam as ungraded
-        else {
-            return insertExam(exam);
-        }
+        setSubjectHasGrade(subject, true);
+        return OldExamsQuery.insert(database, new OldExam(subject, exam.getInfo(), grade, exam.getDate()));
+
 
     }
 

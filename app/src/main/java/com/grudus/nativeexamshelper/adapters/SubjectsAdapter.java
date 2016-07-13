@@ -153,9 +153,4 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
 
     }
 
-
-    public interface ItemClickListener {
-
-        void itemClicked(View v, int position);
-    }
 }

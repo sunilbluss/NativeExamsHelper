@@ -108,15 +108,6 @@ public class AddingExamFragment extends Fragment {
     }
 
 
-    // move exams to oldExams if necessary
-    private void updateDatabase() {
-        initDatabase();
-        ArrayList<Exam> oldExams = examsDbHelper.selectAllFromExamsWhereDateIsSmallerThan(
-                Calendar.getInstance().getTimeInMillis()
-        );
-        if (oldExams == null) return;
-        for (Exam exam : oldExams) examsDbHelper.examBecomesOld(exam);
-    }
 
     private void populateListView() {
         cursorAdapter = new ExamsCursorAdapter(getActivity(), examsDbHelper.getAllIncomingExamsSortByDate(), 0);

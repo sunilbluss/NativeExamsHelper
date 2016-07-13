@@ -10,15 +10,19 @@ import android.widget.TextView;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
+import com.grudus.nativeexamshelper.pojos.Exam;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class UngradedExamsAdapter extends RecyclerView.Adapter<UngradedExamsAdapter.UngradedExamViewHolder> {
 
     private Cursor cursor;
+    private ItemClickListener listener;
 
-    public UngradedExamsAdapter(Cursor cursor) {
+    public UngradedExamsAdapter(Cursor cursor, ItemClickListener itemClickListener) {
         this.cursor = cursor;
+        this.listener = itemClickListener;
     }
 
     @Override
@@ -47,7 +51,23 @@ public class UngradedExamsAdapter extends RecyclerView.Adapter<UngradedExamsAdap
         return cursor == null ? 0 : cursor.getCount();
     }
 
-    public class UngradedExamViewHolder extends RecyclerView.ViewHolder {
+
+    public void examHasGrade(int position, Cursor newCursor) {
+        notifyItemRemoved(position);
+        cursor.close();
+        cursor = newCursor;
+    }
+
+    public Exam getExamByPosition(int position) {
+        cursor.moveToPosition(position);
+        String subject = cursor.getString(ExamsContract.ExamEntry.SUBJECT_COLUMN_INDEX);
+        String info = cursor.getString(ExamsContract.ExamEntry.INFO_COLUMN_INDEX);
+        Date date = new Date(cursor.getLong(ExamsContract.ExamEntry.DATE_COLUMN_INDEX));
+
+        return new Exam(subject, info, date);
+    }
+
+    public class UngradedExamViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView iconView, textView, infoView;
 
@@ -56,6 +76,12 @@ public class UngradedExamsAdapter extends RecyclerView.Adapter<UngradedExamsAdap
             iconView = (TextView) itemView.findViewById(R.id.list_item_icon_text);
             textView = (TextView) itemView.findViewById(R.id.list_item_adding_exam_subject);
             infoView = (TextView) itemView.findViewById(R.id.list_item_adding_exam_date);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            listener.itemClicked(v, getAdapterPosition());
         }
     }
 }
