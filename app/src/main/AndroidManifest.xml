@@ -19,7 +19,7 @@
         <activity android:name=".activities.SubjectsListActivity" />
         <activity android:name=".activities.AddNewSubjectActivity" />
         <activity android:name=".activities.SingleSubjectExamsActivity" />
-        <activity android:name=".activities.UngradedExamsActivity"></activity>
+        <activity android:name=".activities.UngradedExamsActivity" />
     </application>
 
 </manifest>

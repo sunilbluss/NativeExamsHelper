@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     tools:context="com.grudus.nativeexamshelper.activities.AddNewSubjectActivity"
     android:id="@+id/add_subject_layout"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="?attr/background">
 
     <include layout="@layout/toolbar" />
 
@@ -16,7 +17,8 @@
         <ImageView
             style="@style/ImageIconAddExamTheme"
             android:src="@drawable/info_icon"
-            android:id="@+id/add_subject_icon1"/>
+            android:id="@+id/add_subject_icon1"
+            android:tint="?attr/iconColor"/>
 
         <EditText
             style="@style/UserInputEditTextStyle"

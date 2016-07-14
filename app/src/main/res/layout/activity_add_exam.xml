@@ -7,6 +7,7 @@
     android:orientation="vertical"
     android:focusable="true"
     android:focusableInTouchMode="true"
+    android:background="?attr/background"
     tools:context="com.grudus.nativeexamshelper.activities.AddExamActivity">
 
     <include layout="@layout/toolbar" />
@@ -24,7 +25,8 @@
             android:id="@+id/add_exam_subject_input"
             android:hint="@string/hint_add_exam_subject"
             android:focusable="false"
-            android:layout_toEndOf="@id/add_exam_image_view_1" />
+            android:layout_toEndOf="@id/add_exam_image_view_1"
+            />
 
 
         <ImageView
@@ -80,6 +82,7 @@
             android:text="@string/button_text_add_exam"
             android:layout_below="@id/add_exam_time_input"
             android:layout_alignParentEnd="true"/>
+
 
 
 

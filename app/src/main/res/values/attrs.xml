@@ -8,5 +8,6 @@
         <attr name="backgroundColor" format="reference|color" />
         <attr name="floatingButtonColor" format="reference|color" />
         <attr name="listItemTextColor" format="reference|color" />
+        <attr name="iconColor" format="reference|color" />
     </declare-styleable>
 </resources>

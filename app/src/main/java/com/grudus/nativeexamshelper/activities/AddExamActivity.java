@@ -2,6 +2,7 @@ package com.grudus.nativeexamshelper.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.helpers.CalendarDialogHelper;
@@ -70,7 +72,6 @@ public class AddExamActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
     private void updateDateView() {
@@ -114,6 +115,7 @@ public class AddExamActivity extends AppCompatActivity {
         Date correctDate = getDateWithTime();
 
         String info = extrasInput.getText().toString();
+        if (info.replaceAll("\\s+", "").isEmpty()) info = getString(R.string.sse_default_exam_info);
 
         Exam exam = new Exam(subject, info, correctDate);
 

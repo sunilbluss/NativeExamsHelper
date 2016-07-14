@@ -74,6 +74,7 @@ public class UngradedExamsActivity extends AppCompatActivity implements ItemClic
                 adapter.examHasGrade(position, dbHelper.getExamsOlderThan(System.currentTimeMillis()));
             }
         });
-        dialog.show(getFragmentManager(), "tag");
+
+        dialog.show(getFragmentManager(), getString(R.string.tag_dialog_select_grade));
     }
 }

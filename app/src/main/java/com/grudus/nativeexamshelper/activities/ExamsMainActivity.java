@@ -42,7 +42,7 @@ public class ExamsMainActivity extends AppCompatActivity  {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ThemeHelper.onActivityCreateSetTheme(this);
+//        ThemeHelper.onActivityCreateSetTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_exams);
         ButterKnife.bind(this);
@@ -60,6 +60,8 @@ public class ExamsMainActivity extends AppCompatActivity  {
 
         DateHelper.setDateFormat(getResources().getString(R.string.date_format));
     }
+
+
 
     private void setUpToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

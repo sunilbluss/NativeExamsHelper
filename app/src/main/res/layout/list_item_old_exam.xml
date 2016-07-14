@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:id="@+id/list_item_adding_exam_linear"
     android:orientation="horizontal"
+    android:background="?attr/background"
     android:padding="@dimen/list_item_margin">
 
     <TextView
@@ -19,6 +20,7 @@
         android:id="@+id/list_item_old_exam_subject"
         android:layout_marginStart="@dimen/list_item_text_left_margin"
         android:text="@string/list_item_old_exam_no_grades"
+        android:textColor="?attr/listItemTextColor"
         android:transitionName="@string/transition_list_item_to_toolbar"/>
 
 </LinearLayout>

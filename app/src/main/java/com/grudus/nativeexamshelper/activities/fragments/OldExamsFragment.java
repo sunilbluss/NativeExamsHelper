@@ -46,16 +46,18 @@ public class OldExamsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_old_exams, container, false);
         initViews(view);
-        Log.d(TAG, "FRAGMENT 2 ON CREATE VIEW");
         return view;
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onResume() {
+        super.onResume();
         populateList();
         setOnItemClickListener();
     }
+
+
+
 
 
     private void populateList() {
@@ -90,9 +92,11 @@ public class OldExamsFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "FRAGMENT 2 ON PAUSE");
         cursorAdapter.changeCursor(null);
+        listView.removeHeaderView(header);
     }
+
+
 
     private void setOnItemClickListener() {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

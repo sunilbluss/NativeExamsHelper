@@ -29,6 +29,7 @@
         android:id="@+id/sse_list_item_info"
         android:text="Pochodne"
         android:textSize="@dimen/list_item_main_text_size"
+        android:textColor="?attr/listItemTextColor"
         android:layout_toEndOf="@id/sse_list_item_icon"
         />
 
@@ -37,6 +38,7 @@
         android:layout_height="wrap_content"
         android:textSize="@dimen/list_item_sub_text_size"
         android:text="12/12/2012"
+        android:textColor="?attr/listItemTextColor"
         android:id="@+id/sse_list_item_date"
         android:layout_below="@id/sse_list_item_info"
         android:layout_toEndOf="@id/sse_list_item_icon"/>

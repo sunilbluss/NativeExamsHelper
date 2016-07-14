@@ -12,9 +12,12 @@
         <item name="tabTextNoFocus">#8c9eff</item>
         <item name="android:buttonStyle">@style/AddButtonStyle</item>
         <item name="background">@color/backgroundColor</item>
-        <item name="floatingButtonColor">@color/floating_button</item>
+        <item name="floatingButtonColor">@color/colorAccent</item>
         <item name="listItemTextColor">#616161</item>
         <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>
+        <item name="iconColor">#000000</item>
+        <item name="colorControlNormal">#9e9e9e</item>
+
     </style>
 
     <style name="AppTheme.Dark" parent="AppTheme">
@@ -23,8 +26,21 @@
         <item name="colorAccent">@color/dark_colorAccent</item>
         <item name="tabTextNoFocus">@color/colorHighlight</item>
         <item name="background">@color/dark_backgroundColor</item>
-        <item name="floatingButtonColor">#f00</item>
+        <item name="floatingButtonColor">@color/dark_colorAccent</item>
         <item name="listItemTextColor">@color/textColor</item>
+        <item name="iconColor">#ffffff</item>
+        <item name="colorControlNormal">#9e9e9e</item>
+        <item name="android:timePickerDialogTheme" tools:targetApi="lollipop">@style/TimePickerTheme</item>
+
+    </style>
+
+    <style name="TimePickerTheme" parent="Theme.AppCompat.Dialog">
+        <item name="colorPrimary">@color/dark_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/dark_colorPrimaryDark</item>
+        <item name="colorAccent">@color/dark_colorAccent</item>
+        <item name="android:headerBackground">@color/colorPrimary</item>
+        <item name="android:numbersBackgroundColor" tools:targetApi="lollipop">@color/colorPrimary</item>
+        <item name="android:background">@color/dark_colorPrimary</item>
     </style>
 
     <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.Light">
@@ -47,6 +63,7 @@
         <item name="android:layout_gravity">center</item>
         <item name="android:padding">@dimen/add_xxx_icon_padding</item>
         <item name="android:contentDescription">@null</item>
+        <item name="android:tint">?attr/iconColor</item>
     </style>
 
     <!--todo change, it is ugly-->
@@ -55,7 +72,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">end</item>
         <item name="android:layout_marginTop">@dimen/add_button_margin</item>
-        <item name="android:background">?attr/colorPrimary</item>
+        <item name="android:background">?attr/colorAccent</item>
         <item name="android:textColor">?attr/buttonTextColor</item>
         <item name="android:textSize">@dimen/add_button_text_size</item>
         <item name="android:paddingTop">@dimen/add_button_padding_vertical</item>
@@ -78,6 +95,8 @@
         <item name="android:textSize">@dimen/add_xxx_edit_text_text_size</item>
         <item name="android:gravity">end</item>
         <item name="android:padding">@dimen/add_xxx_edit_text_padding</item>
+        <item name="android:textColorHint">?attr/colorControlNormal</item>
+        <item name="android:textColor">?attr/listItemTextColor</item>
     </style>
 
     <style name="CircularTextView">
@@ -97,6 +116,7 @@
         <item name="android:textSize">@dimen/list_item_main_text_size</item>
         <item name="android:layout_marginStart">@dimen/list_item_text_left_margin</item>
         <item name="android:layout_gravity">center</item>
+        <item name="android:textColor">?attr/listItemTextColor</item>
     </style>
 
     <style name="FloatingActionButtonStyle">

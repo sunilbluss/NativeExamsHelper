@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:id="@+id/list_item_adding_exam_linear"
     android:orientation="horizontal"
+    android:background="?attr/background"
     android:padding="@dimen/list_item_margin">
 
     <TextView

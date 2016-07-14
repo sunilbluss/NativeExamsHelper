@@ -67,10 +67,16 @@
     <string name="sse_info_failed">Niezaliczone: </string>
     <string name="sse_info_percent">Wynik: </string>
 
+    <!--ungraded exams-->
+    <string name="ungraded_toolbar_text">Nieocenione</string>
+
     <!--list items-->
     <string name="list_item_old_exam_no_grades">Nieocenione</string>
 
     <!--transitions -->
     <string name="transition_list_item_to_toolbar">listItemToToolbar</string>
+
+    <!--tags-->
+    <string name="tag_dialog_select_grade">selectGrade</string>
 
 </resources>

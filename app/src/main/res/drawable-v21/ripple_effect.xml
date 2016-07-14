@@ -5,8 +5,8 @@
     <item android:id="@android:id/mask"
         android:drawable="@android:color/white" />
 
-    <item android:drawable="@color/materialcolorpicker__white">
 
+    <item android:drawable="?attr/background">
     </item>
 
 </ripple>

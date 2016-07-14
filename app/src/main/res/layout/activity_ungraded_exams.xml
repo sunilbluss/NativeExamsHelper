@@ -31,7 +31,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
-                app:title="Nieocenione"
+                app:title="@string/ungraded_toolbar_text"
                 />
 
         </android.support.design.widget.CollapsingToolbarLayout>
@@ -42,17 +42,11 @@
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="?attr/background"
         android:id="@+id/recycler_view_ungraded_exams"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     </android.support.v7.widget.RecyclerView>
 
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="HEHE"-->
-        <!--android:textSize="50dp"-->
-        <!--android:textColor="#f00"-->
-        <!--android:transitionName="@string/transition_list_item_to_toolbar"/>-->
 
 </android.support.design.widget.CoordinatorLayout>

@@ -19,10 +19,10 @@
     <color name="niceBlueColor">#4286F5</color>
     
     <!--DARK THEME-->
-    <color name="dark_colorPrimaryDark">#212121</color>
-    <color name="dark_colorPrimary">#424242</color>
-    <color name="dark_backgroundColor">#616161</color>
-   <color name="dark_colorAccent">#f0f</color>
+    <color name="dark_colorPrimaryDark">#101010</color>
+    <color name="dark_colorPrimary">#212121</color>
+    <color name="dark_backgroundColor">#424242</color>
+   <color name="dark_colorAccent">#4CAF50</color>
 
 
 
