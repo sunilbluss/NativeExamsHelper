@@ -67,6 +67,11 @@ public class UngradedExamsAdapter extends RecyclerView.Adapter<UngradedExamsAdap
         return new Exam(subject, info, date);
     }
 
+    public void closeCursor() {
+        cursor.close();
+        cursor = null;  //?
+    }
+
     public class UngradedExamViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView iconView, textView, infoView;

@@ -6,15 +6,16 @@
     android:layout_width="match_parent"
     android:id="@+id/list_item_adding_exam_linear"
     android:orientation="horizontal"
-    android:background="?attr/background"
+    android:background="@drawable/ripple_effect"
+    android:clickable="true"
     android:padding="@dimen/list_item_margin">
 
     <TextView
-        style="@style/CircularTextView"
+        style="@style/CircularTextView" android:text="M"
         android:id="@+id/list_item_icon_text" />
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="match_parent" android:text="Matematyka"
         android:layout_height="wrap_content"
         android:textColor="?attr/listItemTextColor"
         android:textSize="@dimen/list_item_main_text_size"
@@ -23,7 +24,7 @@
         android:layout_marginStart="@dimen/list_item_text_left_margin" />
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="match_parent" android:text="12/12/2012"
         android:layout_height="wrap_content"
         android:textColor="?attr/listItemTextColor"
         android:textSize="@dimen/list_item_sub_text_size"
@@ -31,6 +32,66 @@
         android:layout_below="@id/list_item_adding_exam_subject"
         android:layout_toEndOf="@id/list_item_icon_text"
         android:layout_marginStart="@dimen/list_item_text_left_margin" />
+
+
+    <!--todo ło panie, kto to panu tak spierdolił-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/list_item_adding_exam_date"
+        android:visibility="gone"
+        android:id="@+id/exams_expanded_list_item_layout"
+        android:padding="10dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/list_item_expanded_first_layout"
+            android:orientation="horizontal"
+            android:paddingBottom="5dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/info_icon"
+                android:layout_gravity="center" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_gravity="center"
+                android:id="@+id/list_item_expanded_info"
+                android:text="Pochodne"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/list_item_expanded_first_layout"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/time_icon"
+                android:layout_gravity="center" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/list_item_expanded_time"
+                android:layout_marginStart="10dp"
+                android:layout_gravity="center"
+                android:text="13:15"/>
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
 
 
 

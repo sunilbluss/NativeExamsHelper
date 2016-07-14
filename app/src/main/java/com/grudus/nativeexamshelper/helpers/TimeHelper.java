@@ -23,4 +23,8 @@ public class TimeHelper {
         return getFormattedTime(calendar.getTime());
     }
 
+    public static String getFormattedTime(long millis) {
+        return getFormattedTime(new Date(millis));
+    }
+
 }

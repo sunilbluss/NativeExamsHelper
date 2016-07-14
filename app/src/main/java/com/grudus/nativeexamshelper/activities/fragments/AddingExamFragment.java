@@ -5,23 +5,21 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.activities.AddExamActivity;
+import com.grudus.nativeexamshelper.adapters.ExamsAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
 import com.grudus.nativeexamshelper.adapters.ExamsCursorAdapter;
-import com.grudus.nativeexamshelper.pojos.Exam;
-
-import java.util.ArrayList;
-import java.util.Calendar;
 
 
 public class AddingExamFragment extends Fragment {
@@ -29,10 +27,10 @@ public class AddingExamFragment extends Fragment {
     private final String TAG = "@@@" + this.getClass().getSimpleName();
 
     private FloatingActionButton floatingActionButton;
-    private ListView listView;
+    private RecyclerView recyclerView;
 
     private ExamsDbHelper examsDbHelper;
-    private ExamsCursorAdapter cursorAdapter;
+    private ExamsAdapter adapter;
 
 
 
@@ -45,7 +43,7 @@ public class AddingExamFragment extends Fragment {
         if (examsDbHelper == null) return;
         examsDbHelper.openDB();
         examsDbHelper.cleanAllRecords(ExamsContract.ExamEntry.TABLE_NAME);
-        cursorAdapter.changeCursor(examsDbHelper.getAllIncomingExamsSortByDate());
+        adapter.changeCursor(null);
         examsDbHelper.closeDB();
     }
 
@@ -58,28 +56,27 @@ public class AddingExamFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_adding_exam, container, false);
 //
         floatingActionButton = (FloatingActionButton) view.findViewById(R.id.floating_button_add_exam);
-        listView = (ListView) view.findViewById(R.id.list_view_adding_exam_content);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_adding_exam_content);
 
         setListeners();
         return view;
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        initDatabase();
-//        updateDatabase();
-        populateListView();
-        closeDatabase();
-    }
 
     @Override
     public void onPause() {
         super.onPause();
         closeDatabase();
-        cursorAdapter.changeCursor(null);
+        adapter.changeCursor(null);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        initDatabase();
+        populateRecyclerView();
+        closeDatabase();
+    }
 
     private void setListeners() {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -91,12 +88,6 @@ public class AddingExamFragment extends Fragment {
         });
 
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), "Klikles w " + position, Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
 
@@ -109,9 +100,10 @@ public class AddingExamFragment extends Fragment {
 
 
 
-    private void populateListView() {
-        cursorAdapter = new ExamsCursorAdapter(getActivity(), examsDbHelper.getAllIncomingExamsSortByDate(), 0);
-        listView.setAdapter(cursorAdapter);
+    private void populateRecyclerView() {
+        adapter = new ExamsAdapter(getActivity(), examsDbHelper.getAllIncomingExamsSortByDate());
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
     private void closeDatabase() {
