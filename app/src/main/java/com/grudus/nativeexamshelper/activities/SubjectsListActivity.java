@@ -17,6 +17,7 @@ import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.adapters.ItemClickListener;
 import com.grudus.nativeexamshelper.adapters.SubjectsAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
+import com.grudus.nativeexamshelper.helpers.ThemeHelper;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
 import butterknife.BindView;
@@ -48,6 +49,7 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ThemeHelper.onActivityCreateSetTheme(this);
         super.onCreate(savedInstanceState);
         Log.d(TAG, "ON CREATE SLACTIVITY");
         setContentView(R.layout.activity_subjects_list);

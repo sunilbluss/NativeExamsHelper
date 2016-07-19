@@ -1,23 +1,22 @@
 package com.grudus.nativeexamshelper.adapters;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.support.v4.graphics.ColorUtils;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
+import com.grudus.nativeexamshelper.helpers.AnimationHelper;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.helpers.TimeHelper;
 import com.grudus.nativeexamshelper.pojos.Subject;
@@ -26,13 +25,20 @@ import com.grudus.nativeexamshelper.pojos.Subject;
 public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHolder> {
 
     private Cursor cursor;
+
+    private static final int ANIMATION_DURATION = 400;
+    private static final float SCALE_TO_RESIZE = 1.4f;
+
     private final ExamsDbHelper dbHelper;
+
+    static {
+        AnimationHelper.setDuration(ANIMATION_DURATION);
+    }
 
     public ExamsAdapter(Context context, Cursor cursor) {
         this.cursor = cursor;
         this.dbHelper = ExamsDbHelper.getInstance(context);
     }
-
 
     @Override
     public ExamsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -75,19 +81,26 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
         return cursor == null ? 0 : cursor.getCount();
     }
 
+
+
     public void changeCursor(Cursor _new) {
         cursor.close();
         cursor = _new;
         notifyDataSetChanged();
     }
 
+    public void closeDatabase() {
+        cursor.close();
+        dbHelper.closeDB();
+    }
 
-
-    public class ExamsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
+    public class ExamsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         private TextView iconView, dateView, subjectView;
         private boolean expanded;
+        private boolean selected;
+
         private RelativeLayout expandedLayout;
+
 
         public ExamsViewHolder(View itemView) {
             super(itemView);
@@ -97,7 +110,9 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
             expandedLayout = (RelativeLayout) itemView.findViewById(R.id.exams_expanded_list_item_layout);
 
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
             expanded = false;
+            selected = false;
 
         }
 
@@ -105,29 +120,41 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
         public void onClick(View v) {
             if (!expanded) {
                 expanded = true;
-                expandedLayout.setAlpha(0f);
-                expandedLayout.setVisibility(View.VISIBLE);
-                expandedLayout.animate().setDuration(500).alpha(1f).setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-
-                    }
-                }).start();
+                AnimationHelper.expand(expandedLayout);
+                startIconResizeAnimation(SCALE_TO_RESIZE);
+                startInfoAlphaAnimation(1f);
             }
             else {
                 expanded = false;
-                expandedLayout.animate().setDuration(500).alpha(0f).setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        expandedLayout.setVisibility(View.GONE);
-                    }
-                }).start();
+                AnimationHelper.collapse(expandedLayout);
+                startIconResizeAnimation(1f);
+                startInfoAlphaAnimation(0f);
 
             }
 
+        }
 
+        private void startIconResizeAnimation(float scale) {
+            iconView.animate().setDuration(ANIMATION_DURATION).scaleY(scale).scaleX(scale).start();
+        }
+
+        private void startInfoAlphaAnimation(float alpha) {
+            expandedLayout.animate().setDuration(ANIMATION_DURATION).alpha(alpha).start();
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            if (!selected) {
+                itemView.setBackgroundColor(0xffeeeeee);
+                selected = true;
+                iconView.animate().rotationY(360).setDuration(ANIMATION_DURATION).start();
+            }
+            else {
+                selected = false;
+                itemView.setBackgroundColor(0xffffffff);
+                iconView.animate().rotationY(0).setDuration(ANIMATION_DURATION).start();
+            }
+            return true;
         }
     }
 

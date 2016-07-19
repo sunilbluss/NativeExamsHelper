@@ -13,6 +13,7 @@ import com.grudus.nativeexamshelper.adapters.ItemClickListener;
 import com.grudus.nativeexamshelper.adapters.UngradedExamsAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.dialogs.SelectGradeDialog;
+import com.grudus.nativeexamshelper.helpers.ThemeHelper;
 import com.grudus.nativeexamshelper.pojos.Exam;
 
 import butterknife.BindView;
@@ -29,6 +30,7 @@ public class UngradedExamsActivity extends AppCompatActivity implements ItemClic
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ThemeHelper.onActivityCreateSetTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ungraded_exams);
         ButterKnife.bind(this);

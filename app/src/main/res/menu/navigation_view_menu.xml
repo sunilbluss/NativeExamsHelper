@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/menu_item_settings"
+        android:title="@string/toolbar_settings"
+        android:icon="@drawable/settings_icon" />
+
+    <item android:id="@+id/menu_item_statistics"
+        android:title="@string/toolbar_statistics"
+        android:icon="@drawable/statistics" />
+
+    <item android:id="@+id/menu_item_change_theme"
+        android:title="@string/toolbar_change_theme"
+        android:icon="@drawable/change_theme_icon"/>
+
+</menu>

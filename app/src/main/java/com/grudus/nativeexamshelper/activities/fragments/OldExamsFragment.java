@@ -4,12 +4,9 @@ package com.grudus.nativeexamshelper.activities.fragments;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
-import android.transition.Fade;
-import android.transition.TransitionManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +18,8 @@ import android.widget.ListView;
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.activities.SingleSubjectExamsActivity;
 import com.grudus.nativeexamshelper.activities.UngradedExamsActivity;
+import com.grudus.nativeexamshelper.adapters.ItemClickListener;
+import com.grudus.nativeexamshelper.adapters.OldExamsAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
 import com.grudus.nativeexamshelper.adapters.OldExamsCursorAdapter;
@@ -33,9 +32,8 @@ public class OldExamsFragment extends Fragment {
 
     public final String TAG = "@@@" + this.getClass().getSimpleName();
 
-    private ListView listView;
-    private CursorAdapter cursorAdapter;
-    private View header;
+    private RecyclerView recyclerView;
+    private OldExamsAdapter adapter;
 
 
     public OldExamsFragment() {}
@@ -65,19 +63,16 @@ public class OldExamsFragment extends Fragment {
         db.openDB();
 
 
-        cursorAdapter = new OldExamsCursorAdapter(getActivity(), db.getSubjectsWithGrade(), 0);
-        setHeader();
-        listView.setAdapter(cursorAdapter);
+        adapter = new OldExamsAdapter(getActivity(), db.getSubjectsWithGrade());
+
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         db.closeDB();
     }
 
-    private void setHeader() {
-        header = getLayoutInflater(null).inflate(R.layout.list_item_old_exam, null);
-        listView.addHeaderView(header);
-    }
 
     private void initViews(View view) {
-        listView = (ListView) view.findViewById(R.id.list_view_old_exams);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_old_exams);
     }
 
     public void removeAll() {
@@ -85,53 +80,34 @@ public class OldExamsFragment extends Fragment {
         db.openDB();
         db.cleanAllRecords(ExamsContract.OldExamEntry.TABLE_NAME);
         db.resetSubjectGrades();
-        cursorAdapter.changeCursor(null);
+        adapter.closeDatabase();
         db.closeDB();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        cursorAdapter.changeCursor(null);
-        listView.removeHeaderView(header);
+        adapter.closeDatabase();
     }
 
 
 
     private void setOnItemClickListener() {
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        adapter.setListener(new ItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Cursor c = (Cursor) cursorAdapter.getItem(position - listView.getHeaderViewsCount());
-                String subjectTitle = c.getString(ExamsContract.OldExamEntry.SUBJECT_COLUMN_INDEX);
-                ExamsDbHelper db = ExamsDbHelper.getInstance(getContext());
+            public void itemClicked(View v, int position) {
+                if (position == OldExamsAdapter.HEADER_POSITION)
+                    startActivity(new Intent(getContext(), UngradedExamsActivity.class));
 
-                db.openDB();
-                Subject subject = db.findSubjectByTitle(subjectTitle);
-                db.closeDB();
-
-                if (subject == null) {
-                    Log.e(TAG, "onItemClick: nie ma subjecta", new NullPointerException());
-                    return;
+                else {
+                    Subject subject = adapter.getSubjectAtPosition(position);
+                    Intent intent = new Intent(getContext(), SingleSubjectExamsActivity.class);
+                    intent.putExtra(SingleSubjectExamsActivity.INTENT_SUBJECT_TAG, subject);
+                    startActivity(intent);
                 }
-
-                Intent intent = new Intent(getContext(), SingleSubjectExamsActivity.class);
-                intent.putExtra(SingleSubjectExamsActivity.INTENT_SUBJECT_TAG, subject);
-                startActivity(intent);
-                c.close();
             }
         });
 
-        // TODO: 11.07.16 add animations
-        header.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                ActivityOptionsCompat anim = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
-//                        header, getString(R.string.transition_list_item_to_toolbar));
-                startActivity(new Intent(getActivity(), UngradedExamsActivity.class)
-//                        , anim.toBundle()
-                );
-            }
-        });
     }
 }

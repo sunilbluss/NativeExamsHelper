@@ -10,6 +10,10 @@
     <string name="toolbar_edit_subjects">Edytuj przedmioty</string>
     <string name="toolbar_change_theme">Zmień motyw</string>
 
+    <!--drawer-->
+    <string name="drawer_open">wtf</string>
+    <string name="drawer_close">lol</string>
+
     <!--Tabs -->
     <string-array name="tab_titles">
         <item>Nadchodzące</item>

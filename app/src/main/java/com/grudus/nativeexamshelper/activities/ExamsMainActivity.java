@@ -1,17 +1,26 @@
 package com.grudus.nativeexamshelper.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.TransitionInflater;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
@@ -29,7 +38,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.internal.Utils;
 
-public class ExamsMainActivity extends AppCompatActivity  {
+public class ExamsMainActivity extends AppCompatActivity{
 
     public static final String TAG = "@@@ MAIN @@@";
 
@@ -37,12 +46,21 @@ public class ExamsMainActivity extends AppCompatActivity  {
     @BindView(R.id.view_pager) ViewPager viewPager;
     @BindView(R.id.tabs) SlidingTabLayout slidingTabLayout;
 
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawerLayout;
+
+    @BindView(R.id.toolbar) Toolbar toolbar;
+
+    @BindView(R.id.nvView)
+    NavigationView navigationView;
+
     private ExamsDbHelper examsDbHelper;
     private ViewPagerAdapter viewPagerAdapter;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        ThemeHelper.onActivityCreateSetTheme(this);
+        ThemeHelper.onActivityCreateSetTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_exams);
         ButterKnife.bind(this);
@@ -51,21 +69,25 @@ public class ExamsMainActivity extends AppCompatActivity  {
 //            getWindow().setSharedElementExitTransition(TransitionInflater.from(this).inflateTransition(R.transition.list_item_to_toolbar));
 //        }
 
+        viewPagerInit();
         setUpToolbar();
 
-        viewPagerInit();
-
-        Log.d(TAG, "onCreate: System " + System.currentTimeMillis() + ", calendar: " +
-                Calendar.getInstance().getTime().getTime());
-
         DateHelper.setDateFormat(getResources().getString(R.string.date_format));
-    }
+
+        setNavigationViewHeaderSize();
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                if (item.getItemId() == R.id.menu_item_change_theme) {
+                    ThemeHelper.changeToTheme(ExamsMainActivity.this, ThemeHelper.nextTheme());
+                }
+                return true;
+            }
+        });
 
 
 
-    private void setUpToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
     }
 
@@ -85,6 +107,44 @@ public class ExamsMainActivity extends AppCompatActivity  {
         });
 
         slidingTabLayout.setViewPager(viewPager);
+    }
+
+    private void setUpToolbar() {
+        setSupportActionBar(toolbar);
+
+        actionBarDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                drawerLayout,
+                toolbar,
+                R.string.drawer_open,
+                R.string.drawer_close
+        );
+
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.hamburger_icon);
+    }
+
+
+
+    private void setNavigationViewHeaderSize() {
+        final View header = navigationView.getHeaderView(0);
+
+        header.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                header.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                int width = header.getWidth();
+                int height = header.getHeight();
+
+                ViewGroup.LayoutParams params = header.getLayoutParams();
+                params.width = width;
+                params.height = (int) (width * (9f/16f));
+
+                header.setLayoutParams(params);
+            }
+        });
     }
 
 
@@ -129,9 +189,7 @@ public class ExamsMainActivity extends AppCompatActivity  {
             startActivity(intent);
         }
 
-        if (item.getItemId() == R.id.menu_item_change_theme) {
-            ThemeHelper.changeToTheme(this, ThemeHelper.nextTheme());
-        }
+
 
         else Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
 
@@ -145,4 +203,5 @@ public class ExamsMainActivity extends AppCompatActivity  {
             examsDbHelper.closeDB();
 
     }
+
 }

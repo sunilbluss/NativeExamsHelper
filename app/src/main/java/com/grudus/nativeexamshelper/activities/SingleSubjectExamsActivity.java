@@ -18,6 +18,7 @@ import com.grudus.nativeexamshelper.database.exams.ExamsContract;
 import com.grudus.nativeexamshelper.helpers.ColorHelper;
 import com.grudus.nativeexamshelper.helpers.GradeStatisticsCalculator;
 import com.grudus.nativeexamshelper.helpers.StatisticsTextFormatter;
+import com.grudus.nativeexamshelper.helpers.ThemeHelper;
 import com.grudus.nativeexamshelper.pojos.OldExam;
 import com.grudus.nativeexamshelper.pojos.Subject;
 import com.grudus.nativeexamshelper.pojos.grades.Grades;
@@ -45,6 +46,7 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ThemeHelper.onActivityCreateSetTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_subject_exams);
         ButterKnife.bind(this);

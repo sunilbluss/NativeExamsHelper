@@ -6,6 +6,7 @@
     tools:context="com.grudus.nativeexamshelper.activities.AddNewSubjectActivity"
     android:id="@+id/add_subject_layout"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     android:background="?attr/background">
 
     <include layout="@layout/toolbar" />

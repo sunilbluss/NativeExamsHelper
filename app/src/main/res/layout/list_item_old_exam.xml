@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:id="@+id/list_item_adding_exam_linear"
     android:orientation="horizontal"
-    android:background="?attr/background"
+    android:background="@drawable/ripple_effect"
+    android:clickable="true"
     android:padding="@dimen/list_item_margin">
 
     <TextView
@@ -20,7 +22,6 @@
         android:id="@+id/list_item_old_exam_subject"
         android:layout_marginStart="@dimen/list_item_text_left_margin"
         android:text="@string/list_item_old_exam_no_grades"
-        android:textColor="?attr/listItemTextColor"
-        android:transitionName="@string/transition_list_item_to_toolbar"/>
+        android:textColor="?attr/listItemTextColor" />
 
 </LinearLayout>

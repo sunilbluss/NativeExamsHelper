@@ -2,14 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/menu_item_settings"
-        android:title="@string/toolbar_settings"
-        app:showAsAction="never"/>
 
-    <item android:id="@+id/menu_item_statistics"
-        android:title="@string/toolbar_statistics"
-        android:icon="@drawable/statistics"
-        app:showAsAction="ifRoom" />
 
     <item android:id="@+id/menu_item_deleteAll"
         android:title="@string/toolbar_delete_all"
@@ -23,8 +16,7 @@
         android:title="@string/toolbar_edit_subjects"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/menu_item_change_theme"
-        android:title="@string/toolbar_change_theme" />
+
 
 
 </menu>

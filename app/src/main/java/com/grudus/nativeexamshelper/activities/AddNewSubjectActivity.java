@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.helpers.ExceptionsHelper;
+import com.grudus.nativeexamshelper.helpers.ThemeHelper;
 import com.grudus.nativeexamshelper.pojos.Subject;
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker;
 
@@ -52,6 +53,7 @@ public class AddNewSubjectActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ThemeHelper.onActivityCreateSetTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_new_subject);
         ButterKnife.bind(this);
