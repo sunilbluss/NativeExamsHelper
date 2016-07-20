@@ -55,11 +55,15 @@ public class AddingExamFragment extends Fragment {
         Log.d(TAG, "onCreateView: ");
         View view = inflater.inflate(R.layout.fragment_adding_exam, container, false);
 //
+        initViews(view);
+        setListeners();
+
+        return view;
+    }
+
+    private void initViews(View view) {
         floatingActionButton = (FloatingActionButton) view.findViewById(R.id.floating_button_add_exam);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_adding_exam_content);
-
-        setListeners();
-        return view;
     }
 
 
@@ -104,6 +108,7 @@ public class AddingExamFragment extends Fragment {
         adapter = new ExamsAdapter(getActivity(), examsDbHelper.getAllIncomingExamsSortByDate());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
     }
 
     private void closeDatabase() {

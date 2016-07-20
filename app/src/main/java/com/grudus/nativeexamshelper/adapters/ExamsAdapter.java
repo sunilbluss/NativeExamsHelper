@@ -1,14 +1,19 @@
 package com.grudus.nativeexamshelper.adapters;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,6 +21,7 @@ import android.widget.Toast;
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
+import com.grudus.nativeexamshelper.database.subjects.SubjectsContract;
 import com.grudus.nativeexamshelper.helpers.AnimationHelper;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.helpers.TimeHelper;
@@ -30,6 +36,7 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
     private static final float SCALE_TO_RESIZE = 1.4f;
 
     private final ExamsDbHelper dbHelper;
+    private final Context context;
 
     static {
         AnimationHelper.setDuration(ANIMATION_DURATION);
@@ -38,6 +45,7 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
     public ExamsAdapter(Context context, Cursor cursor) {
         this.cursor = cursor;
         this.dbHelper = ExamsDbHelper.getInstance(context);
+        this.context = context;
     }
 
     @Override
@@ -81,12 +89,23 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
         return cursor == null ? 0 : cursor.getCount();
     }
 
+    private void deleteRowAtPosition(int adapterPosition) {
+        ExamsDbHelper db = ExamsDbHelper.getInstance(context);
+        cursor.moveToPosition(adapterPosition);
+        db.openDB();
+        db.removeExam(cursor.getLong(ExamsContract.ExamEntry.DATE_COLUMN_INDEX));
+        changeCursor(db.getAllIncomingExamsSortByDate());
+
+        db.closeDB();
+        cursor.moveToFirst();
+        notifyItemRemoved(adapterPosition);
+    }
+
 
 
     public void changeCursor(Cursor _new) {
         cursor.close();
         cursor = _new;
-        notifyDataSetChanged();
     }
 
     public void closeDatabase() {
@@ -96,6 +115,7 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
 
     public class ExamsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         private TextView iconView, dateView, subjectView;
+        private ImageView binIcon;
         private boolean expanded;
         private boolean selected;
 
@@ -104,6 +124,7 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
 
         public ExamsViewHolder(View itemView) {
             super(itemView);
+            binIcon = (ImageView) itemView.findViewById(R.id.list_item_image_under_icon);
             subjectView = (TextView) itemView.findViewById(R.id.list_item_adding_exam_subject);
             dateView = (TextView) itemView.findViewById(R.id.list_item_adding_exam_date);
             iconView = (TextView) itemView.findViewById(R.id.list_item_icon_text);
@@ -111,6 +132,14 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
+
+            binIcon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    deleteRowAtPosition(getAdapterPosition());
+                }
+            });
+
             expanded = false;
             selected = false;
 
@@ -122,19 +151,18 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
                 expanded = true;
                 AnimationHelper.expand(expandedLayout);
                 startIconResizeAnimation(SCALE_TO_RESIZE);
-                startInfoAlphaAnimation(1f);
             }
             else {
                 expanded = false;
                 AnimationHelper.collapse(expandedLayout);
                 startIconResizeAnimation(1f);
-                startInfoAlphaAnimation(0f);
 
             }
 
         }
 
         private void startIconResizeAnimation(float scale) {
+            if (selected) return;
             iconView.animate().setDuration(ANIMATION_DURATION).scaleY(scale).scaleX(scale).start();
         }
 
@@ -144,18 +172,49 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
 
         @Override
         public boolean onLongClick(View v) {
+            Log.d("@@@@", "onLongClick: selected = " + selected);
+            if (expanded) return false;
             if (!selected) {
                 itemView.setBackgroundColor(0xffeeeeee);
                 selected = true;
-                iconView.animate().rotationY(360).setDuration(ANIMATION_DURATION).start();
+                iconView.animate()
+                        .rotationY(90)
+                        .setDuration(ANIMATION_DURATION/2)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                iconView.setVisibility(View.INVISIBLE);
+                                binIcon.setRotationY(90);
+                                binIcon.setVisibility(View.VISIBLE);
+                                binIcon.animate().setDuration(ANIMATION_DURATION/2).rotationY(180).setListener(null).start();
+
+                            }
+                        })
+                        .start();
             }
             else {
                 selected = false;
                 itemView.setBackgroundColor(0xffffffff);
-                iconView.animate().rotationY(0).setDuration(ANIMATION_DURATION).start();
+                binIcon.animate()
+                        .rotationY(90)
+                        .setDuration(ANIMATION_DURATION/2)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                binIcon.setVisibility(View.INVISIBLE);
+                                iconView.setRotationY(90);
+                                iconView.setVisibility(View.VISIBLE);
+                                iconView.animate().setDuration(ANIMATION_DURATION/2).rotationY(0).setListener(null).start();
+                            }
+                        })
+                        .start();
             }
             return true;
         }
+
+
     }
 
 }

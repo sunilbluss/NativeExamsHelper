@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="@dimen/list_item_margin"
-        android:background="#d50000"
+        android:background="@color/deleteColor"
         android:id="@+id/invisible">
 
         <ImageView

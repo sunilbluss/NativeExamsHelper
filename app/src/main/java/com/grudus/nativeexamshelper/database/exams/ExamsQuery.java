@@ -84,11 +84,14 @@ public class ExamsQuery {
         return db.insert(ExamsContract.ExamEntry.TABLE_NAME, null, contentValues);
     }
 
-    public static boolean remove(SQLiteDatabase db, Exam exam) {
-        final String WHERE = ExamsContract.ExamEntry.SUBJECT_COLUMN + "=? AND "
-                + ExamsContract.ExamEntry.DATE_COLUMN + "=? ";
+    public static boolean remove(SQLiteDatabase db, long timeInMillis) {
+        final String WHERE = ExamsContract.ExamEntry.DATE_COLUMN + " = ?";
         return db.delete(ExamsContract.ExamEntry.TABLE_NAME,
                 WHERE,
-                new String[] {exam.getSubject(), String.valueOf(DateHelper.getLongFromDate(exam.getDate()))}) > 0;
+                new String[] {timeInMillis + ""}) > 0;
+    }
+
+    public static boolean remove(SQLiteDatabase db, Exam exam) {
+        return remove(db, DateHelper.getLongFromDate(exam.getDate()));
     }
 }

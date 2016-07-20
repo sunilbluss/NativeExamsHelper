@@ -42,6 +42,7 @@ public class OldExamsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d("@@@", "FRAGMENT2: onCreateView");
         View view = inflater.inflate(R.layout.fragment_old_exams, container, false);
         initViews(view);
         return view;
@@ -49,6 +50,7 @@ public class OldExamsFragment extends Fragment {
 
     @Override
     public void onResume() {
+        Log.d("@@@", "FRAGMENT2: onResume");
         super.onResume();
         populateList();
         setOnItemClickListener();

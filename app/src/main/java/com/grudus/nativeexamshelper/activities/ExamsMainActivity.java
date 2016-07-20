@@ -136,7 +136,6 @@ public class ExamsMainActivity extends AppCompatActivity{
             public void onGlobalLayout() {
                 header.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 int width = header.getWidth();
-                int height = header.getHeight();
 
                 ViewGroup.LayoutParams params = header.getLayoutParams();
                 params.width = width;

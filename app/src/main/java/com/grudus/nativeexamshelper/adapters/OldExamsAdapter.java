@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
 import com.grudus.nativeexamshelper.database.subjects.SubjectsContract;
 import com.grudus.nativeexamshelper.pojos.Subject;
+
+import java.util.Arrays;
 
 public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExamsViewHolder> {
 
@@ -28,6 +31,7 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
     public OldExamsAdapter(Context context, Cursor cursor) {
         this.dbHelper = ExamsDbHelper.getInstance(context);
         this.cursor = cursor;
+        Log.d("@@@", "OldExamsAdapter: konstruktor " + Arrays.toString(cursor.getColumnNames()) + ", " + cursor.getCount());
     }
 
     public void setListener(ItemClickListener listener) {
@@ -39,13 +43,16 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
         dbHelper.openDBReadOnly();
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_old_exam, parent, false);
+        Log.d("@@@", "OldExamsAdapter: onCreateViewHolder");
         return new OldExamsViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(OldExamsViewHolder holder, int position) {
+        Log.d("@@@", "OldExamsAdapter: onBind " + position);
         if (position == HEADER_POSITION)
             return; //header - already defined in xml
+        position = position - 1; //because of header
 
 
         cursor.moveToPosition(position);
@@ -66,8 +73,8 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
         holder.subjectView.setText(subjectTitle);
     }
 
-    public Subject getSubjectAtPosition(int position) {
-        cursor.moveToPosition(position);
+    public Subject getSubjectAtPosition(int adapterPosition) {
+        cursor.moveToPosition(adapterPosition - 1);
         String subjectTitle = cursor.getString(SubjectsContract.SubjectEntry.TITLE_COLUMN_INDEX);
         String color = cursor.getString(SubjectsContract.SubjectEntry.COLOR_COLUMN_INDEX);
 
@@ -86,7 +93,9 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
 
     @Override
     public int getItemCount() {
-        return cursor == null ? 0 : cursor.getCount();
+        return cursor == null
+                ? 0
+                : cursor.getCount() + 1 ;  //for header
     }
 
     public class OldExamsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

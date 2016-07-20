@@ -25,7 +25,7 @@
    <color name="dark_colorAccent">#4CAF50</color>
 
 
-
+    <color name="deleteColor">#d50000</color>
 
 
     <string-array name="defaultSubjectsColors">

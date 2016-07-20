@@ -11,8 +11,19 @@
     android:padding="@dimen/list_item_margin">
 
     <TextView
-        style="@style/CircularTextView" 
+        style="@style/CircularTextView"
         android:id="@+id/list_item_icon_text" />
+
+    <ImageView
+        android:layout_width="@dimen/list_item_radius"
+        android:layout_height="@dimen/list_item_radius"
+        android:background="@drawable/circular_bin_icon"
+        android:id="@+id/list_item_image_under_icon"
+        android:src="@drawable/bin_icon"
+        android:padding="5dp"
+        android:tint="#ffffff"
+        android:visibility="gone"/>
+
 
     <TextView
         android:layout_width="match_parent" 

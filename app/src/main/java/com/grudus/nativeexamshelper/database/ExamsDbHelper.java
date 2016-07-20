@@ -203,4 +203,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
     }
 
 
+    public void removeExam(long timeInMillis) {
+        ExamsQuery.remove(database, timeInMillis);
+    }
 }
