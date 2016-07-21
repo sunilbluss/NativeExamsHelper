@@ -23,6 +23,12 @@ import com.grudus.nativeexamshelper.pojos.grades.Grades;
 import java.util.ArrayList;
 import java.util.Random;
 
+import rx.Observable;
+import rx.Scheduler;
+import rx.Subscriber;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
+
 public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public static final String TAG = "@@@ Main DB HELPER @@@";
@@ -198,8 +204,13 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
         setSubjectHasGrade(subject, true);
         return OldExamsQuery.insert(database, new OldExam(subject, exam.getInfo(), grade, exam.getDate()));
+    }
 
-
+    public Observable<Cursor> getAllIncomingExams() {
+        return Observable.create(subscriber -> {
+            subscriber.onNext(getAllIncomingExamsSortByDate());
+            subscriber.onCompleted();
+        });
     }
 
 
