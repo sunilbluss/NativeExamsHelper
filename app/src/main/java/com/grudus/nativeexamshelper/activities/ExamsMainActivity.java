@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
+import com.grudus.nativeexamshelper.MyApplication;
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.activities.fragments.AddingExamFragment;
 import com.grudus.nativeexamshelper.activities.fragments.OldExamsFragment;
@@ -31,6 +32,7 @@ import com.grudus.nativeexamshelper.activities.sliding.SlidingTabLayout;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.helpers.ThemeHelper;
+import com.squareup.leakcanary.RefWatcher;
 
 import java.util.Calendar;
 
@@ -87,8 +89,14 @@ public class ExamsMainActivity extends AppCompatActivity{
         });
 
 
+    }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        RefWatcher ref = MyApplication.getRefWatcher(this);
+        ref.watch(this);
+        ref.watch(viewPager);
     }
 
     private void viewPagerInit() {
@@ -167,8 +175,8 @@ public class ExamsMainActivity extends AppCompatActivity{
             Toast.makeText(this, "Usunieto wszystko", Toast.LENGTH_SHORT).show();
             initDatabase();
 
-            ((AddingExamFragment) viewPagerAdapter.getFragment(0)).removeAll();
-            ((OldExamsFragment) viewPagerAdapter.getFragment(1)).removeAll();
+//            ((AddingExamFragment) viewPagerAdapter.getFragment(0)).removeAll();
+//            ((OldExamsFragment) viewPagerAdapter.getFragment(1)).removeAll();
             examsDbHelper.closeDB();
 
             return true;

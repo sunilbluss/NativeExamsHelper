@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,6 +27,9 @@ import com.grudus.nativeexamshelper.helpers.AnimationHelper;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.helpers.TimeHelper;
 import com.grudus.nativeexamshelper.pojos.Subject;
+
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 
 public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHolder> {
@@ -89,18 +93,20 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
         return cursor == null ? 0 : cursor.getCount();
     }
 
-    private void deleteRowAtPosition(int adapterPosition) {
-        ExamsDbHelper db = ExamsDbHelper.getInstance(context);
+    private void deleteRowAtPosition(final int adapterPosition) {
         cursor.moveToPosition(adapterPosition);
-        db.openDB();
-        db.removeExam(cursor.getLong(ExamsContract.ExamEntry.DATE_COLUMN_INDEX));
-        changeCursor(db.getAllIncomingExamsSortByDate());
+        dbHelper.openDB();
+        dbHelper.removeExam(cursor.getLong(ExamsContract.ExamEntry.DATE_COLUMN_INDEX));
 
-        db.closeDB();
-        cursor.moveToFirst();
-        notifyItemRemoved(adapterPosition);
+        dbHelper.getAllIncomingExamsSortByDate()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(cursor -> {
+                    changeCursor(cursor);
+                    notifyItemRemoved(adapterPosition);
+                }, error -> Log.e("@@@" + this.getClass().getSimpleName(), "populateRecyclerView: ERRRRRRR", error));
+
     }
-
 
 
     public void changeCursor(Cursor _new) {

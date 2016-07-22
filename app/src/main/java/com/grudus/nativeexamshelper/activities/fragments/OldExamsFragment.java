@@ -25,6 +25,10 @@ import com.grudus.nativeexamshelper.database.exams.ExamsContract;
 import com.grudus.nativeexamshelper.adapters.OldExamsCursorAdapter;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -34,7 +38,9 @@ public class OldExamsFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private OldExamsAdapter adapter;
+    private ExamsDbHelper examsDbHelper;
 
+    private Subscription subscription;
 
     public OldExamsFragment() {}
 
@@ -42,74 +48,65 @@ public class OldExamsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d("@@@", "FRAGMENT2: onCreateView");
         View view = inflater.inflate(R.layout.fragment_old_exams, container, false);
         initViews(view);
         return view;
     }
 
-    @Override
-    public void onResume() {
-        Log.d("@@@", "FRAGMENT2: onResume");
-        super.onResume();
-        populateList();
-        setOnItemClickListener();
-    }
-
-
-
-
-
-    private void populateList() {
-        ExamsDbHelper db = ExamsDbHelper.getInstance(getContext());
-        db.openDB();
-
-
-        adapter = new OldExamsAdapter(getActivity(), db.getSubjectsWithGrade());
-
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        db.closeDB();
-    }
-
-
     private void initViews(View view) {
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_old_exams);
     }
 
-    public void removeAll() {
-        ExamsDbHelper db = ExamsDbHelper.getInstance(getContext());
-        db.openDB();
-        db.cleanAllRecords(ExamsContract.OldExamEntry.TABLE_NAME);
-        db.resetSubjectGrades();
-        adapter.closeDatabase();
-        db.closeDB();
-    }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        adapter.closeDatabase();
+    public void onStart() {
+        super.onStart();
+        initDatabase();
+        populateList();
+    }
+
+    private void initDatabase() {
+        if (examsDbHelper == null && getActivity() != null)
+            examsDbHelper = ExamsDbHelper.getInstance(getContext());
+        examsDbHelper.openDB();
     }
 
 
+    private void populateList() {
+        examsDbHelper.getSubjectsWithGrade()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(cursor -> {
+                    adapter = new OldExamsAdapter(getActivity(), cursor);
+                    recyclerView.setAdapter(adapter);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                    setOnItemClickListener();
+                });
+    }
 
     private void setOnItemClickListener() {
+        adapter.setListener((v, position) -> {
+            if (position == OldExamsAdapter.HEADER_POSITION)
+                startActivity(new Intent(getContext(), UngradedExamsActivity.class));
 
-        adapter.setListener(new ItemClickListener() {
-            @Override
-            public void itemClicked(View v, int position) {
-                if (position == OldExamsAdapter.HEADER_POSITION)
-                    startActivity(new Intent(getContext(), UngradedExamsActivity.class));
-
-                else {
-                    Subject subject = adapter.getSubjectAtPosition(position);
-                    Intent intent = new Intent(getContext(), SingleSubjectExamsActivity.class);
-                    intent.putExtra(SingleSubjectExamsActivity.INTENT_SUBJECT_TAG, subject);
-                    startActivity(intent);
-                }
+            else {
+                Subject subject = adapter.getSubjectAtPosition(position);
+                Intent intent = new Intent(getContext(), SingleSubjectExamsActivity.class);
+                intent.putExtra(SingleSubjectExamsActivity.INTENT_SUBJECT_TAG, subject);
+                startActivity(intent);
             }
         });
+    }
 
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        closeDatabase();
+    }
+
+    private void closeDatabase() {
+        examsDbHelper.closeDB();
+        adapter.closeDatabase();
     }
 }

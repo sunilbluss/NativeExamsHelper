@@ -88,7 +88,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
     public void closeDB() {
         if (database != null && database.isOpen())
             database.close();
-        this.close();
+        super.close();
 //        Log.d(TAG, "Database is closed");
     }
 
@@ -153,10 +153,6 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
        return ExamsQuery.getAllRecordsAndSortByDate(database);
     }
 
-    public Cursor getAllIncomingExamsSortByDate() {
-        return ExamsQuery.getAllIncomingExamsAndSortByDate(database);
-    }
-
     public long insertExam(Exam exam) {
         return ExamsQuery.insert(database, exam);
     }
@@ -184,8 +180,12 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         return OldExamsQuery.getAllRecordsAndSortBy(database, ExamsContract.OldExamEntry.GRADE_COLUMN);
     }
 
-    public Cursor getSubjectsWithGrade() {
-        return SubjectsQuery.findSubjectsWithGradesAndSortBy(database, null);
+
+    public Observable<Cursor> getSubjectsWithGrade() {
+        return Observable.create(subscriber -> {
+           subscriber.onNext(SubjectsQuery.findSubjectsWithGradesAndSortBy(database, null));
+            subscriber.onCompleted();
+        });
     }
 
     public Cursor getSubjectGrades(String subjectTitle) {return OldExamsQuery.findGradesAndSortBy(database, subjectTitle, null);}
@@ -206,9 +206,9 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         return OldExamsQuery.insert(database, new OldExam(subject, exam.getInfo(), grade, exam.getDate()));
     }
 
-    public Observable<Cursor> getAllIncomingExams() {
+    public Observable<Cursor> getAllIncomingExamsSortByDate() {
         return Observable.create(subscriber -> {
-            subscriber.onNext(getAllIncomingExamsSortByDate());
+            subscriber.onNext(ExamsQuery.getAllIncomingExamsAndSortByDate(database));
             subscriber.onCompleted();
         });
     }

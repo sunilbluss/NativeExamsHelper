@@ -7,19 +7,18 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.activities.AddExamActivity;
-import com.grudus.nativeexamshelper.activities.ExamsMainActivity;
 import com.grudus.nativeexamshelper.adapters.ExamsAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
-import com.grudus.nativeexamshelper.database.exams.ExamsContract;
+
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 
 public class AddingExamFragment extends Fragment {
@@ -31,30 +30,18 @@ public class AddingExamFragment extends Fragment {
 
     private ExamsDbHelper examsDbHelper;
     private ExamsAdapter adapter;
+    private Subscription subscription;
 
 
-
-
-    public AddingExamFragment() {
-        // Required empty public constructor
-    }
-    
-    public void removeAll() {
-        if (examsDbHelper == null) return;
-        examsDbHelper.openDB();
-        examsDbHelper.cleanAllRecords(ExamsContract.ExamEntry.TABLE_NAME);
-        adapter.changeCursor(null);
-        examsDbHelper.closeDB();
-    }
+    public AddingExamFragment() {}
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Log.d(TAG, "onCreateView: ");
         View view = inflater.inflate(R.layout.fragment_adding_exam, container, false);
-//
+
         initViews(view);
         setListeners();
 
@@ -67,52 +54,53 @@ public class AddingExamFragment extends Fragment {
     }
 
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        closeDatabase();
-        adapter.changeCursor(null);
+    private void setListeners() {
+        floatingActionButton.setOnClickListener(view -> {
+            Intent openAddExamActivity = new Intent(getActivity(), AddExamActivity.class);
+            startActivity(openAddExamActivity);
+        });
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         initDatabase();
         populateRecyclerView();
-        closeDatabase();
     }
 
-    private void setListeners() {
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent openAddExamActivity = new Intent(getActivity(), AddExamActivity.class);
-                startActivity(openAddExamActivity);
-            }
-        });
-
-
-    }
 
 
     private void initDatabase() {
         if (examsDbHelper == null && getActivity() != null)
             examsDbHelper = ExamsDbHelper.getInstance(getContext());
         examsDbHelper.openDB();
-        Log.d(TAG, "initDatabase method ");
     }
 
 
-
     private void populateRecyclerView() {
-        adapter = new ExamsAdapter(getActivity(), examsDbHelper.getAllIncomingExamsSortByDate());
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setHasFixedSize(true);
+        subscription =
+            examsDbHelper.getAllIncomingExamsSortByDate()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(cursor -> {
+                    adapter = new ExamsAdapter(getContext(), cursor);
+                    recyclerView.setAdapter(adapter);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                }, error -> Log.e(TAG, "populateRecyclerView: ERRRRRRR", error));
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (!subscription.isUnsubscribed())
+            subscription.unsubscribe();
+        closeDatabase();
     }
 
     private void closeDatabase() {
         examsDbHelper.closeDB();
+        adapter.closeDatabase();
     }
 
 
