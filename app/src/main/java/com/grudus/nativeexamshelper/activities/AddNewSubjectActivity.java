@@ -25,6 +25,10 @@ import com.pes.androidmaterialcolorpickerdialog.ColorPicker;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class AddNewSubjectActivity extends AppCompatActivity {
 
@@ -47,6 +51,8 @@ public class AddNewSubjectActivity extends AppCompatActivity {
     private final int[] colorPickerInitVal = new int[3];
 
     private Subject subject, oldSubject;
+
+    private Subscription subscription;
 
     private boolean changingExistingSubjectMode;
     private boolean addingNewButStillEditableMode;
@@ -176,10 +182,11 @@ public class AddNewSubjectActivity extends AppCompatActivity {
 
         ExamsDbHelper db = ExamsDbHelper.getInstance(this);
         db.openDB();
-        db.updateSubject(oldSubject, subject);
-        db.closeDB();
+        subscription =
+            db.updateSubject(oldSubject, subject)
+            .subscribeOn(Schedulers.io())
+            .subscribe(success -> db.closeDB(), error -> db.closeDB());
         return true;
-
     }
 
     private boolean addSubjectToDatabase() {
@@ -190,18 +197,20 @@ public class AddNewSubjectActivity extends AppCompatActivity {
         ExamsDbHelper db = ExamsDbHelper.getInstance(this);
         db.openDB();
 
-        if (db.findSubjectByTitle(subject.getTitle()) != null) {
-            Toast.makeText(getApplicationContext(),
-                    getResources().getString(R.string.warning_add_subject_subject_already_exists),
-                    Toast.LENGTH_SHORT).show();
-            db.closeDB();
-            return false;
-        }
+        subscription =
+        db.findSubjectByTitle(subject.getTitle())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(subjectTitle -> {
+                    if (subjectTitle != null) {
+                        Toast.makeText(getApplicationContext(),
+                        getResources().getString(R.string.warning_add_subject_subject_already_exists),
+                        Toast.LENGTH_SHORT).show();
+                        return Observable.empty();
+                    }
+                    else return db.insertSubject(subject); })
+                .subscribe(success -> db.closeDB(), error -> db.closeDB());
 
-        db.insertSubject(subject);
-        Log.d(TAG, "Dodano " + subject + " do bazy danych");
-
-        db.closeDB();
         return true;
     }
 
@@ -214,5 +223,10 @@ public class AddNewSubjectActivity extends AppCompatActivity {
         findViewById(R.id.add_subject_layout).requestFocus();
     }
 
-
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (subscription != null && !subscription.isUnsubscribed())
+            subscription.unsubscribe();
+    }
 }

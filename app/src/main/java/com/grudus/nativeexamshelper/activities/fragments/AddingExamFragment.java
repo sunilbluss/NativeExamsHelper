@@ -91,8 +91,8 @@ public class AddingExamFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onPause() {
+        super.onPause();
         if (!subscription.isUnsubscribed())
             subscription.unsubscribe();
         closeDatabase();

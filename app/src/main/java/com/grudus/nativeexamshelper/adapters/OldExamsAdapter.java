@@ -20,6 +20,9 @@ import com.grudus.nativeexamshelper.pojos.Subject;
 
 import java.util.Arrays;
 
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExamsViewHolder> {
 
     public static final int HEADER_POSITION = 0;
@@ -28,9 +31,12 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
     private final ExamsDbHelper dbHelper;
     private ItemClickListener listener;
 
+    private int headers;
+
     public OldExamsAdapter(Context context, Cursor cursor) {
         this.dbHelper = ExamsDbHelper.getInstance(context);
         this.cursor = cursor;
+        headers = 1;
         Log.d("@@@", "OldExamsAdapter: konstruktor " + Arrays.toString(cursor.getColumnNames()) + ", " + cursor.getCount());
     }
 
@@ -52,21 +58,22 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
         Log.d("@@@", "OldExamsAdapter: onBind " + position);
         if (position == HEADER_POSITION)
             return; //header - already defined in xml
-        position = position - 1; //because of header
+        position = position - getHeaderCount();
 
 
         cursor.moveToPosition(position);
-        String subjectTitle = cursor.getString(ExamsContract.OldExamEntry.SUBJECT_COLUMN_INDEX);
+        final String subjectTitle = cursor.getString(ExamsContract.OldExamEntry.SUBJECT_COLUMN_INDEX);
 
-        dbHelper.openDB();
-        Subject subjectObject = dbHelper.findSubjectByTitle(subjectTitle);
-        dbHelper.closeDB();
-
-        if (subjectObject != null) {
-            GradientDrawable bg = (GradientDrawable) holder.iconView.getBackground();
-            bg.setColor(Color.parseColor(subjectObject.getColor()));
-            holder.iconView.setBackground(bg);
-        }
+        dbHelper.findSubjectByTitle(subjectTitle)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subjectObject -> {
+                    if (subjectObject != null) {
+                        GradientDrawable bg = (GradientDrawable) holder.iconView.getBackground();
+                        bg.setColor(Color.parseColor(subjectObject.getColor()));
+                        holder.iconView.setBackground(bg);
+                    }
+                });
 
         holder.iconView.setText(subjectTitle.substring(0, 1).toUpperCase());
 
@@ -74,7 +81,7 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
     }
 
     public Subject getSubjectAtPosition(int adapterPosition) {
-        cursor.moveToPosition(adapterPosition - 1);
+        cursor.moveToPosition(adapterPosition - getHeaderCount());
         String subjectTitle = cursor.getString(SubjectsContract.SubjectEntry.TITLE_COLUMN_INDEX);
         String color = cursor.getString(SubjectsContract.SubjectEntry.COLOR_COLUMN_INDEX);
 
@@ -91,11 +98,15 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
         dbHelper.closeDB();
     }
 
+    public int getHeaderCount() {
+        return headers;
+    }
+
     @Override
     public int getItemCount() {
         return cursor == null
                 ? 0
-                : cursor.getCount() + 1 ;  //for header
+                : cursor.getCount() + getHeaderCount();
     }
 
     public class OldExamsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

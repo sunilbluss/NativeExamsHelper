@@ -1,18 +1,25 @@
 package com.grudus.nativeexamshelper.helpers;
 
 
+import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.pojos.OldExam;
+import com.grudus.nativeexamshelper.pojos.grades.Grade;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class GradeStatisticsCalculator {
     private final double MINIMAL_GRADE_TO_PASS;
@@ -21,63 +28,83 @@ public class GradeStatisticsCalculator {
     private int maxGradeOccurrences = 0;
     private ArrayList<Double> dominants;
     private double median, sum = 0;
-    private int passed = 0, numberOfGrades = 0;
+    private int passed = 0;
+    private int numberOfAllGrades = -1, actualNumberOfGrades = 0;
+    private int numberOfOccurrencesOfSingleGrade = 0;
+    private double previousGrade = -1;
+    private double tempGrade;
 
-    private Cursor sortedGradesCursor;
+//    private Cursor sortedGradesCursor;
     private int gradesColumnDatabaseIndex;
 
+    private final Context context;
+    private final String subjectTitle;
 
-    public GradeStatisticsCalculator(double minimalGradeToPass) {
+
+    public GradeStatisticsCalculator(Context context, String subjectTitle, double minimalGradeToPass) {
+        this.subjectTitle = subjectTitle;
+        this.context = context;
         gradesOccurrences = new HashMap<>();
         dominants = new ArrayList<>();
         MINIMAL_GRADE_TO_PASS = minimalGradeToPass;
     }
 
-    public void setUpDatabaseData(@NonNull Cursor sortedGradesCursor, int gradesColumnIndex) {
-        this.sortedGradesCursor = sortedGradesCursor;
+    public void setUpDatabaseData(Cursor cursor, int gradesColumnIndex) {
+//        this.sortedGradesCursor = cursor;
         this.gradesColumnDatabaseIndex = gradesColumnIndex;
     }
 
-    public void calculateFromDatabase() {
-        if (sortedGradesCursor == null) throw new IllegalStateException("You have to set up database");
-        sortedGradesCursor.moveToFirst();
+    public Observable<Double> startCalculating() {
 
-        double tempGrade;
-        int numberOfOccurrencesOfSingleGrade = 0;
-        double previousGrade = -1;
+        ExamsDbHelper db = ExamsDbHelper.getInstance(context);
+        return db.getGradesFromOrderedSubjectGrades(subjectTitle);
+    }
 
-        numberOfGrades = sortedGradesCursor.getCount();
+    public void calculate(double tempGrade) {
 
-        do {
-            tempGrade = sortedGradesCursor.getDouble(gradesColumnDatabaseIndex);
+        if (numberOfAllGrades == -1) {
+            numberOfAllGrades = (int)tempGrade;
+            return;
+        }
 
-            if (previousGrade == -1) previousGrade = tempGrade;
-
-            if (tempGrade > previousGrade) {
-                gradesOccurrences.put(previousGrade, numberOfOccurrencesOfSingleGrade);
-                previousGrade = tempGrade;
-                checkIfMaxOccurrencesWasReached(numberOfOccurrencesOfSingleGrade);
-                numberOfOccurrencesOfSingleGrade = 1;
+        if (actualNumberOfGrades == numberOfAllGrades / 2) {
+            if (numberOfAllGrades % 2 == 0) {
+                calculateMedian(tempGrade, this.tempGrade);
             }
-
-            else numberOfOccurrencesOfSingleGrade++;
-
-            sum += tempGrade;
-
-
-            if (tempGrade > MINIMAL_GRADE_TO_PASS) {
-                passed++;
+            else {
+                calculateMedian(tempGrade, Grade.EMPTY_GRADE);
             }
+        }
+
+        actualNumberOfGrades++;
+        this.tempGrade = tempGrade;
 
 
-        } while (sortedGradesCursor.moveToNext());
+        if (previousGrade == -1) previousGrade = tempGrade;
 
+        if (tempGrade > previousGrade) {
+            gradesOccurrences.put(previousGrade, numberOfOccurrencesOfSingleGrade);
+            previousGrade = tempGrade;
+            checkIfMaxOccurrencesWasReached(numberOfOccurrencesOfSingleGrade);
+            numberOfOccurrencesOfSingleGrade = 1;
+        } else numberOfOccurrencesOfSingleGrade++;
+
+        sum += tempGrade;
+
+
+        if (tempGrade > MINIMAL_GRADE_TO_PASS) {
+            passed++;
+        }
+    }
+
+    public void onCompleteCalculations() {
         gradesOccurrences.put(tempGrade, numberOfOccurrencesOfSingleGrade);
         checkIfMaxOccurrencesWasReached(numberOfOccurrencesOfSingleGrade);
-        calculateMedianFromDatabase();
         calculateDominants();
-        closeDatabase();
     }
+
+    public void onError(Throwable throwable) {throwable.printStackTrace();}
+
 
     private void checkIfMaxOccurrencesWasReached(int numberOfOccurrencesOfSingleGrade) {
         if (numberOfOccurrencesOfSingleGrade > maxGradeOccurrences)
@@ -85,30 +112,15 @@ public class GradeStatisticsCalculator {
     }
 
 
-    private void calculateMedianFromDatabase() {
-        if (sortedGradesCursor == null) throw new IllegalStateException("You have to set up database");
-
-        sortedGradesCursor.moveToPosition(numberOfGrades / 2);
-
-        double middleGrade = sortedGradesCursor.getDouble(gradesColumnDatabaseIndex);
-
-        // if number is even, then median is an average of two 'middle' values
-        if (numberOfGrades % 2 == 0) {
-            sortedGradesCursor.moveToPosition(numberOfGrades / 2 - 1);
-            double secondMiddle = sortedGradesCursor.getDouble(gradesColumnDatabaseIndex);
-            median = (middleGrade + secondMiddle) / 2;
-        }
-        else median = middleGrade;
-
+    private void calculateMedian(double middleGrade, double middleMinusOneGrade) {
+        median = (middleMinusOneGrade == Grade.EMPTY_GRADE)
+                ? middleGrade
+                : (middleGrade + middleMinusOneGrade) / 2;
     }
 
-    private void closeDatabase() {
-        sortedGradesCursor.close();
-        sortedGradesCursor = null;
-    }
 
     public double getAverage() {
-        return  sum / numberOfGrades;
+        return  sum / numberOfAllGrades;
     }
 
 
@@ -135,11 +147,11 @@ public class GradeStatisticsCalculator {
     }
 
     public int getNumberOfFailedExams() {
-        return numberOfGrades - passed;
+        return numberOfAllGrades - passed;
     }
 
     public double getPercentOfPassedExams() {
-        return ((double) passed) / numberOfGrades;
+        return ((double) passed) / numberOfAllGrades;
     }
     
     

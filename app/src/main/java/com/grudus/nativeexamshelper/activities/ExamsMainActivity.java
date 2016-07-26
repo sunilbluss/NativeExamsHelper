@@ -39,6 +39,7 @@ import java.util.Calendar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.internal.Utils;
+import rx.schedulers.Schedulers;
 
 public class ExamsMainActivity extends AppCompatActivity{
 
@@ -185,8 +186,11 @@ public class ExamsMainActivity extends AppCompatActivity{
         if (item.getItemId() == R.id.menu_item_refresh_subjects) {
             Toast.makeText(this, "Przedmioty sa odswiezone", Toast.LENGTH_SHORT).show();
             initDatabase();
-            examsDbHelper.refreshSubjects();
-            examsDbHelper.closeDB();
+            examsDbHelper.refreshSubjects()
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(onNext -> {},
+                            onError -> examsDbHelper.closeDB(),
+                            () -> examsDbHelper.closeDB());
             return true;
         }
 

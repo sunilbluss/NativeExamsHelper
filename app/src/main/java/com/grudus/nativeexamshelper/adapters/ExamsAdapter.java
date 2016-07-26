@@ -6,9 +6,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,16 +14,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
-import com.grudus.nativeexamshelper.database.subjects.SubjectsContract;
 import com.grudus.nativeexamshelper.helpers.AnimationHelper;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.helpers.TimeHelper;
-import com.grudus.nativeexamshelper.pojos.Subject;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -69,15 +63,18 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
 
         String readableDate = DateHelper.getReadableDataFromLong(dateLong);
 
-        dbHelper.openDB();
-        Subject subjectObject = dbHelper.findSubjectByTitle(subjectTitle);
-        dbHelper.closeDB();
 
-        if (subjectObject != null) {
-            GradientDrawable bg = (GradientDrawable) holder.iconView.getBackground();
-            bg.setColor(Color.parseColor(subjectObject.getColor()));
-            holder.iconView.setBackground(bg);
-        }
+        dbHelper.findSubjectByTitle(subjectTitle)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subjectObject -> {
+                    if (subjectObject != null) {
+                        GradientDrawable bg = (GradientDrawable) holder.iconView.getBackground();
+                        bg.setColor(Color.parseColor(subjectObject.getColor()));
+                        holder.iconView.setBackground(bg);
+                    }
+                });
+
 
         holder.iconView.setText(subjectTitle.substring(0, 1).toUpperCase());
         holder.subjectView.setText(subjectTitle);
@@ -96,15 +93,19 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
     private void deleteRowAtPosition(final int adapterPosition) {
         cursor.moveToPosition(adapterPosition);
         dbHelper.openDB();
-        dbHelper.removeExam(cursor.getLong(ExamsContract.ExamEntry.DATE_COLUMN_INDEX));
+        long millis = cursor.getLong(ExamsContract.ExamEntry.DATE_COLUMN_INDEX);
 
-        dbHelper.getAllIncomingExamsSortByDate()
+        dbHelper.removeExam(millis)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .flatMap(function -> dbHelper.getAllIncomingExamsSortByDate())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(cursor -> {
                     changeCursor(cursor);
                     notifyItemRemoved(adapterPosition);
                 }, error -> Log.e("@@@" + this.getClass().getSimpleName(), "populateRecyclerView: ERRRRRRR", error));
+
 
     }
 

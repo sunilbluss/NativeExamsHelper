@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.grudus.nativeexamshelper.R;
@@ -18,16 +17,8 @@ import com.grudus.nativeexamshelper.pojos.Exam;
 import com.grudus.nativeexamshelper.pojos.OldExam;
 import com.grudus.nativeexamshelper.pojos.Subject;
 import com.grudus.nativeexamshelper.pojos.grades.Grade;
-import com.grudus.nativeexamshelper.pojos.grades.Grades;
-
-import java.util.ArrayList;
-import java.util.Random;
 
 import rx.Observable;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 public class ExamsDbHelper extends SQLiteOpenHelper {
 
@@ -75,8 +66,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
 
     public void openDB() {
-        if (database == null || !database.isOpen())
-            database = this.getWritableDatabase();
+        database = this.getWritableDatabase();
 //        Log.d(TAG, "Database is opened");
     }
 
@@ -92,93 +82,77 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 //        Log.d(TAG, "Database is closed");
     }
 
-    public void cleanAllRecords(String tableName) {
-        if (database != null && database.isOpen()) {
-            database.delete(tableName, null, null);
-            Log.d(TAG, "All records was deleted");
-        }
-        else Log.e(TAG, "Database is not opened - cannot delete records");
-    }
 
 //    Subjects part ******************************
 
-    public Cursor selectAllFromSubjects() {
-        return SubjectsQuery.getAllRecords(database);
+    public Observable<Cursor> getAllSubjectsSortByTitle() {
+        return Observable.create(subscriber -> {
+            subscriber.onNext(SubjectsQuery.getAllRecordsAndSortByTitle(database));
+            subscriber.onCompleted();
+        });
     }
 
-    public Cursor selectAllFromSubjectsSortByTitle() {
-        return SubjectsQuery.getAllRecordsAndSortByTitle(database);
+    public Observable<Long> insertSubject(Subject subject) {
+        return Observable.create(subscriber -> {
+            subscriber.onNext(SubjectsQuery.insert(database, subject));
+            subscriber.onCompleted();
+        });
     }
 
-    public long insertSubject(Subject subject) {
-        return SubjectsQuery.insert(database, subject);
+    public Observable<Integer> refreshSubjects() {
+        return Observable.create(subscriber -> {
+            subscriber.onNext(SubjectsQuery.deleteAll(database));
+            SubjectsQuery.setDefaultColors(context.getResources().getStringArray(R.array.defaultSubjectsColors));
+            SubjectsQuery.setDefaultSubjects(context.getResources().getStringArray(R.array.default_subjects));
+            subscriber.onNext(SubjectsQuery.firstInsert(database));
+        });
     }
 
-    public void refreshSubjects() {
-        database.delete(SubjectsContract.SubjectEntry.TABLE_NAME, null, null);
-        SubjectsQuery.setDefaultColors(context.getResources().getStringArray(R.array.defaultSubjectsColors));
-        SubjectsQuery.setDefaultSubjects(context.getResources().getStringArray(R.array.default_subjects));
-        SubjectsQuery.firstInsert(database);
-        Log.d(TAG, "Subjects are fresh");
+    public Observable<Integer> updateSubject(Subject old, Subject _new) {
+        return Observable.create(subscriber -> {
+            subscriber.onNext(SubjectsQuery.update(database, old, _new));
+            subscriber.onCompleted();
+        });
     }
 
-    public void updateSubject(Subject old, Subject _new) {
-        SubjectsQuery.update(database, old, _new);
+    public Observable<Integer> setSubjectHasGrade(Subject subject, boolean hasGrade) {
+        return Observable.create(subscriber -> {
+            subscriber.onNext(SubjectsQuery.setSubjectHasGrade(database, subject, hasGrade));
+            subscriber.onCompleted();
+        });
     }
 
-    public int setSubjectHasGrade(Subject subject, boolean hasGrade) {
-        return SubjectsQuery.setSubjectHasGrade(database, subject, hasGrade);
+
+    public Observable<Subject> findSubjectByTitle(String title) {
+        return Observable.create(subscriber -> {
+            subscriber.onNext(SubjectsQuery.findByTitle(database, title));
+            subscriber.onCompleted();
+        });
     }
 
-    @Nullable
-    public Subject findSubjectByTitle(String title) {
-        return SubjectsQuery.findByTitle(database, title);
-    }
-
-    public void resetSubjectGrades() {
-        SubjectsQuery.resetGrades(database);
-    }
-
-    public void removeSubject(String subjectTitle) {
-        SubjectsQuery.removeSubject(database, subjectTitle);
+    public Observable<Integer> removeSubject(String subjectTitle) {
+        return Observable.create(subscriber -> {
+            subscriber.onNext(SubjectsQuery.removeSubject(database, subjectTitle));
+            subscriber.onCompleted();
+        });
     }
 
 //    Exams part *********************************
 
-    public Cursor selectAllFromExams() {
-        return ExamsQuery.getAllRecords(database);
+    public Observable<Long> insertExam(Exam exam) {
+        return Observable.create(subscriber -> {
+            subscriber.onNext(ExamsQuery.insert(database, exam));
+            subscriber.onCompleted();
+        });
     }
 
-    public Cursor selectAllFromExamsSortByDate() {
-       return ExamsQuery.getAllRecordsAndSortByDate(database);
+    public Observable<Cursor> getExamsOlderThan(long time) {
+        return Observable.create(subscriber -> {
+            subscriber.onNext(ExamsQuery.getAllExamsOlderThan(database, time));
+            subscriber.onCompleted();
+        });
     }
 
-    public long insertExam(Exam exam) {
-        return ExamsQuery.insert(database, exam);
-    }
-
-    public Cursor getExamsOlderThan(long time) {
-        return ExamsQuery.getAllExamsOlderThan(database, time);
-    }
-
-    @Nullable
-    public ArrayList<Exam> selectAllFromExamsWhereDateIsSmallerThan(long dateInMillis) {
-        return ExamsQuery.getAllExamsOlderThanAsArray(database, dateInMillis);
-    }
-
-
-//    Old exams part *****************************
-    public Cursor selectAllFromOldExams() {
-        return OldExamsQuery.getAllRecordsAndSortBy(database, null);
-    }
-
-    public Cursor selectAllFromOldExamsSortByDate() {
-        return OldExamsQuery.getAllRecordsAndSortBy(database, ExamsContract.OldExamEntry.DATE_COLUMN);
-    }
-
-    public Cursor selectAllFromOldExamsSortByGrade() {
-        return OldExamsQuery.getAllRecordsAndSortBy(database, ExamsContract.OldExamEntry.GRADE_COLUMN);
-    }
 
 
     public Observable<Cursor> getSubjectsWithGrade() {
@@ -188,22 +162,58 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         });
     }
 
-    public Cursor getSubjectGrades(String subjectTitle) {return OldExamsQuery.findGradesAndSortBy(database, subjectTitle, null);}
+    public Observable<Cursor> getSubjectGrades(String subjectTitle) {
+        return Observable.create(subscriber -> {
+            subscriber.onNext(OldExamsQuery.findGradesAndSortBy(database, subjectTitle, null));
+            subscriber.onCompleted();
+        });
+    }
 
-    public Cursor getOrderedSubjectGrades(String subjectTitle) {
-        return OldExamsQuery.findGradesAndSortBy(database, subjectTitle, ExamsContract.OldExamEntry.GRADE_COLUMN);
+    public Observable<Double> getGradesFromOrderedSubjectGrades(String subjectTitle) {
+        return Observable.create(subscriber -> {
+            Cursor cursor = OldExamsQuery.findGradesAndSortBy(database, subjectTitle, ExamsContract.OldExamEntry.GRADE_COLUMN);
+            cursor.moveToFirst();
+            // first returned item is size of the items
+            subscriber.onNext((double)cursor.getCount());
+            do {
+                double temp = cursor.getDouble(ExamsContract.OldExamEntry.GRADE_COLUMN_INDEX);
+                subscriber.onNext(temp);
+                Log.d(TAG, "getGradesFromOrderedSubjectGrades: kursor");
+            } while (cursor.moveToNext());
+            Log.d(TAG, "getGradesFromOrderedSubjectGrades: koniec kursora");
+            cursor.close();
+            subscriber.onCompleted();
+        });
+    }
+
+    private Observable<Boolean> removeExam(Exam exam) {
+        return Observable.create(subscriber -> {
+            subscriber.onNext(ExamsQuery.remove(database, exam));
+            subscriber.onCompleted();
+        });
+    }
+
+    private Observable<Long> insertOldExam(OldExam exam) {
+        return Observable.create(subscriber -> {
+            subscriber.onNext(OldExamsQuery.insert(database, exam));
+            subscriber.onCompleted();
+        });
     }
 
 
-    public long examBecomesOld(Exam exam, double grade) {
-        Subject subject = findSubjectByTitle(exam.getSubject());
-        if (subject == null) return -1L;
-        if (grade == Grade.EMPTY_GRADE) return -1L;
+    public Observable<Long> examBecomesOld(Exam exam, double grade) {
+        final OldExam oldExam = new OldExam(null, exam.getInfo(), grade, exam.getDate());
+        if (grade == Grade.EMPTY_GRADE) return Observable.empty();
 
-        ExamsQuery.remove(database, exam);
 
-        setSubjectHasGrade(subject, true);
-        return OldExamsQuery.insert(database, new OldExam(subject, exam.getInfo(), grade, exam.getDate()));
+        return findSubjectByTitle(exam.getSubject())
+                .flatMap(subject -> {
+                    if (subject == null) return Observable.empty();
+                    oldExam.setSubject(subject);
+                    return setSubjectHasGrade(subject, true);
+                })
+                .flatMap((updatedRows) -> removeExam(exam))
+                .flatMap((success) -> insertOldExam(oldExam));
     }
 
     public Observable<Cursor> getAllIncomingExamsSortByDate() {
@@ -214,7 +224,11 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
     }
 
 
-    public void removeExam(long timeInMillis) {
-        ExamsQuery.remove(database, timeInMillis);
+    public Observable<Boolean> removeExam(long timeInMillis) {
+        return Observable.create(subscriber -> {
+            subscriber.onNext(ExamsQuery.remove(database, timeInMillis));
+            subscriber.onCompleted();
+        });
     }
+
 }

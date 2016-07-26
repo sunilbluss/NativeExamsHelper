@@ -4,9 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +16,10 @@ import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.subjects.SubjectsContract;
 import com.grudus.nativeexamshelper.pojos.Subject;
+
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 
 public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.SubjectsViewHolder> {
@@ -90,13 +92,15 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
     public void removeFromDbAndChangeCursor(int adapterPosition) {
         ExamsDbHelper db = ExamsDbHelper.getInstance(context);
         cursor.moveToPosition(adapterPosition);
-        db.openDB();
-        db.removeSubject(cursor.getString(SubjectsContract.SubjectEntry.TITLE_COLUMN_INDEX));
-        changeCursor(db.selectAllFromSubjectsSortByTitle());
 
-        db.closeDB();
-        cursor.moveToFirst();
-
+        db.removeSubject(cursor.getString(SubjectsContract.SubjectEntry.TITLE_COLUMN_INDEX))
+                .flatMap(howManyDeleted -> {
+                    if (howManyDeleted == 0) return Observable.empty();
+                    return db.getAllSubjectsSortByTitle();
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::changeCursor);
     }
 
 

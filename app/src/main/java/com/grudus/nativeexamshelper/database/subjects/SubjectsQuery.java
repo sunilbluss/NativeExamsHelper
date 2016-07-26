@@ -27,7 +27,7 @@ public final class SubjectsQuery {
         SubjectsQuery.defaultColors = defaultColors;
     }
 
-    public static boolean firstInsert(SQLiteDatabase db) {
+    public static int firstInsert(SQLiteDatabase db) {
         ContentValues[] firstValues = new ContentValues[defaultSubjects.length];
         for (int i = 0; i < firstValues.length; i++) {
             firstValues[i] = new ContentValues(2);
@@ -52,7 +52,11 @@ public final class SubjectsQuery {
         }
 
         Log.d(ExamsMainActivity.TAG, "Inserted " + counter + " values");
-        return counter == firstValues.length;
+        return firstValues.length;
+    }
+
+    public static int deleteAll(SQLiteDatabase db) {
+        return db.delete(SubjectsContract.SubjectEntry.TABLE_NAME, null, null);
     }
 
     public static Cursor getAllRecords(SQLiteDatabase db) {
@@ -102,22 +106,20 @@ public final class SubjectsQuery {
     }
 
 
-    public static void update(SQLiteDatabase db, Subject old, Subject _new) {
+    public static int update(SQLiteDatabase db, Subject old, Subject _new) {
         if (findByTitle(db, old.getTitle()) == null) {
             Log.e(ExamsDbHelper.TAG, "update: " + old + " doesn't exists");
-            return;
+            return -1;
         }
 
         ContentValues cv = new ContentValues(2);
         cv.put(SubjectsContract.SubjectEntry.TITLE_COLUMN, _new.getTitle());
         cv.put(SubjectsContract.SubjectEntry.COLOR_COLUMN, _new.getColor());
 
-        db.update(SubjectsContract.SubjectEntry.TABLE_NAME,
+        return db.update(SubjectsContract.SubjectEntry.TABLE_NAME,
                 cv,
                 SubjectsContract.SubjectEntry.TITLE_COLUMN + "=?",
                 new String[] {old.getTitle()});
-
-        Log.d(ExamsDbHelper.TAG, "Updated " + old + " to " + _new);
     }
 
     public static Cursor findSubjectsWithGradesAndSortBy(SQLiteDatabase db, @Nullable String sort) {
@@ -158,8 +160,8 @@ public final class SubjectsQuery {
         );
     }
 
-    public static void removeSubject(SQLiteDatabase db, String subjectTitle) {
-        db.delete(
+    public static int removeSubject(SQLiteDatabase db, String subjectTitle) {
+        return db.delete(
                 SubjectsContract.SubjectEntry.TABLE_NAME,
                 SubjectsContract.SubjectEntry.TITLE_COLUMN + "=?",
                 new String[] {subjectTitle}

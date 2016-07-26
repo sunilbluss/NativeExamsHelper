@@ -23,6 +23,9 @@ import com.grudus.nativeexamshelper.pojos.Subject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class SubjectsListActivity extends AppCompatActivity implements ItemClickListener {
 
@@ -42,6 +45,8 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
     private ExamsDbHelper examsDbHelper;
     private SubjectsAdapter adapter;
     private ItemTouchHelper itemTouchHelper;
+
+    private Subscription subscription;
 
     /* If true - after click on listview item it is possible to change color and title
      *  otherwise - it's on selected mode (user is choosing exam subject)*/
@@ -79,11 +84,15 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
     }
 
     private void populateList() {
-        Cursor c = examsDbHelper.selectAllFromSubjectsSortByTitle();
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        adapter = new SubjectsAdapter(c, this, this);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setHasFixedSize(true);
+        subscription =
+            examsDbHelper.getAllSubjectsSortByTitle()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(cursor -> {
+                    adapter = new SubjectsAdapter(cursor, SubjectsListActivity.this, SubjectsListActivity.this);
+                    recyclerView.setAdapter(adapter);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(SubjectsListActivity.this));
+                });
 
     }
 
@@ -123,6 +132,8 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
         if (examsDbHelper != null)
             examsDbHelper.closeDB();
         adapter.closeCursor();
+        if (!subscription.isUnsubscribed())
+            subscription.unsubscribe();
     }
 
 }

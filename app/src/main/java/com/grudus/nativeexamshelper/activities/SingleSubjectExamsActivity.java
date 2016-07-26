@@ -27,6 +27,9 @@ import java.text.DecimalFormat;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class SingleSubjectExamsActivity extends AppCompatActivity {
 
@@ -43,6 +46,8 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
     private SingleSubjectExamsAdapter adapter;
     private String subjectTitle;
     private ExamsDbHelper dbHelper;
+
+    private Subscription subscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,10 +87,15 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
     }
 
     private void initRecyclerView() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new SingleSubjectExamsAdapter(this, dbHelper.getSubjectGrades(subjectTitle));
-        recyclerView.setAdapter(adapter);
-//        adapter.closeCursor();
+        subscription =
+        dbHelper.getSubjectGrades(subjectTitle)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(cursor -> {
+                    adapter = new SingleSubjectExamsAdapter(this, cursor);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(this));
+                    recyclerView.setAdapter(adapter);
+                });
     }
 
 
@@ -105,10 +115,19 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
 
 
     private void calculateAllStatistics() {
-        GradeStatisticsCalculator calculator = new GradeStatisticsCalculator(Grades.getFirstPassedGrade());
-        calculator.setUpDatabaseData(dbHelper.getOrderedSubjectGrades(subjectTitle), ExamsContract.OldExamEntry.GRADE_COLUMN_INDEX);
-        calculator.calculateFromDatabase();
+        GradeStatisticsCalculator calculator = new GradeStatisticsCalculator(this, subjectTitle, Grades.getFirstPassedGrade());
         setUpStatisticsTextFormatter(calculator);
+
+        calculator.startCalculating()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(calculator::calculate,
+                        calculator::onError,
+                        () -> {
+                            calculator.onCompleteCalculations();
+                            updateStatisticsLabels();
+                        });
+
     }
 
     private void setUpStatisticsTextFormatter(GradeStatisticsCalculator calculator) {
@@ -120,6 +139,8 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        if (!subscription.isUnsubscribed())
+            subscription.unsubscribe();
         if (dbHelper != null) dbHelper.closeDB();
         adapter.closeCursor();
     }

@@ -2,27 +2,19 @@ package com.grudus.nativeexamshelper.activities.fragments;
 
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.CursorAdapter;
-import android.widget.ListView;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.activities.SingleSubjectExamsActivity;
 import com.grudus.nativeexamshelper.activities.UngradedExamsActivity;
-import com.grudus.nativeexamshelper.adapters.ItemClickListener;
 import com.grudus.nativeexamshelper.adapters.OldExamsAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
-import com.grudus.nativeexamshelper.database.exams.ExamsContract;
-import com.grudus.nativeexamshelper.adapters.OldExamsCursorAdapter;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
 import rx.Subscription;
@@ -73,15 +65,16 @@ public class OldExamsFragment extends Fragment {
 
 
     private void populateList() {
-        examsDbHelper.getSubjectsWithGrade()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(cursor -> {
-                    adapter = new OldExamsAdapter(getActivity(), cursor);
-                    recyclerView.setAdapter(adapter);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                    setOnItemClickListener();
-                });
+        subscription =
+            examsDbHelper.getSubjectsWithGrade()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(cursor -> {
+                        adapter = new OldExamsAdapter(getActivity(), cursor);
+                        recyclerView.setAdapter(adapter);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                        setOnItemClickListener();
+                    });
     }
 
     private void setOnItemClickListener() {
@@ -98,10 +91,11 @@ public class OldExamsFragment extends Fragment {
         });
     }
 
-
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onPause() {
+        super.onPause();
+        if (!subscription.isUnsubscribed())
+            subscription.unsubscribe();
         closeDatabase();
     }
 

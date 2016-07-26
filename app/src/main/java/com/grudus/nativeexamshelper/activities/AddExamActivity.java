@@ -2,36 +2,33 @@ package com.grudus.nativeexamshelper.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.grudus.nativeexamshelper.helpers.CalendarDialogHelper;
-import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
+import com.grudus.nativeexamshelper.helpers.CalendarDialogHelper;
+import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.helpers.ThemeHelper;
 import com.grudus.nativeexamshelper.helpers.TimeDialogHelper;
 import com.grudus.nativeexamshelper.helpers.TimeHelper;
 import com.grudus.nativeexamshelper.pojos.Exam;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.schedulers.Schedulers;
 
 public class AddExamActivity extends AppCompatActivity {
 
@@ -60,19 +57,9 @@ public class AddExamActivity extends AppCompatActivity {
         toolbar.setTitle(getResources().getString(R.string.add_new_exam_toolbar_text));
         setListenerToDeleteTextViewFocus();
 
-        calendarDialog = new CalendarDialogHelper(this, new CalendarDialogHelper.AfterDateSetListener() {
-            @Override
-            public void afterDateSet() {
-                updateDateView();
-            }
-        });
+        calendarDialog = new CalendarDialogHelper(this, this::updateDateView);
 
-        timeDialog = new TimeDialogHelper(this, new TimeDialogHelper.AfterTimeSetListener() {
-            @Override
-            public void afterTimeSet() {
-                updateTimeView();
-            }
-        });
+        timeDialog = new TimeDialogHelper(this, this::updateTimeView);
 
     }
 
@@ -121,12 +108,12 @@ public class AddExamActivity extends AppCompatActivity {
 
         Exam exam = new Exam(subject, info, correctDate);
 
-        ExamsDbHelper db = ExamsDbHelper.getInstance(this);
+        final ExamsDbHelper db = ExamsDbHelper.getInstance(this);
         db.openDB();
 
-        db.insertExam(exam);
-
-        db.closeDB();
+        db.insertExam(exam)
+            .subscribeOn(Schedulers.io())
+            .subscribe(action -> db.closeDB(), error -> db.closeDB());
 
         Intent goBack = new Intent(getApplicationContext(), ExamsMainActivity.class);
         // new subject has been added, so there is no reason to keep previous activities in stack
@@ -139,11 +126,6 @@ public class AddExamActivity extends AppCompatActivity {
         temp.add(Calendar.HOUR_OF_DAY, timeDialog.getHour());
         temp.add(Calendar.MINUTE, timeDialog.getMinute());
         return temp.getTime();
-    }
-
-
-    private static boolean examWasInThePast(Date date) {
-        return date.getTime() < Calendar.getInstance().getTime().getTime();
     }
 
 
@@ -165,25 +147,19 @@ public class AddExamActivity extends AppCompatActivity {
     }
 
     private void setListenerToDeleteTextViewFocus() {
-        extrasInput.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
+        extrasInput.setOnKeyListener((v, keyCode, event) -> {
 
-                if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                    deleteFocus();
-                    return true;
-                }
-
+            if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                deleteFocus();
                 return true;
             }
+
+            return true;
         });
 
-        extrasInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    deleteFocus();
-                }
+        extrasInput.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                deleteFocus();
             }
         });
     }
