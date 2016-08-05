@@ -17,6 +17,7 @@ import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.adapters.ItemClickListener;
 import com.grudus.nativeexamshelper.adapters.SubjectsAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
+import com.grudus.nativeexamshelper.dialogs.EditSubjectDialog;
 import com.grudus.nativeexamshelper.helpers.ThemeHelper;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
@@ -31,13 +32,6 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
 
     private final String TAG = "@@@" + this.getClass().getSimpleName();
 
-    // info for AddNewSubjectActivity - when is 'true' then we are editing the existing subject
-    public static final String INTENT_EDITABLE_TAG = "editable";
-
-    // info for AddNewSubjectActivity - when is 'true' we are creating new subject, but we are still in
-    // 'edit subjects' mode
-    public static final String INTENT_EDIT_MODE_TAG = "editMode";
-
     @BindView(R.id.subjects_recycler_view) RecyclerView recyclerView;
     @BindView(R.id.floating_button_add_subject) FloatingActionButton floatingActionButton;
     @BindView(R.id.toolbar) Toolbar toolbar;
@@ -50,8 +44,6 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
 
     /* If true - after click on listview item it is possible to change color and title
      *  otherwise - it's on selected mode (user is choosing exam subject)*/
-    private boolean isEditable;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ThemeHelper.onActivityCreateSetTheme(this);
@@ -59,9 +51,6 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
         Log.d(TAG, "ON CREATE SLACTIVITY");
         setContentView(R.layout.activity_subjects_list);
         ButterKnife.bind(this);
-
-        isEditable = getIntent().getBooleanExtra(INTENT_EDITABLE_TAG, false);
-        Log.i(TAG, "onCreate: is editable? " + isEditable);
 
         toolbar.setTitle(getResources().getString(R.string.subject_list_toolbar_text));
         setSupportActionBar(toolbar);
@@ -99,30 +88,34 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
     @Override
     public void itemClicked(View v, int position) {
         Subject subject = adapter.getItem(position);
+        new EditSubjectDialog()
+                .addSubject(subject)
+                .addListener(editedSubject -> {
+                    examsDbHelper.updateSubject(subject, editedSubject)
+                            .flatMap(howMany -> examsDbHelper.getAllSubjectsSortByTitle())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(cursor -> {
+                                adapter.changeCursor(cursor);
+                                adapter.notifyItemChanged(position);
+                            });
 
-        Intent whereToGo = isEditable ? new Intent(this, AddNewSubjectActivity.class)
-                : new Intent(this, AddExamActivity.class);
+                })
+                .show(getFragmentManager(), "qqq");
 
-        whereToGo.putExtra("subject", subject);
-        startActivity(whereToGo);
     }
 
 
     @OnClick(R.id.floating_button_add_subject)
     public void addSubject() {
         Intent openAddNewSubjectActivity = new Intent(getApplicationContext(), AddNewSubjectActivity.class);
-        openAddNewSubjectActivity.putExtra(INTENT_EDIT_MODE_TAG, isEditable);
         startActivity(openAddNewSubjectActivity);
     }
 
 
     @Override
     public void onBackPressed() {
-        Log.d(TAG, "onBackPressed: ");
-        if (isEditable) {
-            this.startActivity(new Intent(this, ExamsMainActivity.class));
-            finish();
-        }
+        finish();
         super.onBackPressed();
     }
 

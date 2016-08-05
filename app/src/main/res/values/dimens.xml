@@ -31,4 +31,9 @@
     <dimen name="sse_grades_info_text_padding">10dp</dimen>
     <dimen name="sse_line_margin">5dp</dimen>
 
+
+        <!--dialogs-->
+    <dimen name="dialog_color_view_height">120dp</dimen>
+
+
 </resources>

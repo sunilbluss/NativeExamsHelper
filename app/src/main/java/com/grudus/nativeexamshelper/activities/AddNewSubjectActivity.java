@@ -55,7 +55,6 @@ public class AddNewSubjectActivity extends AppCompatActivity {
     private Subscription subscription;
 
     private boolean changingExistingSubjectMode;
-    private boolean addingNewButStillEditableMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,9 +75,6 @@ public class AddNewSubjectActivity extends AppCompatActivity {
     private void getDataFromIntent() {
         subject = getIntent().getParcelableExtra("subject") == null
                 ? Subject.empty() : (Subject) getIntent().getParcelableExtra("subject");
-
-        addingNewButStillEditableMode = getIntent()
-                .getBooleanExtra(SubjectsListActivity.INTENT_EDIT_MODE_TAG, false);
 
         changingExistingSubjectMode = !subject.isEmpty();
     }
@@ -120,17 +116,14 @@ public class AddNewSubjectActivity extends AppCompatActivity {
         Button button = (Button) colorPicker.findViewById(R.id.okColorButton);
 
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int color = colorPicker.getColor();
-                updateColorPickerInitValAndSetIconColor(color);
+        button.setOnClickListener(v -> {
+            int color = colorPicker.getColor();
+            updateColorPickerInitValAndSetIconColor(color);
 
-                String hexColor = String.format("#%06X", (0xFFFFFF & color));
-                colorPicker.dismiss();
+            String hexColor = String.format("#%06X", (0xFFFFFF & color));
+            colorPicker.dismiss();
 
-                subject.setColor(hexColor);
-            }
+            subject.setColor(hexColor);
         });
 
     }
@@ -150,8 +143,6 @@ public class AddNewSubjectActivity extends AppCompatActivity {
             return;
 
         Intent goBack = new Intent(getApplicationContext(), SubjectsListActivity.class);
-        goBack.putExtra(SubjectsListActivity.INTENT_EDITABLE_TAG,
-                changingExistingSubjectMode || addingNewButStillEditableMode);
         startActivity(goBack);
 
     }

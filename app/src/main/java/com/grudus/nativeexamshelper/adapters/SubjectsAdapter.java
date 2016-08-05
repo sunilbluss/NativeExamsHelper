@@ -100,7 +100,13 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::changeCursor);
+                .subscribe(this::changeCursor,
+                        onError -> {},
+                        () -> notifyItemRemoved(adapterPosition));
+
+        db.removeAllExamsRelatedWithSubject(cursor.getString(SubjectsContract.SubjectEntry.TITLE_COLUMN_INDEX))
+                .subscribeOn(Schedulers.io())
+                .subscribe();
     }
 
 
@@ -114,7 +120,6 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
             super(itemView);
 
             bindViews(itemView);
-            changeIconColor();
 
             itemView.setOnClickListener(this);
             linearLayout.setOnClickListener(this);
@@ -125,11 +130,6 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
             iconView = (TextView) itemView.findViewById(R.id.list_item_subject_icon_text);
             invisibleView = (LinearLayout) itemView.findViewById(R.id.invisible);
             linearLayout = (LinearLayout) itemView.findViewById(R.id.list_item_adding_exam_linear);
-        }
-
-        private void changeIconColor() {
-            ImageView iv = (ImageView) invisibleView.findViewById(R.id.list_item_adding_exam_bin);
-            iv.setColorFilter(0xffffffff);
         }
 
         @Override

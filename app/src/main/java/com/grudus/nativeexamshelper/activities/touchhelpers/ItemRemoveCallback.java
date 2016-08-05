@@ -50,7 +50,6 @@ public class ItemRemoveCallback extends ItemTouchHelper.SimpleCallback {
         Log.d("@@@@@@@", "onSwiped: swiped " + pos);
 
         ((SubjectsAdapter.SubjectsViewHolder)viewHolder).getAdapter().removeFromDbAndChangeCursor(pos);
-        ((SubjectsAdapter.SubjectsViewHolder)viewHolder).getAdapter().removeItemFromList(pos);
     }
 
 

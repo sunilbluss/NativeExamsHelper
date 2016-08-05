@@ -137,6 +137,14 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         });
     }
 
+    public Observable<Integer> removeAllExamsRelatedWithSubject(String subjectTitle) {
+        return Observable.create(subscriber -> {
+            subscriber.onNext(ExamsQuery.removeSubjectExams(database, subjectTitle));
+            subscriber.onNext(OldExamsQuery.removeSubjectExams(database, subjectTitle));
+            subscriber.onCompleted();
+        });
+    }
+
 //    Exams part *********************************
 
     public Observable<Long> insertExam(Exam exam) {
@@ -216,6 +224,13 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
                 .flatMap((success) -> insertOldExam(oldExam));
     }
 
+    public Observable<Integer> removeAllOldExams() {
+        return Observable.create(subscriber -> {
+            subscriber.onNext(OldExamsQuery.removeAll(database));
+            subscriber.onCompleted();
+        });
+    }
+
     public Observable<Cursor> getAllIncomingExamsSortByDate() {
         return Observable.create(subscriber -> {
             subscriber.onNext(ExamsQuery.getAllIncomingExamsAndSortByDate(database));
@@ -227,6 +242,13 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
     public Observable<Boolean> removeExam(long timeInMillis) {
         return Observable.create(subscriber -> {
             subscriber.onNext(ExamsQuery.remove(database, timeInMillis));
+            subscriber.onCompleted();
+        });
+    }
+
+    public Observable<Integer> removeAllIncomingExams() {
+        return Observable.create(subscriber -> {
+            subscriber.onNext(ExamsQuery.removeAll(database));
             subscriber.onCompleted();
         });
     }

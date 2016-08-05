@@ -22,7 +22,7 @@ public class SelectGradeDialog extends DialogFragment {
 
     private int gradePickerValue, additionalPickerValue;
     private DialogInterface.OnClickListener listener;
-    private NumberPicker picker;
+    private NumberPicker picker, picker1;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -32,24 +32,28 @@ public class SelectGradeDialog extends DialogFragment {
 
         View root = inflater.inflate(R.layout.dialog_select_grade, null);
         builder.setView(root);
-        picker = (NumberPicker) root.findViewById(R.id.mainGradePicker);
-        picker.setMinValue(1);
-        picker.setMaxValue(6);
-        final NumberPicker picker1 = (NumberPicker) root.findViewById(R.id.additionalGradePicker);
-        picker1.setMinValue(0);
-        picker1.setMaxValue(5);
-        picker1.setDisplayedValues(new String[] {"-", " ", "+", "-", " ", "+"});
-        picker1.setWrapSelectorWheel(false);
 
-        picker1.setEnabled(false);
         builder.setTitle("Wybierz ocenę");
-
+        setUpPickers(root);
 
         builder.setPositiveButton("Wybierz", listener);
         builder.setNegativeButton("Wróć", null);
 
 
         return builder.create();
+    }
+
+    private void setUpPickers(View root) {
+        picker = (NumberPicker) root.findViewById(R.id.mainGradePicker);
+        picker.setMinValue(1);
+        picker.setMaxValue(6);
+        picker1 = (NumberPicker) root.findViewById(R.id.additionalGradePicker);
+        picker1.setMinValue(0);
+        picker1.setMaxValue(5);
+        picker1.setDisplayedValues(new String[] {"-", " ", "+", "-", " ", "+"});
+        picker1.setWrapSelectorWheel(false);
+
+        picker1.setEnabled(false);
     }
 
 

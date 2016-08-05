@@ -1,8 +1,6 @@
 package com.grudus.nativeexamshelper.activities;
 
-import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
@@ -11,10 +9,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.transition.TransitionInflater;
-import android.util.AttributeSet;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,22 +18,16 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
-import com.grudus.nativeexamshelper.MyApplication;
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.activities.fragments.AddingExamFragment;
-import com.grudus.nativeexamshelper.activities.fragments.OldExamsFragment;
-import com.grudus.nativeexamshelper.adapters.ViewPagerAdapter;
 import com.grudus.nativeexamshelper.activities.sliding.SlidingTabLayout;
+import com.grudus.nativeexamshelper.adapters.ViewPagerAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.helpers.ThemeHelper;
-import com.squareup.leakcanary.RefWatcher;
-
-import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.internal.Utils;
 import rx.schedulers.Schedulers;
 
 public class ExamsMainActivity extends AppCompatActivity{
@@ -95,9 +84,9 @@ public class ExamsMainActivity extends AppCompatActivity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        RefWatcher ref = MyApplication.getRefWatcher(this);
-        ref.watch(this);
-        ref.watch(viewPager);
+//        RefWatcher ref = MyApplication.getRefWatcher(this);
+//        ref.watch(this);
+//        ref.watch(viewPager);
     }
 
     private void viewPagerInit() {
@@ -108,12 +97,7 @@ public class ExamsMainActivity extends AppCompatActivity{
 
         slidingTabLayout.setDistributeEvenly(true);
 
-        slidingTabLayout.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
-            @Override
-            public int getIndicatorColor(int position) {
-                return ContextCompat.getColor(getApplicationContext(), R.color.tabsScrollColor);
-            }
-        });
+        slidingTabLayout.setCustomTabColorizer(position -> ContextCompat.getColor(getApplicationContext(), R.color.tabsScrollColor));
 
         slidingTabLayout.setViewPager(viewPager);
     }
@@ -176,9 +160,7 @@ public class ExamsMainActivity extends AppCompatActivity{
             Toast.makeText(this, "Usunieto wszystko", Toast.LENGTH_SHORT).show();
             initDatabase();
 
-//            ((AddingExamFragment) viewPagerAdapter.getFragment(0)).removeAll();
-//            ((OldExamsFragment) viewPagerAdapter.getFragment(1)).removeAll();
-            examsDbHelper.closeDB();
+            ((AddingExamFragment) viewPagerAdapter.getFragment(0)).removeAll();
 
             return true;
         }
@@ -196,7 +178,6 @@ public class ExamsMainActivity extends AppCompatActivity{
 
         if (item.getItemId() == R.id.menu_item_edit_subjects) {
             Intent intent = new Intent(getApplicationContext(), SubjectsListActivity.class);
-            intent.putExtra(SubjectsListActivity.INTENT_EDITABLE_TAG, true);
             startActivity(intent);
         }
 

@@ -55,4 +55,16 @@ public class OldExamsQuery {
         if (c != null) c.moveToFirst();
         return c;
     }
+
+    public static int removeAll(SQLiteDatabase db) {
+        return db.delete(ExamsContract.OldExamEntry.TABLE_NAME,
+                null,
+                null);
+    }
+
+    public static int removeSubjectExams(SQLiteDatabase db, String subjectTitle) {
+        return db.delete(ExamsContract.OldExamEntry.TABLE_NAME,
+                ExamsContract.OldExamEntry.SUBJECT_COLUMN + " = ?",
+                new String[] {subjectTitle});
+    }
 }

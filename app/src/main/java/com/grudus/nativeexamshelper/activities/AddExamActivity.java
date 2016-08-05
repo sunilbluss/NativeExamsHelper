@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
+import com.grudus.nativeexamshelper.dialogs.SelectGradeDialog;
+import com.grudus.nativeexamshelper.dialogs.SelectSubjectDialog;
 import com.grudus.nativeexamshelper.helpers.CalendarDialogHelper;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.helpers.ThemeHelper;
@@ -90,8 +92,10 @@ public class AddExamActivity extends AppCompatActivity {
 
     @OnClick(R.id.add_exam_subject_input)
     void openSubjectsListActivity() {
-        Intent intent = new Intent(this, SubjectsListActivity.class);
-        startActivity(intent);
+
+        new SelectSubjectDialog()
+                .addListener(subject -> this.subjectInput.setText(subject.getTitle()))
+                .show(getFragmentManager(), getString(R.string.tag_dialog_select_subject));
     }
 
     @OnClick(R.id.add_exam_button)

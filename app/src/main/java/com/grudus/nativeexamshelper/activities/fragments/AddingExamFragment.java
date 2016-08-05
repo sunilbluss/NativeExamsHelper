@@ -1,6 +1,7 @@
 package com.grudus.nativeexamshelper.activities.fragments;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -104,6 +105,17 @@ public class AddingExamFragment extends Fragment {
     }
 
 
-
-
+    public void removeAll() {
+        subscription =
+                examsDbHelper.removeAllIncomingExams()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(howManyRows -> {
+                   if (howManyRows > 0) {
+                       adapter.changeCursor(null);
+                       adapter.notifyItemRangeRemoved(0, howManyRows);
+                   }
+                }, onError -> examsDbHelper.closeDB(),
+                        () -> examsDbHelper.closeDB());
+    }
 }

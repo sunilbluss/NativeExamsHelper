@@ -116,7 +116,8 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
     }
 
     public void closeDatabase() {
-        cursor.close();
+        if (cursor != null)
+            cursor.close();
         dbHelper.closeDB();
     }
 
@@ -140,12 +141,7 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
 
-            binIcon.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    deleteRowAtPosition(getAdapterPosition());
-                }
-            });
+            binIcon.setOnClickListener(v -> deleteRowAtPosition(getAdapterPosition()));
 
             expanded = false;
             selected = false;
@@ -173,9 +169,6 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
             iconView.animate().setDuration(ANIMATION_DURATION).scaleY(scale).scaleX(scale).start();
         }
 
-        private void startInfoAlphaAnimation(float alpha) {
-            expandedLayout.animate().setDuration(ANIMATION_DURATION).alpha(alpha).start();
-        }
 
         @Override
         public boolean onLongClick(View v) {

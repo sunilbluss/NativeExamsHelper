@@ -97,4 +97,16 @@ public class ExamsQuery {
     public static boolean remove(SQLiteDatabase db, Exam exam) {
         return remove(db, DateHelper.getLongFromDate(exam.getDate()));
     }
+
+    public static int removeAll(SQLiteDatabase db) {
+        return db.delete(ExamsContract.ExamEntry.TABLE_NAME,
+                null,
+                null);
+    }
+
+    public static int removeSubjectExams(SQLiteDatabase db, String subjectTitle) {
+        return db.delete(ExamsContract.ExamEntry.TABLE_NAME,
+                ExamsContract.ExamEntry.SUBJECT_COLUMN + " = ?",
+                new String[] {subjectTitle});
+    }
 }
