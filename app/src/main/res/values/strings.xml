@@ -88,5 +88,6 @@
     <!--tags-->
     <string name="tag_dialog_select_grade">selectGrade</string>
     <string name="tag_dialog_select_subject">selectSubject</string>
+    <string name="tag_dialog_edit_subject">editSubject</string>
 
 </resources>

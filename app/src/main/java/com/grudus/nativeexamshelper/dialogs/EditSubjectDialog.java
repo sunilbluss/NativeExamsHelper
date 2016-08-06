@@ -5,6 +5,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -20,7 +21,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
-import com.grudus.nativeexamshelper.helpers.ColorHelper;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
 public class EditSubjectDialog extends DialogFragment {
@@ -29,12 +29,14 @@ public class EditSubjectDialog extends DialogFragment {
 
     private final int[] seekBarsIds = {R.id.seekbar_red, R.id.seekbar_green, R.id.seekbar_blue};
     private static final int MAX_RGB_VALUE = 255;
-    private int seekBarRealMargin = 24;
 
     private int[] colors;
 
     private Subject editedSubject = Subject.empty();
-    private OnSaveListener onSaveListener;
+    protected OnSaveListener onSaveListener;
+
+    private Rect rect;
+    private int seekBarLeft;
 
     private SeekBar[] seekBarsRGB;
     private TextView[] seekBarsTextViews;
@@ -50,9 +52,12 @@ public class EditSubjectDialog extends DialogFragment {
         initColors();
         initViews();
         initListeners();
-        setUpButtons(builder);
+        builder.setPositiveButton(getString(R.string.button_text_save), null);
+        builder.setNegativeButton(getString(R.string.button_text_back), null);
 
-        subjectInput.setText(editedSubject.getTitle());
+        if (!editedSubject.isEmpty()) {
+            subjectInput.setText(editedSubject.getTitle());
+        }
 
 
 
@@ -63,13 +68,16 @@ public class EditSubjectDialog extends DialogFragment {
                 root.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 setWidthTo90percentOfScreenWidth();
                 setUpSeekBars();
+                setUpButtonsListener(builder);
                 setButtonsColor();
             }
         });
 
+
         builder.setView(root);
         return builder.create();
     }
+
 
     private void initColors() {
         colorView = root.findViewById(R.id.dialog_edit_subject_colorview);
@@ -87,6 +95,7 @@ public class EditSubjectDialog extends DialogFragment {
         seekBarsRGB = new SeekBar[length];
         seekBarsTextViews = new TextView[length];
         subjectInput = (EditText) root.findViewById(R.id.edit_subject_title);
+        rect = new Rect();
 
         for (int i = 0; i < length; i++) {
             final ViewGroup viewGroup = (ViewGroup) root.findViewById(seekBarsIds[i]);
@@ -96,6 +105,8 @@ public class EditSubjectDialog extends DialogFragment {
 
             seekBarsTextViews[i].setText(String.valueOf(colors[i]));
         }
+
+        seekBarLeft = seekBarsRGB[0].getPaddingLeft();
     }
 
 
@@ -105,11 +116,9 @@ public class EditSubjectDialog extends DialogFragment {
             seekBarsRGB[i].setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    seekBarsTextViews[temp].setText(String.valueOf(progress));
+                    seekBarsTextViews[temp].setText(progress < 10 ? "  " + String.valueOf(progress) : (progress < 100 ? " " + progress : progress + ""));
 
-                    seekBarsTextViews[temp].setX(
-                            seekBarRealMargin + (root.getWidth() - seekBarRealMargin*2) * (float)progress / (float) MAX_RGB_VALUE
-                    );
+                    setSeekBarsTextViewsPosition(temp, progress);
 
                     colors[temp] = progress;
                     updateColorView();
@@ -122,30 +131,39 @@ public class EditSubjectDialog extends DialogFragment {
         }
     }
 
+    private void setSeekBarsTextViewsPosition(int whichOne, int progress) {
+        seekBarsRGB[whichOne].setProgress(progress);
+        rect = seekBarsRGB[whichOne].getThumb().getBounds();
+        seekBarsTextViews[whichOne].setX(rect.left /*+ seekBarLeft*/);
 
-    private void setUpButtons(AlertDialog.Builder builder) {
-        builder.setPositiveButton(getString(R.string.button_text_save), (((dialog, which1) -> {
-            if (inputIsEmpty()) {
-                Toast.makeText(getActivity(), getString(R.string.warning_add_subject_empty), Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (!inputIsCorrect()) {
-                Toast.makeText(getActivity(), getString(R.string.warning_add_subject_badchar), Toast.LENGTH_SHORT).show();
-                return;
-            }
-            updateSubject();
-            if (onSaveListener != null)
-                onSaveListener.onCorrectInputs(editedSubject);
-            this.dismiss();
-        })));
+    }
+
+
+    protected void setUpButtonsListener(AlertDialog.Builder builder) {
+        ((AlertDialog)getDialog()).getButton(DialogInterface.BUTTON_POSITIVE)
+                .setOnClickListener(v -> {
+                    if (inputIsEmpty()) {
+                        Toast.makeText(getActivity(), getString(R.string.warning_add_subject_empty), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (!inputIsCorrect()) {
+                        Toast.makeText(getActivity(), getString(R.string.warning_add_subject_badchar), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    updateSubject();
+                    if (onSaveListener != null)
+                        onSaveListener.onCorrectInputs(editedSubject);
+                    this.dismiss();
+                });
+
         builder.setNegativeButton(getString(R.string.button_text_back), ((dialog, which) -> this.dismiss()));
     }
 
-    private boolean inputIsEmpty() {
+    protected boolean inputIsEmpty() {
         return subjectInput.getText().toString().replaceAll("\\s+", "").isEmpty();
     }
 
-    private boolean inputIsCorrect() {
+    protected boolean inputIsCorrect() {
         return Character.isLetter(subjectInput.getText().toString().charAt(0));
     }
 
@@ -159,9 +177,7 @@ public class EditSubjectDialog extends DialogFragment {
 
     private void setUpSeekBars() {
         for (int i = 0; i < seekBarsTextViews.length; i++) {
-            seekBarsTextViews[i].setX(
-                    seekBarRealMargin + (root.getWidth() - seekBarRealMargin*2) * (float)colors[i] / (float) MAX_RGB_VALUE
-            );
+            setSeekBarsTextViewsPosition(i, colors[i]);
 
 
             seekBarsRGB[0].getThumb()

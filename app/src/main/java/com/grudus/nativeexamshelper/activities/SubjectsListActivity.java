@@ -1,7 +1,5 @@
 package com.grudus.nativeexamshelper.activities;
 
-import android.content.Intent;
-import android.database.Cursor;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,12 +9,14 @@ import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.activities.touchhelpers.ItemRemoveCallback;
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.adapters.ItemClickListener;
 import com.grudus.nativeexamshelper.adapters.SubjectsAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
+import com.grudus.nativeexamshelper.database.subjects.SubjectsContract;
 import com.grudus.nativeexamshelper.dialogs.EditSubjectDialog;
 import com.grudus.nativeexamshelper.helpers.ThemeHelper;
 import com.grudus.nativeexamshelper.pojos.Subject;
@@ -90,26 +90,40 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
         Subject subject = adapter.getItem(position);
         new EditSubjectDialog()
                 .addSubject(subject)
-                .addListener(editedSubject -> {
-                    examsDbHelper.updateSubject(subject, editedSubject)
+                .addListener(editedSubject ->
+                    subscription = examsDbHelper.updateSubject(subject, editedSubject)
                             .flatMap(howMany -> examsDbHelper.getAllSubjectsSortByTitle())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(cursor -> {
                                 adapter.changeCursor(cursor);
                                 adapter.notifyItemChanged(position);
-                            });
-
-                })
-                .show(getFragmentManager(), "qqq");
-
+                            }))
+                .show(getFragmentManager(), getString(R.string.tag_dialog_edit_subject));
     }
 
 
     @OnClick(R.id.floating_button_add_subject)
     public void addSubject() {
-        Intent openAddNewSubjectActivity = new Intent(getApplicationContext(), AddNewSubjectActivity.class);
-        startActivity(openAddNewSubjectActivity);
+        new EditSubjectDialog()
+                .addListener((editedSubject ->
+                    subscription = examsDbHelper.insertSubject(editedSubject)
+                            .flatMap(id -> examsDbHelper.getAllSubjectsSortByTitle())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(cursor -> {
+                                if (cursor.moveToFirst()) {
+                                    int position = 0;
+                                    do {
+                                        if ( cursor.getString(SubjectsContract.SubjectEntry.TITLE_COLUMN_INDEX)
+                                                .compareTo(editedSubject.getTitle()) > 0) break;
+                                        position++;
+                                    } while (cursor.moveToNext());
+                                    adapter.changeCursor(cursor);
+                                    adapter.notifyItemInserted(position - 1);
+                                }
+                })))
+                .show(getFragmentManager(), "qqq");
     }
 
 
