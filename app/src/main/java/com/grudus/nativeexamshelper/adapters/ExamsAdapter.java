@@ -3,11 +3,13 @@ package com.grudus.nativeexamshelper.adapters;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,40 +32,63 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
 
     private Cursor cursor;
 
-    private static final int ANIMATION_DURATION = 400;
+    private static final int ANIMATION_DURATION = AnimationHelper.DEFAULT_ANIMATION_DURATION;
     private static final float SCALE_TO_RESIZE = 1.4f;
+
+    private final int selectedItemBackgroundColor;
+    private final int normalItemBackgroundColor;
 
     private final ExamsDbHelper dbHelper;
     private final Context context;
 
-    static {
-        AnimationHelper.setDuration(ANIMATION_DURATION);
-    }
 
     public ExamsAdapter(Context context, Cursor cursor) {
         this.cursor = cursor;
         this.dbHelper = ExamsDbHelper.getInstance(context);
         this.context = context;
+
+        TypedValue typedValue = new TypedValue();
+        Resources.Theme theme = context.getTheme();
+
+        theme.resolveAttribute(R.attr.selectedListItemColor, typedValue, true);
+        selectedItemBackgroundColor = typedValue.data;
+
+        theme.resolveAttribute(R.attr.background, typedValue, true);
+        normalItemBackgroundColor = typedValue.data;
     }
+
 
     @Override
     public ExamsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         dbHelper.openDBReadOnly();
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_exam, parent, false);
-        ExamsViewHolder vh = new ExamsViewHolder(itemView);
-        return vh;
+        return new ExamsViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(ExamsViewHolder holder, int position) {
         cursor.moveToPosition(position);
+
         String subjectTitle = cursor.getString(ExamsContract.ExamEntry.SUBJECT_COLUMN_INDEX);
         long dateLong = cursor.getLong(ExamsContract.ExamEntry.DATE_COLUMN_INDEX);
 
-        String readableDate = DateHelper.getReadableDataFromLong(dateLong);
+        findSubjectAndBindColor(holder, subjectTitle);
+        bindIconView(holder, subjectTitle);
+        bindSubjectView(holder, subjectTitle);
+        bindDateView(holder, dateLong);
 
+        bindExpandedLayout(holder, dateLong);
 
+    }
+
+    private void bindExpandedLayout(ExamsViewHolder holder, long dateLong) {
+        String info = cursor.getString(ExamsContract.ExamEntry.INFO_COLUMN_INDEX);
+        ((TextView)holder.expandedLayout.findViewById(R.id.list_item_expanded_time)).setText(TimeHelper.getFormattedTime(dateLong));
+        ((TextView)holder.expandedLayout.findViewById(R.id.list_item_expanded_info)).setText(info);
+    }
+
+    private void findSubjectAndBindColor(ExamsViewHolder holder, String subjectTitle) {
         dbHelper.findSubjectByTitle(subjectTitle)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -74,15 +99,19 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
                         holder.iconView.setBackground(bg);
                     }
                 });
+    }
 
-
+    private void bindIconView(ExamsViewHolder holder, String subjectTitle) {
         holder.iconView.setText(subjectTitle.substring(0, 1).toUpperCase());
-        holder.subjectView.setText(subjectTitle);
-        holder.dateView.setText(readableDate);
+    }
 
-        String info = cursor.getString(ExamsContract.ExamEntry.INFO_COLUMN_INDEX);
-        ((TextView)holder.expandedLayout.findViewById(R.id.list_item_expanded_time)).setText(TimeHelper.getFormattedTime(dateLong));
-        ((TextView)holder.expandedLayout.findViewById(R.id.list_item_expanded_info)).setText(info);
+    private void bindSubjectView(ExamsViewHolder holder, String subjectTitle) {
+        holder.subjectView.setText(subjectTitle);
+    }
+
+    private void bindDateView(ExamsViewHolder holder, long dateLong) {
+        String readableDate = DateHelper.getReadableDataFromLong(dateLong);
+        holder.dateView.setText(readableDate);
     }
 
     @Override
@@ -96,8 +125,6 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
         long millis = cursor.getLong(ExamsContract.ExamEntry.DATE_COLUMN_INDEX);
 
         dbHelper.removeExam(millis)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
                 .flatMap(function -> dbHelper.getAllIncomingExamsSortByDate())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -145,6 +172,7 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
 
             expanded = false;
             selected = false;
+            AnimationHelper.setDuration(ANIMATION_DURATION);
 
         }
 
@@ -172,43 +200,17 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
 
         @Override
         public boolean onLongClick(View v) {
-            Log.d("@@@@", "onLongClick: selected = " + selected);
             if (expanded) return false;
             if (!selected) {
-                itemView.setBackgroundColor(0xffeeeeee);
+                itemView.setBackgroundColor(selectedItemBackgroundColor);
                 selected = true;
-                iconView.animate()
-                        .rotationY(90)
-                        .setDuration(ANIMATION_DURATION/2)
-                        .setListener(new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                super.onAnimationEnd(animation);
-                                iconView.setVisibility(View.INVISIBLE);
-                                binIcon.setRotationY(90);
-                                binIcon.setVisibility(View.VISIBLE);
-                                binIcon.animate().setDuration(ANIMATION_DURATION/2).rotationY(180).setListener(null).start();
-
-                            }
-                        })
+                AnimationHelper.rotateToReceiveBinIcon(iconView, binIcon, ANIMATION_DURATION/2)
                         .start();
             }
             else {
                 selected = false;
-                itemView.setBackgroundColor(0xffffffff);
-                binIcon.animate()
-                        .rotationY(90)
-                        .setDuration(ANIMATION_DURATION/2)
-                        .setListener(new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                super.onAnimationEnd(animation);
-                                binIcon.setVisibility(View.INVISIBLE);
-                                iconView.setRotationY(90);
-                                iconView.setVisibility(View.VISIBLE);
-                                iconView.animate().setDuration(ANIMATION_DURATION/2).rotationY(0).setListener(null).start();
-                            }
-                        })
+                itemView.setBackgroundColor(normalItemBackgroundColor);
+                AnimationHelper.rotateToDisposeBinIcon(iconView, binIcon, ANIMATION_DURATION/2)
                         .start();
             }
             return true;

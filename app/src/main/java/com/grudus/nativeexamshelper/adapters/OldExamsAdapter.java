@@ -1,21 +1,30 @@
 package com.grudus.nativeexamshelper.adapters;
 
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
 import com.grudus.nativeexamshelper.database.subjects.SubjectsContract;
+import com.grudus.nativeexamshelper.helpers.AnimationHelper;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
 import java.util.Arrays;
@@ -26,6 +35,10 @@ import rx.schedulers.Schedulers;
 public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExamsViewHolder> {
 
     public static final int HEADER_POSITION = 0;
+    public static final int ANIMATION_DURATION = AnimationHelper.DEFAULT_ANIMATION_DURATION / 2;
+
+    private final int selectedItemBackgroundColor;
+    private final int normalItemBackgroundColor;
 
     private Cursor cursor;
     private final ExamsDbHelper dbHelper;
@@ -37,7 +50,15 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
         this.dbHelper = ExamsDbHelper.getInstance(context);
         this.cursor = cursor;
         headers = 1;
-        Log.d("@@@", "OldExamsAdapter: konstruktor " + Arrays.toString(cursor.getColumnNames()) + ", " + cursor.getCount());
+
+        TypedValue typedValue = new TypedValue();
+        Resources.Theme theme = context.getTheme();
+
+        theme.resolveAttribute(R.attr.selectedListItemColor, typedValue, true);
+        selectedItemBackgroundColor = typedValue.data;
+
+        theme.resolveAttribute(R.attr.background, typedValue, true);
+        normalItemBackgroundColor = typedValue.data;
     }
 
     public void setListener(ItemClickListener listener) {
@@ -49,21 +70,25 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
         dbHelper.openDBReadOnly();
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_old_exam, parent, false);
-        Log.d("@@@", "OldExamsAdapter: onCreateViewHolder");
         return new OldExamsViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(OldExamsViewHolder holder, int position) {
-        Log.d("@@@", "OldExamsAdapter: onBind " + position);
         if (position == HEADER_POSITION)
             return; //header - already defined in xml
         position = position - getHeaderCount();
-
-
         cursor.moveToPosition(position);
+
         final String subjectTitle = cursor.getString(ExamsContract.OldExamEntry.SUBJECT_COLUMN_INDEX);
 
+        findSubjectAndBindColor(holder, subjectTitle);
+        bindIconView(holder, subjectTitle);
+        bindSubjectView(holder, subjectTitle);
+
+    }
+
+    private void findSubjectAndBindColor(OldExamsViewHolder holder, String subjectTitle) {
         dbHelper.findSubjectByTitle(subjectTitle)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -74,11 +99,16 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
                         holder.iconView.setBackground(bg);
                     }
                 });
+    }
 
+    private void bindIconView(OldExamsViewHolder holder, String subjectTitle) {
         holder.iconView.setText(subjectTitle.substring(0, 1).toUpperCase());
+    }
 
+    private void bindSubjectView(OldExamsViewHolder holder, String subjectTitle) {
         holder.subjectView.setText(subjectTitle);
     }
+
 
     public Subject getSubjectAtPosition(int adapterPosition) {
         cursor.moveToPosition(adapterPosition - getHeaderCount());
@@ -109,20 +139,62 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
                 : cursor.getCount() + getHeaderCount();
     }
 
-    public class OldExamsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+    private void deleteAllSubjectExams(int adapterPosition) {
+        final Subject subject = getSubjectAtPosition(adapterPosition);
+
+        dbHelper.removeAllOldSubjectExams(subject)
+                .flatMap(howMany -> dbHelper.getSubjectsWithGrade())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::changeCursor,
+                        onError -> {},
+                        () -> notifyItemRemoved(adapterPosition));
+
+    }
+
+    public class OldExamsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         private TextView subjectView, iconView;
+        private ImageView binIcon;
+
+        private boolean deleteMode = false;
 
         public OldExamsViewHolder(View itemView) {
             super(itemView);
             subjectView = (TextView) itemView.findViewById(R.id.list_item_old_exam_subject);
             iconView = (TextView) itemView.findViewById(R.id.list_item_old_exam_icon_text);
+            binIcon = (ImageView) itemView.findViewById(R.id.list_item_image_under_icon);
+
+            binIcon.setOnClickListener(view ->
+                deleteAllSubjectExams(getAdapterPosition())
+            );
+
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            listener.itemClicked(v, getAdapterPosition());
+            if (!deleteMode)
+                listener.itemClicked(v, getAdapterPosition());
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            if (getAdapterPosition() == HEADER_POSITION)
+                return false;
+            if (deleteMode) {
+                deleteMode = false;
+                itemView.setBackgroundColor(normalItemBackgroundColor);
+                AnimationHelper.rotateToDisposeBinIcon(iconView, binIcon, ANIMATION_DURATION).start();
+            }
+            else {
+                deleteMode = true;
+                itemView.setBackgroundColor(selectedItemBackgroundColor);
+                AnimationHelper.rotateToReceiveBinIcon(iconView, binIcon, ANIMATION_DURATION).start();
+            }
+            return true;
         }
     }
 }

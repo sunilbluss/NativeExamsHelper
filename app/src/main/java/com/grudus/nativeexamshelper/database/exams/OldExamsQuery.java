@@ -67,4 +67,10 @@ public class OldExamsQuery {
                 ExamsContract.OldExamEntry.SUBJECT_COLUMN + " = ?",
                 new String[] {subjectTitle});
     }
+
+    public static Object removeExam(SQLiteDatabase db, long timeInMillis) {
+        return db.delete(ExamsContract.OldExamEntry.TABLE_NAME,
+                ExamsContract.OldExamEntry.DATE_COLUMN + " = ?",
+                new String[] {timeInMillis + ""});
+    }
 }

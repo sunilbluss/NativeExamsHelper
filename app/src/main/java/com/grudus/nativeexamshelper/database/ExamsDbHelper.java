@@ -19,6 +19,8 @@ import com.grudus.nativeexamshelper.pojos.Subject;
 import com.grudus.nativeexamshelper.pojos.grades.Grade;
 
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class ExamsDbHelper extends SQLiteOpenHelper {
 
@@ -145,6 +147,14 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         });
     }
 
+    public Observable<Integer> removeAllOldSubjectExams(Subject subject) {
+        return Observable.create(subscriber -> {
+            subscriber.onNext(OldExamsQuery.removeSubjectExams(database, subject.getTitle()));
+            subscriber.onNext(SubjectsQuery.setSubjectHasGrade(database, subject, false));
+            subscriber.onCompleted();
+        });
+    }
+
 //    Exams part *********************************
 
     public Observable<Long> insertExam(Exam exam) {
@@ -224,11 +234,13 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
                 .flatMap((success) -> insertOldExam(oldExam));
     }
 
-    public Observable<Integer> removeAllOldExams() {
+    public Observable<Object> removeOldExam(long timeInMillis) {
         return Observable.create(subscriber -> {
-            subscriber.onNext(OldExamsQuery.removeAll(database));
+            subscriber.onNext(OldExamsQuery.removeExam(database, timeInMillis));
             subscriber.onCompleted();
-        });
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<Cursor> getAllIncomingExamsSortByDate() {

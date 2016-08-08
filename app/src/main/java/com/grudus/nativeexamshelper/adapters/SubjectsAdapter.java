@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.activities.touchhelpers.SwipeToDeleteable;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.subjects.SubjectsContract;
 import com.grudus.nativeexamshelper.pojos.Subject;
@@ -48,14 +49,26 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
         cursor.moveToPosition(position);
 
         String titleText = cursor.getString(SubjectsContract.SubjectEntry.TITLE_COLUMN_INDEX);
-        holder.titleView.setText(titleText);
 
+        bindTitleText(holder, titleText);
+        bindColor(holder);
+        bindIconView(holder, titleText);
+
+    }
+
+    private void bindTitleText(SubjectsViewHolder holder, String title) {
+        holder.titleView.setText(title);
+    }
+
+    private void bindColor(SubjectsViewHolder holder) {
         int color = Color.parseColor(cursor.getString(SubjectsContract.SubjectEntry.COLOR_COLUMN_INDEX));
 
         GradientDrawable bgShape = (GradientDrawable) holder.iconView.getBackground();
         bgShape.setColor(color);
         holder.iconView.setBackground(bgShape);
+    }
 
+    private void bindIconView(SubjectsViewHolder holder, String titleText) {
         holder.iconView.setText(titleText.substring(0, 1).toUpperCase());
     }
 
@@ -110,7 +123,7 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
     }
 
 
-    public class SubjectsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class SubjectsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, SwipeToDeleteable {
 
         TextView titleView, iconView;
         LinearLayout invisibleView;
@@ -139,20 +152,25 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
             }
         }
 
-        public SubjectsAdapter getAdapter() {
-            return SubjectsAdapter.this;
-        }
-
-        public LinearLayout getLinearLayout() {return linearLayout;}
-
         public String getSubject() {
             return titleView.getText().toString();
         }
 
 
+        @Override
+        public ViewGroup getSwipedLayout() {
+            return linearLayout;
+        }
+
+        @Override
         public void clearView() {
             linearLayout.setX(0);
             linearLayout.setTranslationX(0);
+        }
+
+        @Override
+        public void delete(int position) {
+            removeFromDbAndChangeCursor(position);
         }
 
     }

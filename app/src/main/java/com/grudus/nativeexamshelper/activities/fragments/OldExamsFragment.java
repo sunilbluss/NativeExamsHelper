@@ -21,9 +21,6 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class OldExamsFragment extends Fragment {
 
     public final String TAG = "@@@" + this.getClass().getSimpleName();

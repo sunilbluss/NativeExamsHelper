@@ -1,17 +1,23 @@
 package com.grudus.nativeexamshelper.helpers;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.view.View;
+import android.view.ViewPropertyAnimator;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 /* expand and collapse animation copied from http://stackoverflow.com/a/13381228/6551568 */
 public class AnimationHelper {
 
+    public static final int DEFAULT_ANIMATION_DURATION = 400;
+
     private static int duration;
 
     static {
-        duration = 500;
+        duration = DEFAULT_ANIMATION_DURATION;
     }
 
     public static void setDuration(int duration) {
@@ -69,5 +75,48 @@ public class AnimationHelper {
 
         a.setDuration(duration);
         v.startAnimation(a);
+    }
+
+    public static ViewPropertyAnimator rotateToReceiveBinIcon(final View iconView, final ImageView binIcon, int duration) {
+        return iconView.animate()
+                .rotationY(90)
+                .setDuration(duration)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        iconView.setVisibility(View.INVISIBLE);
+                        binIcon.setRotationY(90);
+                        binIcon.setVisibility(View.VISIBLE);
+                        binIcon.animate().setDuration(duration).rotationY(180).setListener(null).start();
+
+                    }
+                });
+    }
+
+    public static ViewPropertyAnimator rotateToReceiveBinIcon(final View iconView, final ImageView binIcon) {
+        return rotateToReceiveBinIcon(iconView, binIcon, DEFAULT_ANIMATION_DURATION);
+    }
+
+
+
+    public static ViewPropertyAnimator rotateToDisposeBinIcon(final View iconView, final ImageView binIcon, int duration) {
+        return binIcon.animate()
+                .rotationY(90)
+                .setDuration(duration)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        binIcon.setVisibility(View.INVISIBLE);
+                        iconView.setRotationY(90);
+                        iconView.setVisibility(View.VISIBLE);
+                        iconView.animate().setDuration(duration).rotationY(0).setListener(null).start();
+                    }
+                });
+    }
+
+    public static ViewPropertyAnimator rotateToDisposeBinIcon(final View iconView, final ImageView binIcon) {
+        return rotateToDisposeBinIcon(iconView, binIcon, DEFAULT_ANIMATION_DURATION);
     }
 }

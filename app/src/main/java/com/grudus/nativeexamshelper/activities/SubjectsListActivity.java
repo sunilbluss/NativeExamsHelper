@@ -38,17 +38,13 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
 
     private ExamsDbHelper examsDbHelper;
     private SubjectsAdapter adapter;
-    private ItemTouchHelper itemTouchHelper;
 
     private Subscription subscription;
 
-    /* If true - after click on listview item it is possible to change color and title
-     *  otherwise - it's on selected mode (user is choosing exam subject)*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ThemeHelper.onActivityCreateSetTheme(this);
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "ON CREATE SLACTIVITY");
         setContentView(R.layout.activity_subjects_list);
         ButterKnife.bind(this);
 
@@ -62,8 +58,8 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
     }
 
     private void initSwipeListener() {
-        ItemRemoveCallback itemRemoveCallback = new ItemRemoveCallback(0, ItemTouchHelper.RIGHT, this);
-        itemTouchHelper = new ItemTouchHelper(itemRemoveCallback);
+        ItemRemoveCallback itemRemoveCallback = new ItemRemoveCallback(0, ItemTouchHelper.RIGHT, SubjectsAdapter.SubjectsViewHolder.class);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemRemoveCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 

@@ -8,10 +8,12 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.activities.touchhelpers.ItemRemoveCallback;
 import com.grudus.nativeexamshelper.adapters.SingleSubjectExamsAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
@@ -46,6 +48,7 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
     private SingleSubjectExamsAdapter adapter;
     private String subjectTitle;
     private ExamsDbHelper dbHelper;
+    private Subject subject;
 
     private Subscription subscription;
 
@@ -67,11 +70,18 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
         updateStatisticsLabels();
 
         initListeners();
+        initSwipeListener();
 
     }
 
+    private void initSwipeListener() {
+        ItemRemoveCallback itemRemoveCallback = new ItemRemoveCallback(0, ItemTouchHelper.RIGHT, null);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemRemoveCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
     private void getIntentInformation() {
-        Subject subject = getIntent().getParcelableExtra(INTENT_SUBJECT_TAG);
+        subject = getIntent().getParcelableExtra(INTENT_SUBJECT_TAG);
         subjectTitle = subject.getTitle();
     }
 
@@ -92,7 +102,7 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(cursor -> {
-                    adapter = new SingleSubjectExamsAdapter(this, cursor);
+                    adapter = new SingleSubjectExamsAdapter(this, cursor, subject);
                     recyclerView.setLayoutManager(new LinearLayoutManager(this));
                     recyclerView.setAdapter(adapter);
                 });

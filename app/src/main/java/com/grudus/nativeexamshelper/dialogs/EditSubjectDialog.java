@@ -28,6 +28,8 @@ public class EditSubjectDialog extends DialogFragment {
     private final String TAG = "@@@" + this.getClass().getSimpleName();
 
     private final int[] seekBarsIds = {R.id.seekbar_red, R.id.seekbar_green, R.id.seekbar_blue};
+    private final int[] seekBarsThumbColors = {R.color.seekBarRed, R.color.seekBarGreen, R.color.seekBarBlue};
+    private final int[] seekBarsProgressDrawables = {R.drawable.red_seekbar, R.drawable.green_seekbar, R.drawable.blue_seekbar};
     private static final int MAX_RGB_VALUE = 255;
 
     private int[] colors;
@@ -68,8 +70,8 @@ public class EditSubjectDialog extends DialogFragment {
                 root.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 setWidthTo90percentOfScreenWidth();
                 setUpSeekBars();
-                setUpButtonsListener(builder);
-                setButtonsColor();
+                setUpButtonListeners(builder);
+                setButtonColors();
             }
         });
 
@@ -101,8 +103,8 @@ public class EditSubjectDialog extends DialogFragment {
             final ViewGroup viewGroup = (ViewGroup) root.findViewById(seekBarsIds[i]);
             seekBarsRGB[i] = (SeekBar) viewGroup.getChildAt(1);
             seekBarsRGB[i].setProgress(colors[i]);
-            seekBarsTextViews[i] = (TextView) viewGroup.getChildAt(0);
 
+            seekBarsTextViews[i] = (TextView) viewGroup.getChildAt(0);
             seekBarsTextViews[i].setText(String.valueOf(colors[i]));
         }
 
@@ -118,7 +120,7 @@ public class EditSubjectDialog extends DialogFragment {
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     seekBarsTextViews[temp].setText(progress < 10 ? "  " + String.valueOf(progress) : (progress < 100 ? " " + progress : progress + ""));
 
-                    setSeekBarsTextViewsPosition(temp, progress);
+                    setSeekBarTextViewPositions(temp, progress);
 
                     colors[temp] = progress;
                     updateColorView();
@@ -131,7 +133,7 @@ public class EditSubjectDialog extends DialogFragment {
         }
     }
 
-    private void setSeekBarsTextViewsPosition(int whichOne, int progress) {
+    private void setSeekBarTextViewPositions(int whichOne, int progress) {
         seekBarsRGB[whichOne].setProgress(progress);
         rect = seekBarsRGB[whichOne].getThumb().getBounds();
         seekBarsTextViews[whichOne].setX(rect.left /*+ seekBarLeft*/);
@@ -139,7 +141,7 @@ public class EditSubjectDialog extends DialogFragment {
     }
 
 
-    protected void setUpButtonsListener(AlertDialog.Builder builder) {
+    protected void setUpButtonListeners(AlertDialog.Builder builder) {
         ((AlertDialog)getDialog()).getButton(DialogInterface.BUTTON_POSITIVE)
                 .setOnClickListener(v -> {
                     if (inputIsEmpty()) {
@@ -177,31 +179,18 @@ public class EditSubjectDialog extends DialogFragment {
 
     private void setUpSeekBars() {
         for (int i = 0; i < seekBarsTextViews.length; i++) {
-            setSeekBarsTextViewsPosition(i, colors[i]);
+            setSeekBarTextViewPositions(i, colors[i]);
 
+            seekBarsRGB[i].getThumb()
+                    .setColorFilter(ContextCompat.getColor(getActivity(), seekBarsThumbColors[i]), PorterDuff.Mode.SRC_IN);
 
-            seekBarsRGB[0].getThumb()
-                    .setColorFilter(ContextCompat.getColor(getActivity(), R.color.seekBarRed), PorterDuff.Mode.SRC_IN);
-
-            seekBarsRGB[0].setProgressDrawable(
-                    ContextCompat.getDrawable(getActivity(), R.drawable.red_seekbar));
-
-            seekBarsRGB[1].getThumb()
-                    .setColorFilter(ContextCompat.getColor(getActivity(), R.color.seekBarGreen), PorterDuff.Mode.SRC_IN);
-
-            seekBarsRGB[1].setProgressDrawable(
-                    ContextCompat.getDrawable(getActivity(), R.drawable.green_seekbar));
-
-            seekBarsRGB[2].getThumb()
-                    .setColorFilter(ContextCompat.getColor(getActivity(), R.color.seekBarBlue), PorterDuff.Mode.SRC_IN);
-
-            seekBarsRGB[2].setProgressDrawable(
-                    ContextCompat.getDrawable(getActivity(), R.drawable.blue_seekbar));
+            seekBarsRGB[i].setProgressDrawable(
+                    ContextCompat.getDrawable(getActivity(), seekBarsProgressDrawables[i]));
 
         }
     }
 
-    private void setButtonsColor() {
+    private void setButtonColors() {
         TypedValue typedValue = new TypedValue();
         getActivity().getTheme()
                 .resolveAttribute(R.attr.colorAccent, typedValue, true);
