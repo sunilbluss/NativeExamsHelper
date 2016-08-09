@@ -57,7 +57,6 @@ public class OldExamsFragment extends Fragment {
     private void initDatabase() {
         if (examsDbHelper == null && getActivity() != null)
             examsDbHelper = ExamsDbHelper.getInstance(getContext());
-        examsDbHelper.openDB();
     }
 
 
@@ -93,11 +92,9 @@ public class OldExamsFragment extends Fragment {
         super.onPause();
         if (!subscription.isUnsubscribed())
             subscription.unsubscribe();
-        closeDatabase();
     }
 
-    private void closeDatabase() {
-        examsDbHelper.closeDB();
+    public void closeDatabase() {
         adapter.closeDatabase();
     }
 }

@@ -90,4 +90,9 @@
     <string name="tag_dialog_select_subject">selectSubject</string>
     <string name="tag_dialog_edit_subject">editSubject</string>
 
+    <!--dialogs-->
+    <string name="dialog_select_grade_title">Wybierz ocenę</string>
+    <string name="dialog_select_grade_posbut">Wybierz</string>
+    <string name="dialog_negbut">Cofnij</string>
+
 </resources>

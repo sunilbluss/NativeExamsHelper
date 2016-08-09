@@ -10,5 +10,8 @@
         <attr name="listItemTextColor" format="reference|color" />
         <attr name="iconColor" format="reference|color" />
         <attr name="selectedListItemColor" format="reference|color" />
+        <attr name="navigationViewBackground" format="reference" />
+        <attr name="navigationViewTextColor" format="reference" />
+        <attr name="navigationViewIconColor" format="reference" />
     </declare-styleable>
 </resources>

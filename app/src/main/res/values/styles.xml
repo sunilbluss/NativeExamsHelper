@@ -13,11 +13,14 @@
         <item name="android:buttonStyle">@style/AddButtonStyle</item>
         <item name="background">@color/backgroundColor</item>
         <item name="floatingButtonColor">@color/colorAccent</item>
-        <item name="listItemTextColor">#616161</item>
+        <item name="listItemTextColor">@color/normalTextColor</item>
         <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>
         <item name="iconColor">#000000</item>
         <item name="colorControlNormal">#9e9e9e</item>
         <item name="selectedListItemColor">#eeeeee</item>
+        <item name="navigationViewBackground">@drawable/navigation_view_background</item>
+        <item name="navigationViewTextColor">@drawable/navigation_view_text_color</item>
+        <item name="navigationViewIconColor">@drawable/navigation_view_icon_color</item>
 
     </style>
 
@@ -33,6 +36,9 @@
         <item name="colorControlNormal">#9e9e9e</item>
         <item name="android:timePickerDialogTheme" tools:targetApi="lollipop">@style/TimePickerTheme</item>
         <item name="selectedListItemColor">#313131</item>
+        <item name="navigationViewBackground">@drawable/navigation_view_background_dark</item>
+        <item name="navigationViewTextColor">@drawable/navigation_view_text_color_dark</item>
+        <item name="navigationViewIconColor">@drawable/navigation_view_icon_color_dark</item>
 
     </style>
 

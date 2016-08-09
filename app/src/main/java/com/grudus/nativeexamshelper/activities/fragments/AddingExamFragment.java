@@ -96,11 +96,9 @@ public class AddingExamFragment extends Fragment {
         super.onPause();
         if (!subscription.isUnsubscribed())
             subscription.unsubscribe();
-        closeDatabase();
     }
 
-    private void closeDatabase() {
-        examsDbHelper.closeDB();
+    public void closeDatabase() {
         adapter.closeDatabase();
     }
 
@@ -115,7 +113,6 @@ public class AddingExamFragment extends Fragment {
                        adapter.changeCursor(null);
                        adapter.notifyItemRangeRemoved(0, howManyRows);
                    }
-                }, onError -> examsDbHelper.closeDB(),
-                        () -> examsDbHelper.closeDB());
+                }, onError -> examsDbHelper.closeDB());
     }
 }

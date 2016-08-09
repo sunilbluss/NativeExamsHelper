@@ -33,11 +33,11 @@ public class SelectGradeDialog extends DialogFragment {
         View root = inflater.inflate(R.layout.dialog_select_grade, null);
         builder.setView(root);
 
-        builder.setTitle("Wybierz ocenę");
+        builder.setTitle(getString(R.string.dialog_select_grade_title));
         setUpPickers(root);
 
-        builder.setPositiveButton("Wybierz", listener);
-        builder.setNegativeButton("Wróć", null);
+        builder.setPositiveButton(getString(R.string.dialog_select_grade_posbut), listener);
+        builder.setNegativeButton(getString(R.string.dialog_negbut), null);
 
 
         return builder.create();
@@ -51,9 +51,8 @@ public class SelectGradeDialog extends DialogFragment {
         picker1.setMinValue(0);
         picker1.setMaxValue(5);
         picker1.setDisplayedValues(new String[] {"-", " ", "+", "-", " ", "+"});
-        picker1.setWrapSelectorWheel(false);
+        picker1.setWrapSelectorWheel(true);
 
-        picker1.setEnabled(false);
     }
 
 
@@ -62,7 +61,12 @@ public class SelectGradeDialog extends DialogFragment {
     }
 
     public double getSelectedGrade() {
-        return picker.getValue();
+        switch (picker1.getValue() % 3) {
+            case 0: return picker.getValue() - 0.25;
+            default:
+            case 1: return picker.getValue();
+            case 2: return picker.getValue() + 0.25;
+        }
     }
 
 }

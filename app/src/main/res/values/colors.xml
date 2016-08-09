@@ -17,6 +17,8 @@
     <color name="button_text">@color/settingsColor</color>
 
     <color name="niceBlueColor">#4286F5</color>
+
+    <color name="navigationViewPressed">#55536DFE</color>
     
     <!--DARK THEME-->
     <color name="dark_colorPrimaryDark">#101010</color>
@@ -31,6 +33,9 @@
     <color name="seekBarRed">#cc0000</color>
     <color name="seekBarGreen">#00c853</color>
     <color name="seekBarBlue">@color/colorPrimary</color>
+
+    <color name="normalTextColor">#616161</color>
+    <color name="navigationViewPressedDark">#554CAF50</color>
 
 
     <string-array name="defaultSubjectsColors">

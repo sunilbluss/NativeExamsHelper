@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.activities.fragments.AddingExamFragment;
+import com.grudus.nativeexamshelper.activities.fragments.OldExamsFragment;
 import com.grudus.nativeexamshelper.activities.sliding.SlidingTabLayout;
 import com.grudus.nativeexamshelper.adapters.ViewPagerAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
@@ -37,18 +38,12 @@ public class ExamsMainActivity extends AppCompatActivity{
 
     @BindView(R.id.view_pager) ViewPager viewPager;
     @BindView(R.id.tabs) SlidingTabLayout slidingTabLayout;
-
-    @BindView(R.id.drawer_layout)
-    DrawerLayout drawerLayout;
-
+    @BindView(R.id.drawer_layout) DrawerLayout drawerLayout;
     @BindView(R.id.toolbar) Toolbar toolbar;
-
-    @BindView(R.id.nvView)
-    NavigationView navigationView;
+    @BindView(R.id.nvView) NavigationView navigationView;
 
     private ExamsDbHelper examsDbHelper;
     private ViewPagerAdapter viewPagerAdapter;
-    private ActionBarDrawerToggle actionBarDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,39 +52,23 @@ public class ExamsMainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main_exams);
         ButterKnife.bind(this);
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            getWindow().setSharedElementExitTransition(TransitionInflater.from(this).inflateTransition(R.transition.list_item_to_toolbar));
-//        }
+        initDatabase();
 
-        viewPagerInit();
+        initViewPager();
         setUpToolbar();
+        setNavigationViewHeaderSize();
+        setUpNavigationViewListener();
 
         DateHelper.setDateFormat(getResources().getString(R.string.date_format));
 
-        setNavigationViewHeaderSize();
-
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem item) {
-                if (item.getItemId() == R.id.menu_item_change_theme) {
-                    ThemeHelper.changeToTheme(ExamsMainActivity.this, ThemeHelper.nextTheme());
-                }
-                return true;
-            }
-        });
-
-
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-//        RefWatcher ref = MyApplication.getRefWatcher(this);
-//        ref.watch(this);
-//        ref.watch(viewPager);
+    private void initDatabase() {
+        examsDbHelper = ExamsDbHelper.getInstance(this);
+        examsDbHelper.openDB();
     }
 
-    private void viewPagerInit() {
+    private void initViewPager() {
         String[] tabs = getResources().getStringArray(R.array.tab_titles);
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), tabs);
 
@@ -97,15 +76,17 @@ public class ExamsMainActivity extends AppCompatActivity{
 
         slidingTabLayout.setDistributeEvenly(true);
 
-        slidingTabLayout.setCustomTabColorizer(position -> ContextCompat.getColor(getApplicationContext(), R.color.tabsScrollColor));
+        slidingTabLayout.setCustomTabColorizer(position ->
+                ContextCompat.getColor(getApplicationContext(), R.color.tabsScrollColor));
 
         slidingTabLayout.setViewPager(viewPager);
     }
 
+
     private void setUpToolbar() {
         setSupportActionBar(toolbar);
 
-        actionBarDrawerToggle = new ActionBarDrawerToggle(
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(
                 this,
                 drawerLayout,
                 toolbar,
@@ -118,8 +99,6 @@ public class ExamsMainActivity extends AppCompatActivity{
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.hamburger_icon);
     }
-
-
 
     private void setNavigationViewHeaderSize() {
         final View header = navigationView.getHeaderView(0);
@@ -140,60 +119,39 @@ public class ExamsMainActivity extends AppCompatActivity{
     }
 
 
-    private void initDatabase() {
-        examsDbHelper = ExamsDbHelper.getInstance(this);
-        examsDbHelper.openDB();
-        Log.d(TAG, "initDatabase method: ");
-    }
 
+    private void setUpNavigationViewListener() {
+        navigationView.setNavigationItemSelectedListener(item -> {
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.toolbar_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
+            switch (item.getItemId()) {
+                case R.id.menu_item_change_theme:
+                    ThemeHelper.changeToTheme(ExamsMainActivity.this, ThemeHelper.nextTheme());
+                    break;
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_item_deleteAll) {
-            Toast.makeText(this, "Usunieto wszystko", Toast.LENGTH_SHORT).show();
-            initDatabase();
+                case R.id.menu_item_deleteAll:
+                    ((AddingExamFragment) viewPagerAdapter.getFragment(0)).removeAll();
+                    break;
 
-            ((AddingExamFragment) viewPagerAdapter.getFragment(0)).removeAll();
+                case R.id.menu_item_refresh_subjects:
+                    examsDbHelper.refreshSubjects()
+                            .subscribeOn(Schedulers.io())
+                            .subscribe();
+                    break;
 
-            return true;
-        }
-
-        if (item.getItemId() == R.id.menu_item_refresh_subjects) {
-            Toast.makeText(this, "Przedmioty sa odswiezone", Toast.LENGTH_SHORT).show();
-            initDatabase();
-            examsDbHelper.refreshSubjects()
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(onNext -> {},
-                            onError -> examsDbHelper.closeDB(),
-                            () -> examsDbHelper.closeDB());
-            return true;
-        }
-
-        if (item.getItemId() == R.id.menu_item_edit_subjects) {
-            Intent intent = new Intent(getApplicationContext(), SubjectsListActivity.class);
-            startActivity(intent);
-        }
-
-
-
-        else Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
-
-        return super.onOptionsItemSelected(item);
+                case R.id.menu_item_edit_subjects:
+                    this.startActivity(new Intent(getApplicationContext(), SubjectsListActivity.class));
+                    break;
+            }
+            drawerLayout.closeDrawers();
+            return false;
+        });
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (examsDbHelper != null)
-            examsDbHelper.closeDB();
-
+        examsDbHelper.closeDB();
+        ((AddingExamFragment) viewPagerAdapter.getFragment(0)).closeDatabase();
+        ((OldExamsFragment) viewPagerAdapter.getFragment(1)).closeDatabase();
     }
-
 }
