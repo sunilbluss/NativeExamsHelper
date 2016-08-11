@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
-import com.grudus.nativeexamshelper.dialogs.SelectGradeDialog;
 import com.grudus.nativeexamshelper.dialogs.SelectSubjectDialog;
 import com.grudus.nativeexamshelper.helpers.CalendarDialogHelper;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
@@ -22,7 +21,6 @@ import com.grudus.nativeexamshelper.helpers.ThemeHelper;
 import com.grudus.nativeexamshelper.helpers.TimeDialogHelper;
 import com.grudus.nativeexamshelper.helpers.TimeHelper;
 import com.grudus.nativeexamshelper.pojos.Exam;
-import com.grudus.nativeexamshelper.pojos.Subject;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -53,16 +51,26 @@ public class AddExamActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_exam);
         ButterKnife.bind(this);
 
-        if (getIntent().getParcelableExtra("subject") != null)
-            setSelectedSubjectLabel((Subject) getIntent().getParcelableExtra("subject"));
-
         toolbar.setTitle(getResources().getString(R.string.add_new_exam_toolbar_text));
         setListenerToDeleteTextViewFocus();
 
         calendarDialog = new CalendarDialogHelper(this, this::updateDateView);
-
         timeDialog = new TimeDialogHelper(this, this::updateTimeView);
+    }
 
+    private void setListenerToDeleteTextViewFocus() {
+        extrasInput.setOnKeyListener((v, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                deleteFocus();
+            }
+            return true;
+        });
+
+        extrasInput.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                deleteFocus();
+            }
+        });
     }
 
     private void updateDateView() {
@@ -108,7 +116,8 @@ public class AddExamActivity extends AppCompatActivity {
         Date correctDate = getDateWithTime();
 
         String info = extrasInput.getText().toString();
-        if (info.replaceAll("\\s+", "").isEmpty()) info = getString(R.string.sse_default_exam_info);
+        if (info.replaceAll("\\s+", "").isEmpty())
+            info = getString(R.string.sse_default_exam_info);
 
         Exam exam = new Exam(subject, info, correctDate);
 
@@ -146,34 +155,14 @@ public class AddExamActivity extends AppCompatActivity {
         return true;
     }
 
-    private void setSelectedSubjectLabel(Subject subject) {
-        subjectInput.setText(subject.getTitle());
-    }
-
-    private void setListenerToDeleteTextViewFocus() {
-        extrasInput.setOnKeyListener((v, keyCode, event) -> {
-
-            if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                deleteFocus();
-                return true;
-            }
-
-            return true;
-        });
-
-        extrasInput.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) {
-                deleteFocus();
-            }
-        });
-    }
-
     private void deleteFocus() {
         View view = this.getCurrentFocus();
         if (view != null) {
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+
+        //noinspection ConstantConditions
         findViewById(R.id.add_exam_layout).requestFocus();
     }
 

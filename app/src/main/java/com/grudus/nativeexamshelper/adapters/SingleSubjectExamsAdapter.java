@@ -5,13 +5,9 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.grudus.nativeexamshelper.R;
@@ -21,6 +17,8 @@ import com.grudus.nativeexamshelper.database.exams.ExamsContract;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -33,12 +31,15 @@ public class SingleSubjectExamsAdapter extends RecyclerView.Adapter<SingleSubjec
     private final ExamsDbHelper examsDbHelper;
     private Subject subject;
 
+    private int cursorSize = 0;
+
     public SingleSubjectExamsAdapter(Context context, Cursor cursor, Subject subject) {
         this.context = context;
         this.cursor = cursor;
         defaultInfo = context.getResources().getString(R.string.sse_default_exam_info);
         examsDbHelper = ExamsDbHelper.getInstance(context);
         this.subject = subject;
+        cursorSize = cursor.getCount();
     }
 
     @Override
@@ -94,7 +95,7 @@ public class SingleSubjectExamsAdapter extends RecyclerView.Adapter<SingleSubjec
 
     @Override
     public int getItemCount() {
-        return cursor == null ? 0 : cursor.getCount();
+        return cursorSize;
     }
     
     public void closeCursor() {
@@ -102,6 +103,7 @@ public class SingleSubjectExamsAdapter extends RecyclerView.Adapter<SingleSubjec
             cursor.close();
             cursor = null;
         }
+        cursorSize = 0;
     }
 
     private void deleteExamAtPosition(int adapterPosition) {
@@ -125,19 +127,19 @@ public class SingleSubjectExamsAdapter extends RecyclerView.Adapter<SingleSubjec
     public void changeCursor(Cursor _new) {
         closeCursor();
         cursor = _new;
+        cursorSize = cursor.getCount();
     }
 
     public class SingleSubjectExamsViewHolder extends RecyclerView.ViewHolder implements SwipeToDeleteable {
 
-        TextView iconView, infoView, dateView;
-        private ViewGroup swipedLayout;
+        @BindView(R.id.sse_list_item_icon) TextView iconView;
+        @BindView(R.id.sse_list_item_info) TextView infoView;
+        @BindView(R.id.sse_list_item_date) TextView dateView;
+        @BindView(R.id.list_item_sse_layout) ViewGroup swipedLayout;
         
-        public SingleSubjectExamsViewHolder(View view) {
-            super(view);
-            this.iconView = (TextView) view.findViewById(R.id.sse_list_item_icon);
-            this.infoView = (TextView) view.findViewById(R.id.sse_list_item_info);
-            this.dateView = (TextView) view.findViewById(R.id.sse_list_item_date);
-            this.swipedLayout = (ViewGroup) view.findViewById(R.id.list_item_sse_layout);
+        public SingleSubjectExamsViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
         }
 
 

@@ -1,8 +1,5 @@
 package com.grudus.nativeexamshelper.activities;
 
-import android.database.Cursor;
-import android.graphics.Color;
-import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,16 +13,11 @@ import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.activities.touchhelpers.ItemRemoveCallback;
 import com.grudus.nativeexamshelper.adapters.SingleSubjectExamsAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
-import com.grudus.nativeexamshelper.database.exams.ExamsContract;
-import com.grudus.nativeexamshelper.helpers.ColorHelper;
 import com.grudus.nativeexamshelper.helpers.GradeStatisticsCalculator;
 import com.grudus.nativeexamshelper.helpers.StatisticsTextFormatter;
 import com.grudus.nativeexamshelper.helpers.ThemeHelper;
-import com.grudus.nativeexamshelper.pojos.OldExam;
 import com.grudus.nativeexamshelper.pojos.Subject;
 import com.grudus.nativeexamshelper.pojos.grades.Grades;
-
-import java.text.DecimalFormat;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,7 +29,6 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
 
     public static final String INTENT_SUBJECT_TAG = "subject";
     private final String TAG = "@@@" + this.getClass().getSimpleName();
-
 
     @BindView(R.id.recycler_view_single_subject_exams)
     RecyclerView recyclerView;
@@ -61,7 +52,7 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
 
         getIntentInformation();
 
-        setToolbar();
+        setUpToolbar();
 
         openDatabase();
         initRecyclerView();
@@ -69,7 +60,6 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
         calculateAllStatistics();
         updateStatisticsLabels();
 
-        initListeners();
         initSwipeListener();
 
     }
@@ -85,7 +75,7 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
         subjectTitle = subject.getTitle();
     }
 
-    private void setToolbar() {
+    private void setUpToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) toolbar.setTitle(subjectTitle);
         setSupportActionBar(toolbar);
@@ -109,18 +99,20 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
     }
 
 
-
-    private void initListeners() {
-
-    }
-
+    @SuppressWarnings({"ConstantConditions"})
     private void updateStatisticsLabels() {
-        ((TextView) findViewById(R.id.sse_info_average)).setText(getString(R.string.sse_info_average) + StatisticsTextFormatter.getAverage());
-        ((TextView) findViewById(R.id.sse_info_median)).setText(getString(R.string.sse_info_median) + StatisticsTextFormatter.getMedian());
-        ((TextView) findViewById(R.id.sse_info_dominant)).setText(getString(R.string.sse_info_dominant) + StatisticsTextFormatter.getDominant());
-        ((TextView) findViewById(R.id.sse_info_passed)).setText(getString(R.string.sse_info_passed) + StatisticsTextFormatter.getPassedExams());
-        ((TextView) findViewById(R.id.sse_info_failed)).setText(getString(R.string.sse_info_failed) + StatisticsTextFormatter.getFailedExams());
-        ((TextView) findViewById(R.id.sse_info_percent)).setText(getString(R.string.sse_info_percent) + StatisticsTextFormatter.getPercentOfPassedExams());
+        ((TextView) findViewById(R.id.sse_info_average))
+                .setText(getString(R.string.sse_info_average, StatisticsTextFormatter.getAverage()));
+        ((TextView) findViewById(R.id.sse_info_median))
+                .setText(getString(R.string.sse_info_median, StatisticsTextFormatter.getMedian()));
+        ((TextView) findViewById(R.id.sse_info_dominant))
+                .setText(getString(R.string.sse_info_dominant, StatisticsTextFormatter.getDominant()));
+        ((TextView) findViewById(R.id.sse_info_passed))
+                .setText(getString(R.string.sse_info_passed, StatisticsTextFormatter.getPassedExams()));
+        ((TextView) findViewById(R.id.sse_info_failed))
+                .setText(getString(R.string.sse_info_failed, StatisticsTextFormatter.getFailedExams()));
+        ((TextView) findViewById(R.id.sse_info_percent))
+                .setText(getString(R.string.sse_info_percent, StatisticsTextFormatter.getPercentOfPassedExams()));
     }
 
 
@@ -151,7 +143,7 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
         super.onPause();
         if (!subscription.isUnsubscribed())
             subscription.unsubscribe();
-        if (dbHelper != null) dbHelper.closeDB();
+        dbHelper.closeDB();
         adapter.closeCursor();
     }
 

@@ -12,25 +12,30 @@ import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
 import com.grudus.nativeexamshelper.pojos.Exam;
 
-import java.util.ArrayList;
 import java.util.Date;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class UngradedExamsAdapter extends RecyclerView.Adapter<UngradedExamsAdapter.UngradedExamViewHolder> {
 
     private Cursor cursor;
     private ItemClickListener listener;
 
+    private int cursorSize = 0;
+
     public UngradedExamsAdapter(Cursor cursor, ItemClickListener itemClickListener) {
         this.cursor = cursor;
         this.listener = itemClickListener;
+
+        cursorSize = cursor.getCount();
     }
 
     @Override
     public UngradedExamViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_exam, parent, false);
-        UngradedExamViewHolder vh = new UngradedExamViewHolder(itemView);
-        return vh;
+        return new UngradedExamViewHolder(itemView);
     }
 
     @Override
@@ -38,17 +43,28 @@ public class UngradedExamsAdapter extends RecyclerView.Adapter<UngradedExamsAdap
         cursor.moveToPosition(position);
 
         String subject = cursor.getString(ExamsContract.ExamEntry.SUBJECT_COLUMN_INDEX);
-        String info = cursor.getString(ExamsContract.ExamEntry.INFO_COLUMN_INDEX);
 
+        bindTextView(holder, subject);
+        bindInfoView(holder);
+        bindIcon(holder, subject);
+    }
+
+    private void bindTextView(UngradedExamViewHolder holder, String subject) {
         holder.textView.setText(subject);
-        holder.infoView.setText(info);
-        holder.iconView.setText(subject.substring(0,1).toUpperCase());
+    }
 
+    private void bindInfoView(UngradedExamViewHolder holder) {
+        String info = cursor.getString(ExamsContract.ExamEntry.INFO_COLUMN_INDEX);
+        holder.infoView.setText(info);
+    }
+
+    private void bindIcon(UngradedExamViewHolder holder, String subject) {
+        holder.iconView.setText(subject.substring(0,1).toUpperCase());
     }
 
     @Override
     public int getItemCount() {
-        return cursor == null ? 0 : cursor.getCount();
+        return cursorSize;
     }
 
 
@@ -56,6 +72,7 @@ public class UngradedExamsAdapter extends RecyclerView.Adapter<UngradedExamsAdap
         notifyItemRemoved(position);
         cursor.close();
         cursor = newCursor;
+        cursorSize = cursor.getCount();
     }
 
     public Exam getExamByPosition(int position) {
@@ -69,18 +86,18 @@ public class UngradedExamsAdapter extends RecyclerView.Adapter<UngradedExamsAdap
 
     public void closeCursor() {
         cursor.close();
-        cursor = null;  //?
+        cursorSize = 0;
     }
 
     public class UngradedExamViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private TextView iconView, textView, infoView;
+        @BindView(R.id.list_item_icon_text) TextView iconView;
+        @BindView(R.id.list_item_adding_exam_subject) TextView textView;
+        @BindView(R.id.list_item_adding_exam_date) TextView infoView;
 
         public UngradedExamViewHolder(View itemView) {
             super(itemView);
-            iconView = (TextView) itemView.findViewById(R.id.list_item_icon_text);
-            textView = (TextView) itemView.findViewById(R.id.list_item_adding_exam_subject);
-            infoView = (TextView) itemView.findViewById(R.id.list_item_adding_exam_date);
+            ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
         }
 

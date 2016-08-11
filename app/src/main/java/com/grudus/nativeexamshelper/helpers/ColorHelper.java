@@ -30,4 +30,8 @@ public class ColorHelper {
         return nearest;
     }
 
+    public static String getHexColor(final int color) {
+        return String.format("#%06X", (0xFFFFFF & color));
+    }
+
 }

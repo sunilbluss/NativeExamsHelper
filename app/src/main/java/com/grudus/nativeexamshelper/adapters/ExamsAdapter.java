@@ -24,6 +24,8 @@ import com.grudus.nativeexamshelper.helpers.AnimationHelper;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.helpers.TimeHelper;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -35,18 +37,25 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
     private static final int ANIMATION_DURATION = AnimationHelper.DEFAULT_ANIMATION_DURATION;
     private static final float SCALE_TO_RESIZE = 1.4f;
 
-    private final int selectedItemBackgroundColor;
-    private final int normalItemBackgroundColor;
+    private int selectedItemBackgroundColor;
+    private int normalItemBackgroundColor;
 
     private final ExamsDbHelper dbHelper;
     private final Context context;
+
+    private int cursorSize = 0;
 
 
     public ExamsAdapter(Context context, Cursor cursor) {
         this.cursor = cursor;
         this.dbHelper = ExamsDbHelper.getInstance(context);
         this.context = context;
+        cursorSize = cursor.getCount();
 
+        setUpBackgroundColors();
+    }
+
+    private void setUpBackgroundColors() {
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = context.getTheme();
 
@@ -116,7 +125,7 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
 
     @Override
     public int getItemCount() {
-        return cursor == null ? 0 : cursor.getCount();
+        return cursorSize;
     }
 
     private void deleteRowAtPosition(final int adapterPosition) {
@@ -140,30 +149,29 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
     public void changeCursor(Cursor _new) {
         cursor.close();
         cursor = _new;
+        cursorSize = cursor.getCount();
     }
 
     public void closeDatabase() {
         if (cursor != null)
             cursor.close();
+        cursorSize = 0;
         dbHelper.closeDB();
     }
 
     public class ExamsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
-        private TextView iconView, dateView, subjectView;
-        private ImageView binIcon;
+        @BindView(R.id.list_item_icon_text) TextView iconView;
+        @BindView(R.id.list_item_adding_exam_date) TextView dateView;
+        @BindView(R.id.list_item_adding_exam_subject) TextView subjectView;
+        @BindView(R.id.list_item_image_under_icon) ImageView binIcon;
+        @BindView(R.id.exams_expanded_list_item_layout) RelativeLayout expandedLayout;
+
         private boolean expanded;
         private boolean selected;
 
-        private RelativeLayout expandedLayout;
-
-
         public ExamsViewHolder(View itemView) {
             super(itemView);
-            binIcon = (ImageView) itemView.findViewById(R.id.list_item_image_under_icon);
-            subjectView = (TextView) itemView.findViewById(R.id.list_item_adding_exam_subject);
-            dateView = (TextView) itemView.findViewById(R.id.list_item_adding_exam_date);
-            iconView = (TextView) itemView.findViewById(R.id.list_item_icon_text);
-            expandedLayout = (RelativeLayout) itemView.findViewById(R.id.exams_expanded_list_item_layout);
+            ButterKnife.bind(this, itemView);
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
@@ -173,7 +181,6 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
             expanded = false;
             selected = false;
             AnimationHelper.setDuration(ANIMATION_DURATION);
-
         }
 
         @Override
@@ -187,14 +194,17 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
                 expanded = false;
                 AnimationHelper.collapse(expandedLayout);
                 startIconResizeAnimation(1f);
-
             }
 
         }
 
         private void startIconResizeAnimation(float scale) {
             if (selected) return;
-            iconView.animate().setDuration(ANIMATION_DURATION).scaleY(scale).scaleX(scale).start();
+            iconView.animate()
+                    .setDuration(ANIMATION_DURATION)
+                    .scaleY(scale)
+                    .scaleX(scale)
+                    .start();
         }
 
 

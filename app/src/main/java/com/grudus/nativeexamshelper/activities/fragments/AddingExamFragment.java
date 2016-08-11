@@ -17,6 +17,9 @@ import com.grudus.nativeexamshelper.activities.AddExamActivity;
 import com.grudus.nativeexamshelper.adapters.ExamsAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -26,8 +29,8 @@ public class AddingExamFragment extends Fragment {
 
     private final String TAG = "@@@" + this.getClass().getSimpleName();
 
-    private FloatingActionButton floatingActionButton;
-    private RecyclerView recyclerView;
+    @BindView(R.id.floating_button_add_exam) FloatingActionButton floatingActionButton;
+    @BindView(R.id.recycler_view_adding_exam_content) RecyclerView recyclerView;
 
     private ExamsDbHelper examsDbHelper;
     private ExamsAdapter adapter;
@@ -43,24 +46,18 @@ public class AddingExamFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_adding_exam, container, false);
 
-        initViews(view);
-        setListeners();
+        ButterKnife.bind(this, view);
 
         return view;
     }
 
-    private void initViews(View view) {
-        floatingActionButton = (FloatingActionButton) view.findViewById(R.id.floating_button_add_exam);
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_adding_exam_content);
+
+    @OnClick(R.id.floating_button_add_exam)
+    public void addNewExam() {
+        Intent openAddExamActivity = new Intent(getActivity(), AddExamActivity.class);
+        startActivity(openAddExamActivity);
     }
 
-
-    private void setListeners() {
-        floatingActionButton.setOnClickListener(view -> {
-            Intent openAddExamActivity = new Intent(getActivity(), AddExamActivity.class);
-            startActivity(openAddExamActivity);
-        });
-    }
 
     @Override
     public void onStart() {
@@ -74,7 +71,6 @@ public class AddingExamFragment extends Fragment {
     private void initDatabase() {
         if (examsDbHelper == null && getActivity() != null)
             examsDbHelper = ExamsDbHelper.getInstance(getContext());
-        examsDbHelper.openDB();
     }
 
 

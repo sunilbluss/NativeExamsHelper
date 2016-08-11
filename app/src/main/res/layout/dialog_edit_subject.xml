@@ -38,23 +38,13 @@
     </android.support.design.widget.TextInputLayout>
 
 
-    <include layout="@layout/seek_bar_with_progress_text"
+    <com.grudus.nativeexamshelper.layouts.ColorPickerSeekBars
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/seekbar_red"
-        android:layout_below="@id/edit_subject_textinputlayout"/>
+        android:id="@+id/color_picker_seek_bars"
+        android:layout_below="@id/edit_subject_textinputlayout">
 
-    <include layout="@layout/seek_bar_with_progress_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/seekbar_green"
-        android:layout_below="@id/seekbar_red"/>
-
-    <include layout="@layout/seek_bar_with_progress_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/seekbar_blue"
-        android:layout_below="@id/seekbar_green" />
+    </com.grudus.nativeexamshelper.layouts.ColorPickerSeekBars>
 
 
 

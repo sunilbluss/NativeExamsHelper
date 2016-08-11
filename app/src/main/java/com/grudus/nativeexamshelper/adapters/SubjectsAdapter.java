@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -18,6 +17,8 @@ import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.subjects.SubjectsContract;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -29,10 +30,13 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
     private ItemClickListener itemClickListener;
     private final Context context;
 
+    private int cursorSize = 0;
+
     public SubjectsAdapter(Cursor cursor, Context context, ItemClickListener listener) {
         this.cursor = cursor;
         this.itemClickListener = listener;
         this.context = context;
+        cursorSize = cursor.getCount();
     }
 
 
@@ -40,8 +44,7 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
     public SubjectsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_subject, parent, false);
-        SubjectsViewHolder vh = new SubjectsViewHolder(itemView);
-        return vh;
+        return new SubjectsViewHolder(itemView);
     }
 
     @Override
@@ -74,7 +77,7 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
 
     @Override
     public int getItemCount() {
-        return cursor == null ? 0 : cursor.getCount();
+        return cursorSize;
     }
 
     public Subject getItem(int position) {
@@ -87,6 +90,7 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
     public void changeCursor(Cursor _new) {
         closeCursor();
         cursor = _new;
+        cursorSize = cursor.getCount();
     }
 
 
@@ -95,10 +99,7 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
             cursor.close();
             cursor = null;
         }
-    }
-
-    public void removeItemFromList(int adapterPosition) {
-        notifyItemRemoved(adapterPosition);
+        cursorSize = 0;
     }
 
 
@@ -125,35 +126,25 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
 
     public class SubjectsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, SwipeToDeleteable {
 
-        TextView titleView, iconView;
-        LinearLayout invisibleView;
-        LinearLayout linearLayout;
+        @BindView(R.id.list_item_subject_text) TextView titleView;
+        @BindView(R.id.list_item_subject_icon_text) TextView iconView;
+        @BindView(R.id.list_item_adding_exam_linear) LinearLayout linearLayout;
+
 
         public SubjectsViewHolder(View itemView) {
             super(itemView);
-
-            bindViews(itemView);
+            ButterKnife.bind(this, itemView);
 
             itemView.setOnClickListener(this);
             linearLayout.setOnClickListener(this);
         }
 
-        private void bindViews(View itemView) {
-            titleView = (TextView) itemView.findViewById(R.id.list_item_subject_text);
-            iconView = (TextView) itemView.findViewById(R.id.list_item_subject_icon_text);
-            invisibleView = (LinearLayout) itemView.findViewById(R.id.invisible);
-            linearLayout = (LinearLayout) itemView.findViewById(R.id.list_item_adding_exam_linear);
-        }
 
         @Override
         public void onClick(View v) {
             if (itemClickListener != null) {
                 itemClickListener.itemClicked(v, getAdapterPosition());
             }
-        }
-
-        public String getSubject() {
-            return titleView.getText().toString();
         }
 
 

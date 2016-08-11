@@ -119,7 +119,7 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
                                     adapter.notifyItemInserted(position - 1);
                                 }
                 })))
-                .show(getFragmentManager(), "qqq");
+                .show(getFragmentManager(), getString(R.string.tag_dialog_add_new_subject));
     }
 
 
@@ -132,8 +132,7 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
     @Override
     protected void onPause() {
         super.onPause();
-        if (examsDbHelper != null)
-            examsDbHelper.closeDB();
+        examsDbHelper.closeDB();
         adapter.closeCursor();
         if (!subscription.isUnsubscribed())
             subscription.unsubscribe();

@@ -3,147 +3,88 @@ package com.grudus.nativeexamshelper.dialogs;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.helpers.ColorHelper;
+import com.grudus.nativeexamshelper.layouts.ColorPickerSeekBars;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
 public class EditSubjectDialog extends DialogFragment {
 
     private final String TAG = "@@@" + this.getClass().getSimpleName();
 
-    private final int[] seekBarsIds = {R.id.seekbar_red, R.id.seekbar_green, R.id.seekbar_blue};
-    private final int[] seekBarsThumbColors = {R.color.seekBarRed, R.color.seekBarGreen, R.color.seekBarBlue};
-    private final int[] seekBarsProgressDrawables = {R.drawable.red_seekbar, R.drawable.green_seekbar, R.drawable.blue_seekbar};
-    private static final int MAX_RGB_VALUE = 255;
-
-    private int[] colors;
-
     private Subject editedSubject = Subject.empty();
     protected OnSaveListener onSaveListener;
 
-    private Rect rect;
-    private int seekBarLeft;
-
-    private SeekBar[] seekBarsRGB;
-    private TextView[] seekBarsTextViews;
     private EditText subjectInput;
     private View root;
     private View colorView;
+    private ColorPickerSeekBars colorPickerSeekBars;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_subject, null);
 
-        initColors();
-        initViews();
-        initListeners();
-        builder.setPositiveButton(getString(R.string.button_text_save), null);
-        builder.setNegativeButton(getString(R.string.button_text_back), null);
-
-        if (!editedSubject.isEmpty()) {
-            subjectInput.setText(editedSubject.getTitle());
-        }
-
-
-
-        root.getViewTreeObserver()
-                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                root.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                setWidthTo90percentOfScreenWidth();
-                setUpSeekBars();
-                setUpButtonListeners(builder);
-                setButtonColors();
-            }
-        });
-
+        initViews(builder);
+        setUpListeners();
+        useSubjectInfo();
+        initOnGlobalLayoutListener();
 
         builder.setView(root);
         return builder.create();
     }
 
-
-    private void initColors() {
+    private void initViews(AlertDialog.Builder builder) {
+        root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_subject, null);
         colorView = root.findViewById(R.id.dialog_edit_subject_colorview);
-        colorView.setBackgroundColor(Color.parseColor(editedSubject.getColor()));
-        colors = new int[3];
-        final int color = Color.parseColor(editedSubject.getColor());
-
-        colors[0] = Color.red(color);
-        colors[1] = Color.green(color);
-        colors[2] = Color.blue(color);
-    }
-
-    private void initViews() {
-        final int length = seekBarsIds.length;
-        seekBarsRGB = new SeekBar[length];
-        seekBarsTextViews = new TextView[length];
+        colorPickerSeekBars = (ColorPickerSeekBars) root.findViewById(R.id.color_picker_seek_bars);
         subjectInput = (EditText) root.findViewById(R.id.edit_subject_title);
-        rect = new Rect();
 
-        for (int i = 0; i < length; i++) {
-            final ViewGroup viewGroup = (ViewGroup) root.findViewById(seekBarsIds[i]);
-            seekBarsRGB[i] = (SeekBar) viewGroup.getChildAt(1);
-            seekBarsRGB[i].setProgress(colors[i]);
+        builder.setPositiveButton(getString(R.string.button_text_save), null);
+        builder.setNegativeButton(getString(R.string.button_text_back), null);
+    }
 
-            seekBarsTextViews[i] = (TextView) viewGroup.getChildAt(0);
-            seekBarsTextViews[i].setText(String.valueOf(colors[i]));
-        }
+    private void setUpListeners() {
+        colorPickerSeekBars.addListener(((progress, color) -> {
+            colorView.setBackgroundColor(color);
+        }));
+    }
 
-        seekBarLeft = seekBarsRGB[0].getPaddingLeft();
+    private void useSubjectInfo() {
+        if (editedSubject.isEmpty())
+            return;
+        colorPickerSeekBars.setColor(editedSubject.getColor());
+        subjectInput.setText(editedSubject.getTitle());
+    }
+
+    private void initOnGlobalLayoutListener() {
+        root.getViewTreeObserver()
+                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        root.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        setWidthTo90percentOfScreenWidth();
+                        setUpButtons();
+                        setButtonColors();
+                    }
+                });
     }
 
 
-    private void initListeners() {
-        for (int i = 0; i < seekBarsRGB.length; i++) {
-            final int temp = i;
-            seekBarsRGB[i].setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    seekBarsTextViews[temp].setText(progress < 10 ? "  " + String.valueOf(progress) : (progress < 100 ? " " + progress : progress + ""));
+    protected void setUpButtons() {
+        final AlertDialog dialog = (AlertDialog) getDialog();
 
-                    setSeekBarTextViewPositions(temp, progress);
-
-                    colors[temp] = progress;
-                    updateColorView();
-                }
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {}
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {}
-            });
-        }
-    }
-
-    private void setSeekBarTextViewPositions(int whichOne, int progress) {
-        seekBarsRGB[whichOne].setProgress(progress);
-        rect = seekBarsRGB[whichOne].getThumb().getBounds();
-        seekBarsTextViews[whichOne].setX(rect.left /*+ seekBarLeft*/);
-
-    }
-
-
-    protected void setUpButtonListeners(AlertDialog.Builder builder) {
-        ((AlertDialog)getDialog()).getButton(DialogInterface.BUTTON_POSITIVE)
-                .setOnClickListener(v -> {
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(v ->
+                {
                     if (inputIsEmpty()) {
                         Toast.makeText(getActivity(), getString(R.string.warning_add_subject_empty), Toast.LENGTH_SHORT).show();
                         return;
@@ -158,7 +99,7 @@ public class EditSubjectDialog extends DialogFragment {
                     this.dismiss();
                 });
 
-        builder.setNegativeButton(getString(R.string.button_text_back), ((dialog, which) -> this.dismiss()));
+        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener(v -> this.dismiss());
     }
 
     protected boolean inputIsEmpty() {
@@ -177,43 +118,24 @@ public class EditSubjectDialog extends DialogFragment {
         getDialog().getWindow().setLayout(params.width, params.height);
     }
 
-    private void setUpSeekBars() {
-        for (int i = 0; i < seekBarsTextViews.length; i++) {
-            setSeekBarTextViewPositions(i, colors[i]);
-
-            seekBarsRGB[i].getThumb()
-                    .setColorFilter(ContextCompat.getColor(getActivity(), seekBarsThumbColors[i]), PorterDuff.Mode.SRC_IN);
-
-            seekBarsRGB[i].setProgressDrawable(
-                    ContextCompat.getDrawable(getActivity(), seekBarsProgressDrawables[i]));
-
-        }
-    }
-
     private void setButtonColors() {
         TypedValue typedValue = new TypedValue();
         getActivity().getTheme()
                 .resolveAttribute(R.attr.colorAccent, typedValue, true);
         final int color = typedValue.data;
 
-        ((AlertDialog)getDialog()).getButton(DialogInterface.BUTTON_POSITIVE)
+        final AlertDialog dialog = (AlertDialog) getDialog();
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE)
                 .setTextColor(color);
-        ((AlertDialog)getDialog()).getButton(DialogInterface.BUTTON_NEGATIVE)
+        dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
                 .setTextColor(color);
     }
 
-    private void updateColorView() {
-        final int color = Color.rgb(colors[0], colors[1], colors[2]);
-        colorView.setBackgroundColor(color);
-    }
 
     private void updateSubject() {
-        final int color = Color.rgb(
-                seekBarsRGB[0].getProgress(),
-                seekBarsRGB[1].getProgress(),
-                seekBarsRGB[2].getProgress()
-        );
-        final String hex = String.format("#%06X", (0xFFFFFF & color));
+        final int color = colorPickerSeekBars.getColor();
+        final String hex = ColorHelper.getHexColor(color);
+
         editedSubject.setColor(hex);
         editedSubject.setTitle(subjectInput.getText().toString());
     }

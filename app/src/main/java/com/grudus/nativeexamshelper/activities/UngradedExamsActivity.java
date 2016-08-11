@@ -33,6 +33,7 @@ public class UngradedExamsActivity extends AppCompatActivity implements ItemClic
     private ExamsDbHelper dbHelper;
 
     private Subscription subscription;
+    private final SelectGradeDialog dialog = new SelectGradeDialog();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,16 +42,12 @@ public class UngradedExamsActivity extends AppCompatActivity implements ItemClic
         setContentView(R.layout.activity_ungraded_exams);
         ButterKnife.bind(this);
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            getWindow().setSharedElementEnterTransition(TransitionInflater.from(this).inflateTransition(R.transition.list_item_to_toolbar));
-//        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         initDatabase();
-
         initRecyclerView();
     }
 
@@ -76,6 +73,8 @@ public class UngradedExamsActivity extends AppCompatActivity implements ItemClic
     protected void onPause() {
         super.onPause();
         dbHelper.closeDB();
+        if (adapter != null)
+            adapter.closeCursor();
         if (!subscription.isUnsubscribed())
             subscription.unsubscribe();
     }
@@ -83,8 +82,7 @@ public class UngradedExamsActivity extends AppCompatActivity implements ItemClic
 
     @Override
     public void itemClicked(View v, final int position) {
-        final SelectGradeDialog dialog = new SelectGradeDialog();
-        Log.i("@@@###", "itemClicked: " + dbHelper);
+
         dialog.setListener((dialogInterface, which) -> {
             Toast.makeText(UngradedExamsActivity.this, dialog.getSelectedGrade() + "", Toast.LENGTH_SHORT).show();
 

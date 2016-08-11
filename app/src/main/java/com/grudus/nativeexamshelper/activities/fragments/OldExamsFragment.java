@@ -17,6 +17,8 @@ import com.grudus.nativeexamshelper.adapters.OldExamsAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -25,7 +27,7 @@ public class OldExamsFragment extends Fragment {
 
     public final String TAG = "@@@" + this.getClass().getSimpleName();
 
-    private RecyclerView recyclerView;
+    @BindView(R.id.recycler_view_old_exams) RecyclerView recyclerView;
     private OldExamsAdapter adapter;
     private ExamsDbHelper examsDbHelper;
 
@@ -37,14 +39,13 @@ public class OldExamsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_old_exams, container, false);
-        initViews(view);
+        ButterKnife.bind(this, view);
+
         return view;
     }
 
-    private void initViews(View view) {
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_old_exams);
-    }
 
 
     @Override

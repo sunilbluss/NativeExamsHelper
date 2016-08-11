@@ -1,24 +1,18 @@
 package com.grudus.nativeexamshelper.adapters;
 
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
@@ -27,8 +21,9 @@ import com.grudus.nativeexamshelper.database.subjects.SubjectsContract;
 import com.grudus.nativeexamshelper.helpers.AnimationHelper;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
-import java.util.Arrays;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -37,20 +32,26 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
     public static final int HEADER_POSITION = 0;
     public static final int ANIMATION_DURATION = AnimationHelper.DEFAULT_ANIMATION_DURATION / 2;
 
-    private final int selectedItemBackgroundColor;
-    private final int normalItemBackgroundColor;
+    private int selectedItemBackgroundColor;
+    private int normalItemBackgroundColor;
 
     private Cursor cursor;
     private final ExamsDbHelper dbHelper;
     private ItemClickListener listener;
 
     private int headers;
+    private int cursorSize = 0;
 
     public OldExamsAdapter(Context context, Cursor cursor) {
         this.dbHelper = ExamsDbHelper.getInstance(context);
         this.cursor = cursor;
         headers = 1;
+        cursorSize = cursor.getCount() + headers;
 
+        setUpBackgroundColors(context);
+    }
+
+    private void setUpBackgroundColors(Context context) {
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = context.getTheme();
 
@@ -121,11 +122,13 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
     public void changeCursor(Cursor _new) {
         cursor.close();
         cursor = _new;
+        cursorSize = cursor.getCount() + headers;
     }
 
     public void closeDatabase() {
         cursor.close();
         dbHelper.closeDB();
+        cursorSize = headers;
     }
 
     public int getHeaderCount() {
@@ -134,9 +137,7 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
 
     @Override
     public int getItemCount() {
-        return cursor == null
-                ? 0
-                : cursor.getCount() + getHeaderCount();
+        return cursorSize;
     }
 
 
@@ -153,25 +154,26 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
 
     }
 
-    public class OldExamsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    public class OldExamsViewHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener, View.OnLongClickListener {
 
-        private TextView subjectView, iconView;
-        private ImageView binIcon;
+        @BindView(R.id.list_item_old_exam_subject) TextView subjectView;
+        @BindView(R.id.list_item_old_exam_icon_text) TextView iconView;
+        @BindView(R.id.list_item_image_under_icon) ImageView binIcon;
 
         private boolean deleteMode = false;
 
         public OldExamsViewHolder(View itemView) {
             super(itemView);
-            subjectView = (TextView) itemView.findViewById(R.id.list_item_old_exam_subject);
-            iconView = (TextView) itemView.findViewById(R.id.list_item_old_exam_icon_text);
-            binIcon = (ImageView) itemView.findViewById(R.id.list_item_image_under_icon);
-
-            binIcon.setOnClickListener(view ->
-                deleteAllSubjectExams(getAdapterPosition())
-            );
+            ButterKnife.bind(this, itemView);
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
+        }
+
+        @OnClick(R.id.list_item_image_under_icon)
+        public void deleteExams() {
+            deleteAllSubjectExams(getAdapterPosition());
         }
 
         @Override
