@@ -42,6 +42,7 @@
             android:hint="@string/hint_add_exam_extras"
             android:maxLines="1"
             android:maxLength="@integer/add_xxx_max_chars"
+            android:focusable="false"
             android:layout_below="@id/add_exam_subject_input"
             android:layout_toEndOf="@id/add_exam_image_view_1"/>
 

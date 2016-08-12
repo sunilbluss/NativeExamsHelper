@@ -94,7 +94,10 @@
     <!--dialogs-->
     <string name="dialog_select_grade_title">Wybierz ocenę</string>
     <string name="dialog_select_grade_posbut">Wybierz</string>
+    <string name="dialog_save_posbut">Zapisz</string>
     <string name="dialog_negbut">Cofnij</string>
+    <string name="dialog_enter_text_title">Podaj zaliczenie</string>
+
 
 
     <!--preferences-->

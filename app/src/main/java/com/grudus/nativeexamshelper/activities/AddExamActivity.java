@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
+import com.grudus.nativeexamshelper.dialogs.EnterTextDialog;
 import com.grudus.nativeexamshelper.dialogs.SelectSubjectDialog;
 import com.grudus.nativeexamshelper.helpers.CalendarDialogHelper;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
@@ -106,6 +107,13 @@ public class AddExamActivity extends AppCompatActivity {
                 .show(getFragmentManager(), getString(R.string.tag_dialog_select_subject));
     }
 
+    @OnClick(R.id.add_exam_extras_input)
+    void openEnterTextDialog() {
+        new EnterTextDialog()
+                .addListener(text -> this.extrasInput.setText(text))
+                .show(getFragmentManager(), "qqq");
+    }
+
     @OnClick(R.id.add_exam_button)
     void addExam()  {
         String subject = subjectInput.getText().toString();
@@ -119,19 +127,9 @@ public class AddExamActivity extends AppCompatActivity {
         if (info.replaceAll("\\s+", "").isEmpty())
             info = getString(R.string.sse_default_exam_info);
 
-        Exam exam = new Exam(subject, info, correctDate);
 
-        final ExamsDbHelper db = ExamsDbHelper.getInstance(this);
-        db.openDB();
-
-        db.insertExam(exam)
-            .subscribeOn(Schedulers.io())
-            .subscribe(action -> db.closeDB(), error -> db.closeDB());
-
-        Intent goBack = new Intent(getApplicationContext(), ExamsMainActivity.class);
-        // new subject has been added, so there is no reason to keep previous activities in stack
-        goBack.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(goBack);
+        addToDatabase(new Exam(subject, info, correctDate));
+        startPreviousActivity();
     }
 
     private Date getDateWithTime() {
@@ -153,6 +151,23 @@ public class AddExamActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    private void addToDatabase(Exam exam) {
+        final ExamsDbHelper db = ExamsDbHelper.getInstance(this);
+        db.openDB();
+
+        db.insertExam(exam)
+                .subscribeOn(Schedulers.io())
+                .subscribe(action -> db.closeDB(), error -> db.closeDB());
+
+    }
+
+    private void startPreviousActivity() {
+        Intent goBack = new Intent(getApplicationContext(), ExamsMainActivity.class);
+        // new subject has been added, so there is no reason to keep previous activities in stack
+        goBack.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(goBack);
     }
 
     private void deleteFocus() {
