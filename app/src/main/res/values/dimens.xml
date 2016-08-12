@@ -32,7 +32,7 @@
     <dimen name="sse_line_margin">5dp</dimen>
 
 
-        <!--dialogs-->
+    <!--dialogs-->
     <dimen name="dialog_color_view_height">120dp</dimen>
 
 

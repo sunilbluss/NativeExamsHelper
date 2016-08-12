@@ -147,6 +147,9 @@ public class ExamsMainActivity extends AppCompatActivity{
                 case R.id.menu_item_edit_subjects:
                     this.startActivity(new Intent(getApplicationContext(), SubjectsListActivity.class));
                     break;
+
+                case R.id.menu_item_settings:
+                    this.startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
             }
             drawerLayout.closeDrawers();
             return false;

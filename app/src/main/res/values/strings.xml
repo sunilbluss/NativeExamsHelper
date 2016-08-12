@@ -96,4 +96,17 @@
     <string name="dialog_select_grade_posbut">Wybierz</string>
     <string name="dialog_negbut">Cofnij</string>
 
+
+    <!--preferences-->
+    <string name="title_activity_settings">Ustawienia</string>
+    <string name="pref_desing_group">Wygląd</string>
+    <string name="pref_night_mode">Używaj trybu nocnego</string>
+    <string name="pref_user_group">Użytkownik</string>
+    <string name="pref_user_name">Nazwa użytkownika</string>
+    <string name="pref_user_name_sub">Pod tą nazwą będą Cię widzieć inni</string>
+
+    <!--preference keys-->
+    <string name="key_night_mode">pref_night_mode</string>
+    <string name="key_user_name">pref_user_name</string>
+
 </resources>

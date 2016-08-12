@@ -1,9 +1,13 @@
 package com.grudus.nativeexamshelper.helpers;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.preference.CheckBoxPreference;
+import android.preference.PreferenceManager;
 
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.activities.MyApplication;
 
 
 public class ThemeHelper {
@@ -15,7 +19,11 @@ public class ThemeHelper {
     public final static int THEME_DARK = 1;
 
     static {
-        sTheme = THEME_DEFAULT;
+        Context context = MyApplication.getContext();
+        String key = context.getString(R.string.key_night_mode);
+        boolean darkTheme = PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(key, false);
+        sTheme = darkTheme ? THEME_DARK : THEME_DEFAULT;
     }
 
     public static int getTheme() {
@@ -29,8 +37,8 @@ public class ThemeHelper {
     public static void changeToTheme(Activity activity, int theme)
     {
         sTheme = theme;
-        activity.finish();
-        activity.startActivity(new Intent(activity, activity.getClass()));
+//        activity.finish();
+//        activity.startActivity(new Intent(activity, activity.getClass()));
     }
 
     public static void onActivityCreateSetTheme(Activity activity)

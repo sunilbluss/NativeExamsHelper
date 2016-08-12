@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:key="pref_design_group"
+        android:title="@string/pref_desing_group">
+
+
+        <CheckBoxPreference
+            android:key="@string/key_night_mode"
+            android:defaultValue="false"
+            android:title="@string/pref_night_mode"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="pref_user_group"
+        android:title="@string/pref_user_group">
+
+        <EditTextPreference
+            android:key="@string/key_user_name"
+            android:title="@string/pref_user_name"
+            android:summary="@string/pref_user_name_sub" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
