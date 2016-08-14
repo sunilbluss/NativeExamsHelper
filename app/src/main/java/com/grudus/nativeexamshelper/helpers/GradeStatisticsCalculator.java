@@ -2,24 +2,18 @@ package com.grudus.nativeexamshelper.helpers;
 
 
 import android.content.Context;
-import android.database.Cursor;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
-import com.grudus.nativeexamshelper.pojos.OldExam;
 import com.grudus.nativeexamshelper.pojos.grades.Grade;
+import com.grudus.nativeexamshelper.pojos.grades.Grades;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class GradeStatisticsCalculator {
     private final double MINIMAL_GRADE_TO_PASS;
@@ -49,35 +43,25 @@ public class GradeStatisticsCalculator {
         MINIMAL_GRADE_TO_PASS = minimalGradeToPass;
     }
 
-    public void setUpDatabaseData(Cursor cursor, int gradesColumnIndex) {
-//        this.sortedGradesCursor = cursor;
-        this.gradesColumnDatabaseIndex = gradesColumnIndex;
-    }
-
     public Observable<Double> startCalculating() {
 
         ExamsDbHelper db = ExamsDbHelper.getInstance(context);
         return db.getGradesFromOrderedSubjectGrades(subjectTitle);
     }
 
-    public void calculate(double tempGrade) {
+    public void calculate(double oneGrade) {
 
         if (numberOfAllGrades == -1) {
-            numberOfAllGrades = (int)tempGrade;
+            numberOfAllGrades = (int)oneGrade;
             return;
         }
 
-        if (actualNumberOfGrades == numberOfAllGrades / 2) {
-            if (numberOfAllGrades % 2 == 0) {
-                calculateMedian(tempGrade, this.tempGrade);
-            }
-            else {
-                calculateMedian(tempGrade, Grade.EMPTY_GRADE);
-            }
-        }
+        double tempGrade = Grades.areDecimalsInGradesEnabled() ? oneGrade : (int)(oneGrade + 0.5);
+
+        calculateMedianIfReachable(tempGrade);
 
         actualNumberOfGrades++;
-        this.tempGrade = tempGrade;
+        this.tempGrade = Grades.areDecimalsInGradesEnabled() ? tempGrade : (int)(tempGrade + 0.5);
 
 
         if (previousGrade == -1) previousGrade = tempGrade;
@@ -94,6 +78,17 @@ public class GradeStatisticsCalculator {
 
         if (tempGrade > MINIMAL_GRADE_TO_PASS) {
             passed++;
+        }
+    }
+
+    private void calculateMedianIfReachable(double tempGrade) {
+        if (actualNumberOfGrades == numberOfAllGrades / 2) {
+            if (numberOfAllGrades % 2 == 0) {
+                calculateMedian(tempGrade, this.tempGrade);
+            }
+            else {
+                calculateMedian(tempGrade, Grade.EMPTY_GRADE);
+            }
         }
     }
 

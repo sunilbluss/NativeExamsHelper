@@ -6,21 +6,27 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="buttonTextColor">@color/textColor</item>
+
+        <item name="android:textColor" >@color/textColorPrimary</item>
+        <item name="android:textColorSecondary">@color/textColorSecondary</item>
+        <item name="android:textColorHint">@color/textColorHint</item>
+
         <item name="grudusToolbarTheme">@style/ToolbarTheme</item>
-        <item name="tabTextHighlight">@color/textColor</item>
-        <item name="tabTextNoFocus">#8c9eff</item>
         <item name="android:buttonStyle">@style/AddButtonStyle</item>
+
         <item name="background">@color/backgroundColor</item>
+        <item name="dialogBackground">@color/dialogColor</item>
+
         <item name="floatingButtonColor">@color/colorAccent</item>
-        <item name="listItemTextColor">@color/normalTextColor</item>
         <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>
-        <item name="iconColor">#000000</item>
+        <item name="iconColor">@color/textColorPrimary</item>
         <item name="colorControlNormal">#9e9e9e</item>
-        <item name="selectedListItemColor">#eeeeee</item>
+        <item name="selectedListItemBackgroundColor">#eeeeee</item>
+
         <item name="navigationViewBackground">@drawable/navigation_view_background</item>
         <item name="navigationViewTextColor">@drawable/navigation_view_text_color</item>
         <item name="navigationViewIconColor">@drawable/navigation_view_icon_color</item>
+        <item name="tabTextNoFocus">@color/tabTextNoFocus</item>
 
     </style>
 
@@ -28,28 +34,28 @@
         <item name="colorPrimary">@color/dark_colorPrimary</item>
         <item name="colorPrimaryDark">@color/dark_colorPrimaryDark</item>
         <item name="colorAccent">@color/dark_colorAccent</item>
-        <item name="tabTextNoFocus">@color/colorHighlight</item>
+
+        <item name="android:textColor" >@color/dark_textColorPrimary</item>
+        <item name="android:textColorSecondary">@color/dark_textColorSecondary</item>
+        <item name="android:textColorHint">@color/dark_textColorHint</item>
+
         <item name="background">@color/dark_backgroundColor</item>
+        <item name="dialogBackground">@color/dark_dialogColor</item>
+
         <item name="floatingButtonColor">@color/dark_colorAccent</item>
-        <item name="listItemTextColor">@color/textColor</item>
-        <item name="iconColor">#ffffff</item>
+        <item name="iconColor">@color/dark_textColorPrimary</item>
         <item name="colorControlNormal">#9e9e9e</item>
         <item name="android:timePickerDialogTheme" tools:targetApi="lollipop">@style/TimePickerTheme</item>
-        <item name="selectedListItemColor">#313131</item>
+        <item name="selectedListItemBackgroundColor">#313131</item>
         <item name="navigationViewBackground">@drawable/navigation_view_background_dark</item>
-        <item name="navigationViewTextColor">@drawable/navigation_view_text_color_dark</item>
-        <item name="navigationViewIconColor">@drawable/navigation_view_icon_color_dark</item>
 
+        <item name="tabTextNoFocus">@color/dark_tabTextNoFocus</item>
     </style>
 
     <style name="TimePickerTheme" parent="Theme.AppCompat.Dialog">
-        <item name="colorPrimary">@color/dark_colorPrimary</item>
-        <item name="colorPrimaryDark">@color/dark_colorPrimaryDark</item>
         <item name="colorAccent">@color/dark_colorAccent</item>
-        <item name="android:headerBackground">@color/colorPrimary</item>
-        <item name="android:numbersBackgroundColor" tools:targetApi="lollipop">@color/colorPrimary</item>
-        <item name="android:background">@color/dark_colorPrimary</item>
     </style>
+    
 
     <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.Light">
         <item name="android:textColorPrimary">#ffffff</item>
@@ -81,7 +87,7 @@
         <item name="android:layout_gravity">end</item>
         <item name="android:layout_marginTop">@dimen/add_button_margin</item>
         <item name="android:background">?attr/colorAccent</item>
-        <item name="android:textColor">?attr/buttonTextColor</item>
+        <item name="android:textColor">@color/dark_textColorPrimary</item>
         <item name="android:textSize">@dimen/add_button_text_size</item>
         <item name="android:paddingTop">@dimen/add_button_padding_vertical</item>
         <item name="android:paddingBottom">@dimen/add_button_padding_vertical</item>
@@ -103,8 +109,8 @@
         <item name="android:textSize">@dimen/add_xxx_edit_text_text_size</item>
         <item name="android:gravity">end</item>
         <item name="android:padding">@dimen/add_xxx_edit_text_padding</item>
-        <item name="android:textColorHint">?attr/colorControlNormal</item>
-        <item name="android:textColor">?attr/listItemTextColor</item>
+        <item name="android:textColorHint">?android:attr/textColorHint</item>
+        <item name="android:textColor">?android:attr/textColor</item>
     </style>
 
     <style name="CircularTextView">
@@ -124,7 +130,7 @@
         <item name="android:textSize">@dimen/list_item_main_text_size</item>
         <item name="android:layout_marginStart">@dimen/list_item_text_left_margin</item>
         <item name="android:layout_gravity">center</item>
-        <item name="android:textColor">?attr/listItemTextColor</item>
+        <item name="android:textColor">?android:attr/textColor</item>
     </style>
 
     <style name="FloatingActionButtonStyle">

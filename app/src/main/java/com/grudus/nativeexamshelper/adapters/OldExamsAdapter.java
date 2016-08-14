@@ -55,7 +55,7 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = context.getTheme();
 
-        theme.resolveAttribute(R.attr.selectedListItemColor, typedValue, true);
+        theme.resolveAttribute(R.attr.selectedListItemBackgroundColor, typedValue, true);
         selectedItemBackgroundColor = typedValue.data;
 
         theme.resolveAttribute(R.attr.background, typedValue, true);

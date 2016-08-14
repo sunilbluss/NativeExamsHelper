@@ -1,7 +1,5 @@
 package com.grudus.nativeexamshelper.adapters;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -59,7 +57,7 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = context.getTheme();
 
-        theme.resolveAttribute(R.attr.selectedListItemColor, typedValue, true);
+        theme.resolveAttribute(R.attr.selectedListItemBackgroundColor, typedValue, true);
         selectedItemBackgroundColor = typedValue.data;
 
         theme.resolveAttribute(R.attr.background, typedValue, true);

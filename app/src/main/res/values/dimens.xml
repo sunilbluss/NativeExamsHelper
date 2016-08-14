@@ -16,12 +16,12 @@
 
     <!-- Single item in list view-->
     <dimen name="list_item_circular_view_text_size">28sp</dimen>
-    <dimen name="list_item_margin">18dp</dimen>
+    <dimen name="list_item_margin">16dp</dimen>
     <dimen name="list_item_radius">40dp</dimen>
-    <dimen name="list_item_text_left_margin">15dp</dimen>
-    <dimen name="list_item_main_text_size">20sp</dimen>
+    <dimen name="list_item_text_left_margin">16dp</dimen>
+    <dimen name="list_item_main_text_size">16sp</dimen>
 
-    <dimen name="list_item_sub_text_size">12sp</dimen>
+    <dimen name="list_item_sub_text_size">14sp</dimen>
 
     <!-- Single subject exams -->
     <dimen name="sse_title_text_size">@dimen/list_item_main_text_size</dimen>

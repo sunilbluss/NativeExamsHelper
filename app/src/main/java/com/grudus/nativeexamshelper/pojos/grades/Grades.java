@@ -1,15 +1,37 @@
 package com.grudus.nativeexamshelper.pojos.grades;
 
 
+import android.content.Context;
+import android.preference.PreferenceManager;
+
+import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.activities.MyApplication;
+
 import java.util.Random;
 
 public class Grades {
 
     private static Grade currentGrade;
 
+    private static boolean decimalsInGradesEnabled;
+
     // TODO: 12.07.16 change to user's choice
     static {
-        currentGrade = GradeFactory.getGrade(GradeFactory.SCHOOL_MODE);
+        Context context = MyApplication.getContext();
+
+        String key = context.getString(R.string.key_grades_type);
+        String gradeType = PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(key, "0");
+        currentGrade = GradeFactory.getGrade(gradeType);
+
+        key = context.getString(R.string.key_grades_decimal);
+
+        if (currentGrade instanceof UniversityGrade)
+            decimalsInGradesEnabled = false;
+
+        else
+            decimalsInGradesEnabled = PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(key, false);
     }
 
     private Grades() {}
@@ -20,6 +42,18 @@ public class Grades {
 
     public static void setGradeMode(int type) {
         currentGrade = GradeFactory.getGrade(type);
+    }
+
+    public static boolean areDecimalsInGradesEnabled() {
+        return decimalsInGradesEnabled;
+    }
+
+    public static void enableDecimalsInGrades(boolean enable) {
+        decimalsInGradesEnabled = enable;
+    }
+
+    public static void setGradeMode(String entryValue) {
+        currentGrade = GradeFactory.getGrade(entryValue);
     }
 
     public static double getFirstPassedGrade() {

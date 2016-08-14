@@ -17,10 +17,30 @@
         android:key="pref_user_group"
         android:title="@string/pref_user_group">
 
-        <EditTextPreference
+        <Preference
             android:key="@string/key_user_name"
             android:title="@string/pref_user_name"
             android:summary="@string/pref_user_name_sub" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="pref_grades_group"
+        android:title="@string/pref_grades_group">
+
+        <ListPreference
+            android:key="@string/key_grades_type"
+            android:title="@string/pref_grades"
+            android:summary="@string/pref_grades_sub"
+            android:entryValues="@array/pref_grades_entryValues"
+            android:defaultValue="0"
+            android:entries="@array/pref_grades_entries"/>
+
+        <SwitchPreference
+            android:key="@string/key_grades_decimal"
+            android:title="@string/pref_grades_decimal"
+            android:summary="@string/pref_grades_decimal_sub"
+            android:defaultValue="false" />
 
     </PreferenceCategory>
 

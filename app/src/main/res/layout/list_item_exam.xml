@@ -8,7 +8,10 @@
     android:orientation="horizontal"
     android:background="@drawable/ripple_effect"
     android:clickable="true"
-    android:padding="@dimen/list_item_margin">
+    android:paddingLeft="@dimen/list_item_margin"
+    android:paddingRight="@dimen/list_item_margin"
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp">
 
     <TextView
         style="@style/CircularTextView"
@@ -28,8 +31,9 @@
     <TextView
         android:layout_width="match_parent" 
         android:layout_height="wrap_content"
-        android:textColor="?attr/listItemTextColor"
+        android:textColor="?android:attr/textColor"
         android:textSize="@dimen/list_item_main_text_size"
+        android:text="Dupa"
         android:id="@+id/list_item_adding_exam_subject"
         android:layout_toEndOf="@id/list_item_icon_text"
         android:layout_marginStart="@dimen/list_item_text_left_margin" />
@@ -37,7 +41,8 @@
     <TextView
         android:layout_width="match_parent" 
         android:layout_height="wrap_content"
-        android:textColor="?attr/listItemTextColor"
+        android:text="12/12/12221"
+        android:textColor="?android:attr/textColorSecondary"
         android:textSize="@dimen/list_item_sub_text_size"
         android:id="@+id/list_item_adding_exam_date"
         android:layout_below="@id/list_item_adding_exam_subject"
@@ -66,6 +71,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/info_icon"
+                android:tint="?android:attr/textColorSecondary"
                 android:layout_gravity="center" />
 
             <TextView
@@ -73,6 +79,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_gravity="center"
+                android:textColor="?android:attr/textColorSecondary"
                 android:id="@+id/list_item_expanded_info" />
                 
 
@@ -88,6 +95,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/time_icon"
+                android:tint="?android:attr/textColorSecondary"
                 android:layout_gravity="center" />
 
             <TextView
@@ -95,6 +103,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/list_item_expanded_time"
                 android:layout_marginStart="10dp"
+                android:textColor="?android:attr/textColorSecondary"
                 android:layout_gravity="center" />
                 
 

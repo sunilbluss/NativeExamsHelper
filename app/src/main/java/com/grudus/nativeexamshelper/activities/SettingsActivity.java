@@ -4,7 +4,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
+import android.preference.ListPreference;
+import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
+import android.preference.SwitchPreference;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,15 +17,21 @@ import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.dialogs.EnterTextDialog;
 import com.grudus.nativeexamshelper.helpers.ThemeHelper;
+import com.grudus.nativeexamshelper.pojos.grades.Grade;
+import com.grudus.nativeexamshelper.pojos.grades.Grades;
 
 public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ThemeHelper.onActivityCreateSetTheme(this);
 
         setContentView(R.layout.settings_layout);
 
@@ -54,11 +65,15 @@ public class SettingsActivity extends AppCompatActivity {
 
 
 
+
+
     public static class MainSettingsFragment extends PreferenceFragment
             implements SharedPreferences.OnSharedPreferenceChangeListener  {
 
         private final String NIGHT_MODE_KEY = MyApplication.getContext().getString(R.string.key_night_mode);
         private final String USER_NAME_KEY = MyApplication.getContext().getString(R.string.key_user_name);
+        private final String GRADE_TYPE_KEY = MyApplication.getContext().getString(R.string.key_grades_type);
+        private final String GRADE_DECIMAL_KEY = MyApplication.getContext().getString(R.string.key_grades_decimal);
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -79,7 +94,27 @@ public class SettingsActivity extends AppCompatActivity {
             }
 
             view.setLayoutParams(params);
+
+            TypedValue typedValue = new TypedValue();
+            getActivity().getTheme().resolveAttribute(R.attr.background, typedValue, true);
+
+            getListView().setBackgroundColor(typedValue.data);
+
         }
+
+        private ListView getListView() {
+            View view = getView();
+            if (view == null) {
+                throw new IllegalStateException("Content view not yet created");
+            }
+
+            View listView = view.findViewById(android.R.id.list);
+            if (!(listView instanceof ListView)) {
+                throw new RuntimeException("Content has view with id attribute 'android.R.id.list' that is not a ListView class");
+            }
+            return (ListView) listView;
+        }
+
 
         @Override
         public void onResume() {
@@ -95,6 +130,21 @@ public class SettingsActivity extends AppCompatActivity {
                     .unregisterOnSharedPreferenceChangeListener(this);
         }
 
+        @Override
+        public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+            if (preference.getKey().equals(USER_NAME_KEY)) {
+                new EnterTextDialog()
+                        .addTitle(getString(R.string.pref_user_name))
+                        .addListener(text -> {
+                            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
+                            editor.putString(USER_NAME_KEY, text);
+                            editor.commit();
+                        })
+                        .show(getFragmentManager(), "qqqa");
+                return false;
+            }
+            return super.onPreferenceTreeClick(preferenceScreen, preference);
+        }
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -106,11 +156,17 @@ public class SettingsActivity extends AppCompatActivity {
                     ThemeHelper.changeToTheme(getActivity(), ThemeHelper.THEME_DEFAULT);
             }
 
-            else if (key.equals(USER_NAME_KEY)) {
-                EditTextPreference pref = (EditTextPreference) findPreference(key);
-                String name = pref.getText();
-                pref.setSummary("Hello, " + name);
+
+            else if (key.equals(GRADE_TYPE_KEY)) {
+                ListPreference pref = (ListPreference) findPreference(key);
+                Grades.setGradeMode(pref.getValue());
             }
+
+            else if (key.equals(GRADE_DECIMAL_KEY)) {
+                SwitchPreference pref = (SwitchPreference) findPreference(key);
+                Grades.enableDecimalsInGrades(!pref.isChecked());
+            }
+
         }
 
     }

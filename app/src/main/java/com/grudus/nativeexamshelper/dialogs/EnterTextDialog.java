@@ -4,13 +4,17 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.grudus.nativeexamshelper.R;
 
@@ -19,6 +23,7 @@ public class EnterTextDialog extends DialogFragment {
 
     private View root;
     private EditText editText;
+    private TextView titleView;
     private OnTextReceivedListener listener;
 
     private String title;
@@ -30,8 +35,6 @@ public class EnterTextDialog extends DialogFragment {
         initViews(builder);
         initOnGlobalLayoutListener();
 
-        builder.setTitle(
-                title == null ? getString(R.string.dialog_enter_text_title) : title);
 
         builder.setView(root);
         return builder.create();
@@ -40,6 +43,9 @@ public class EnterTextDialog extends DialogFragment {
     private void initViews(AlertDialog.Builder builder) {
         root = getActivity().getLayoutInflater().inflate(R.layout.dialog_enter_text, null);
         editText = (EditText) root.findViewById(R.id.dialog_edit_text);
+        titleView = (TextView) root.findViewById(R.id.dialog_input_text_title);
+
+        titleView.setText(title == null ? getString(R.string.dialog_enter_text_title) : title);
 
         builder.setPositiveButton(getString(R.string.button_text_save), null);
         builder.setNegativeButton(getString(R.string.button_text_back), null);
@@ -52,8 +58,18 @@ public class EnterTextDialog extends DialogFragment {
                 root.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 setUpButtonColors();
                 setUpButtonListeners();
+                setUpDialogColors();
             }
         });
+    }
+
+    private void setUpDialogColors() {
+        AlertDialog dialog = (AlertDialog) getDialog();
+        TypedValue typedValue = new TypedValue();
+        getActivity().getTheme().resolveAttribute(R.attr.dialogBackground, typedValue, true);
+        final int color = typedValue.data;
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(color));
+
     }
 
     private void showKeyboard() {

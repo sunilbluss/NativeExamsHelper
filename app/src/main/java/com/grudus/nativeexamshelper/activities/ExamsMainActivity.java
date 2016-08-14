@@ -2,6 +2,7 @@ package com.grudus.nativeexamshelper.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
@@ -17,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
@@ -108,6 +110,11 @@ public class ExamsMainActivity extends AppCompatActivity{
 
     private void setNavigationViewHeaderSize() {
         final View header = navigationView.getHeaderView(0);
+
+        TextView title = (TextView) header.findViewById(R.id.hamburger_title);
+        title.setText(PreferenceManager.getDefaultSharedPreferences(this).getString(
+                getString(R.string.key_user_name), "Szczęściarz"
+        ));
 
         header.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override

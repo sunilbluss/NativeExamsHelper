@@ -10,20 +10,30 @@
     android:clickable="true"
     android:padding="@dimen/list_item_margin">
 
-    <TextView
-        style="@style/CircularTextView"
-        android:id="@+id/list_item_old_exam_icon_text" />
 
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/list_item_main_text_size"
-        android:id="@+id/list_item_old_exam_subject"
-        android:layout_marginStart="@dimen/list_item_text_left_margin"
-        android:text="@string/list_item_old_exam_no_grades"
-        android:textColor="?attr/listItemTextColor"
-        android:layout_toEndOf="@id/list_item_old_exam_icon_text"/>
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/CircularTextView"
+            android:id="@+id/list_item_old_exam_icon_text" />
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/list_item_main_text_size"
+            android:id="@+id/list_item_old_exam_subject"
+            android:text="@string/list_item_old_exam_no_grades"
+            android:textColor="?android:attr/textColor"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp" />
+
+    </LinearLayout>
+
 
     <ImageView
         android:layout_width="@dimen/list_item_radius"

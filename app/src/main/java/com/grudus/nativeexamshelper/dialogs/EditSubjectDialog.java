@@ -3,6 +3,7 @@ package com.grudus.nativeexamshelper.dialogs;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
@@ -75,6 +76,7 @@ public class EditSubjectDialog extends DialogFragment {
                         setWidthTo90percentOfScreenWidth();
                         setUpButtons();
                         setButtonColors();
+                        setBackgroundColor();
                     }
                 });
     }
@@ -129,6 +131,12 @@ public class EditSubjectDialog extends DialogFragment {
                 .setTextColor(color);
         dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
                 .setTextColor(color);
+    }
+
+    private void setBackgroundColor() {
+        TypedValue typedValue = new TypedValue();
+        getActivity().getTheme().resolveAttribute(R.attr.dialogBackground, typedValue, true);
+        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(typedValue.data));
     }
 
 

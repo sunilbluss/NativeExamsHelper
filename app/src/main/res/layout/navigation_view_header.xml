@@ -3,12 +3,13 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="130dp"
-    android:background="?attr/colorPrimary">
+    android:background="?attr/colorAccent">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#ffffff"
+        android:id="@+id/hamburger_title"
+        android:textColor="@color/dark_textColorPrimary"
         android:text="Hamburger"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"

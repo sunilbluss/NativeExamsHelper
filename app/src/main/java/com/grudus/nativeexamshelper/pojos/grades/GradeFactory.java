@@ -15,4 +15,10 @@ public class GradeFactory {
         }
     }
 
+    public static Grade getGrade(String entityValue) {
+        if (!entityValue.matches("\\d"))
+            return getGrade(SCHOOL_MODE);
+        return getGrade(Integer.valueOf(entityValue));
+    }
+
 }

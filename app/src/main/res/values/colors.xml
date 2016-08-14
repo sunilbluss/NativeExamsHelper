@@ -3,9 +3,14 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#536DFE</color>
-    <color name="colorHighlight">#bdbdbd</color>
-    <color name="textColor">#ffffff</color>
-    <color name="backgroundColor">#ffffff</color>
+
+    <color name="backgroundColor">#fafafa</color>
+    <color name="dialogColor">#ffffff</color>
+
+    <color name="textColorPrimary">#DC000000</color>
+    <color name="textColorSecondary">#8A000000</color>
+    <color name="textColorHint">#64000000</color>
+
 
     <color name="toolbar_text_theme">#ffffff</color>
     <color name="settingsColor">#ffffff</color>
@@ -19,12 +24,21 @@
     <color name="niceBlueColor">#4286F5</color>
 
     <color name="navigationViewPressed">#55536DFE</color>
+
+    <color name="tabTextNoFocus">#9fa8da</color>
+
     
     <!--DARK THEME-->
     <color name="dark_colorPrimaryDark">#101010</color>
     <color name="dark_colorPrimary">#212121</color>
-    <color name="dark_backgroundColor">#424242</color>
-   <color name="dark_colorAccent">#4CAF50</color>
+    <color name="dark_colorAccent">#4CAF50</color>
+
+    <color name="dark_backgroundColor">#303030</color>
+    <color name="dark_dialogColor">#424242</color>
+
+    <color name="dark_textColorPrimary">#FFffffff</color>
+    <color name="dark_textColorSecondary">#B3ffffff</color>
+    <color name="dark_textColorHint">#80ffffff</color>
 
 
     <color name="deleteColor">#d50000</color>
@@ -34,8 +48,11 @@
     <color name="seekBarGreen">#00c853</color>
     <color name="seekBarBlue">@color/colorPrimary</color>
 
-    <color name="normalTextColor">#616161</color>
+    <color name="dark_tabTextNoFocus">#bdbdbd</color>
+
+
     <color name="navigationViewPressedDark">#554CAF50</color>
+    <color name="colorHighlight">#d5d5d5</color>
 
 
     <string-array name="defaultSubjectsColors">

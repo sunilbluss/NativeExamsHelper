@@ -9,13 +9,15 @@
     <NumberPicker
         android:layout_width="wrap_content"
         android:id="@+id/mainGradePicker"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:descendantFocusability="blocksDescendants">
     </NumberPicker>
 
     <NumberPicker
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/additionalGradePicker">
+        android:id="@+id/additionalGradePicker"
+        android:descendantFocusability="blocksDescendants">
 
     </NumberPicker>
 

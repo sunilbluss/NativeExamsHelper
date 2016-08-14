@@ -3,8 +3,14 @@ package com.grudus.nativeexamshelper.helpers;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.preference.CheckBoxPreference;
 import android.preference.PreferenceManager;
+import android.util.TypedValue;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.activities.MyApplication;
@@ -37,9 +43,10 @@ public class ThemeHelper {
     public static void changeToTheme(Activity activity, int theme)
     {
         sTheme = theme;
-//        activity.finish();
-//        activity.startActivity(new Intent(activity, activity.getClass()));
+        activity.finish();
+        activity.startActivity(new Intent(activity, activity.getClass()));
     }
+
 
     public static void onActivityCreateSetTheme(Activity activity)
     {

@@ -24,6 +24,8 @@ public class SelectGradeDialog extends DialogFragment {
     private DialogInterface.OnClickListener listener;
     private NumberPicker picker, picker1;
 
+    private double[] grades = Grades.getAllPossibleGrades();
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -45,14 +47,25 @@ public class SelectGradeDialog extends DialogFragment {
 
     private void setUpPickers(View root) {
         picker = (NumberPicker) root.findViewById(R.id.mainGradePicker);
-        picker.setMinValue(1);
-        picker.setMaxValue(6);
+
+        picker.setMinValue(0);
+        picker.setMaxValue(grades.length-1);
+        picker.setDisplayedValues(getStringArrayFromDoubleArray());
+
         picker1 = (NumberPicker) root.findViewById(R.id.additionalGradePicker);
         picker1.setMinValue(0);
         picker1.setMaxValue(5);
         picker1.setDisplayedValues(new String[] {"-", " ", "+", "-", " ", "+"});
         picker1.setWrapSelectorWheel(true);
+        picker1.setEnabled(false);
 
+    }
+
+    private String[] getStringArrayFromDoubleArray() {
+        String[] arr = new String[grades.length];
+        for (int i = 0; i < grades.length; i++)
+            arr[i] = String.valueOf(grades[i]);
+        return arr;
     }
 
 
@@ -61,12 +74,14 @@ public class SelectGradeDialog extends DialogFragment {
     }
 
     public double getSelectedGrade() {
-        switch (picker1.getValue() % 3) {
-            case 0: return picker.getValue() - 0.25;
-            default:
-            case 1: return picker.getValue();
-            case 2: return picker.getValue() + 0.25;
-        }
+        return Double.parseDouble(picker.getDisplayedValues()[picker.getValue()]);
+
+//        switch (picker1.getValue() % 3) {
+//            case 0: return picker.getValue() - 0.25;
+//            default:
+//            case 1: return picker.getValue();
+//            case 2: return picker.getValue() + 0.25;
+//        }
     }
 
 }
