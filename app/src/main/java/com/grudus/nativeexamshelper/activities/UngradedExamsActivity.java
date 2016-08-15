@@ -1,21 +1,19 @@
 package com.grudus.nativeexamshelper.activities;
 
-import android.content.DialogInterface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.adapters.ItemClickListener;
 import com.grudus.nativeexamshelper.adapters.UngradedExamsAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
-import com.grudus.nativeexamshelper.dialogs.SelectGradeDialog;
+import com.grudus.nativeexamshelper.dialogs.extensible.RadioDialog;
 import com.grudus.nativeexamshelper.helpers.ThemeHelper;
 import com.grudus.nativeexamshelper.pojos.Exam;
+import com.grudus.nativeexamshelper.pojos.grades.Grades;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,7 +31,7 @@ public class UngradedExamsActivity extends AppCompatActivity implements ItemClic
     private ExamsDbHelper dbHelper;
 
     private Subscription subscription;
-    private final SelectGradeDialog dialog = new SelectGradeDialog();
+    private final RadioDialog dialog = new RadioDialog();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,20 +81,20 @@ public class UngradedExamsActivity extends AppCompatActivity implements ItemClic
     @Override
     public void itemClicked(View v, final int position) {
 
-        dialog.setListener((dialogInterface, which) -> {
-            Toast.makeText(UngradedExamsActivity.this, dialog.getSelectedGrade() + "", Toast.LENGTH_SHORT).show();
-
+        dialog.addListener(((selectedIndex, selectedValue) -> {
             Exam exam = adapter.getExamByPosition(position);
 
             subscription =
-                dbHelper.examBecomesOld(exam, dialog.getSelectedGrade())
-                        .flatMap((id) -> dbHelper.getExamsOlderThan(System.currentTimeMillis()))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe((cursor) -> {
-                            adapter.examHasGrade(position, cursor);
-                        });
-        });
+                    dbHelper.examBecomesOld(exam, Double.valueOf(selectedValue))
+                            .flatMap((id) -> dbHelper.getExamsOlderThan(System.currentTimeMillis()))
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe((cursor) -> {
+                                adapter.examHasGrade(position, cursor);
+                            });
+        }))
+                .addTitle(getString(R.string.dialog_select_grade_title))
+                .addDisplayedValues(Grades.getAllPossibleGradesAsStrings());
 
         dialog.show(getFragmentManager(), getString(R.string.tag_dialog_select_grade));
     }

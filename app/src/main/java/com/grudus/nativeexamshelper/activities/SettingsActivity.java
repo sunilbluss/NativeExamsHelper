@@ -1,10 +1,9 @@
 package com.grudus.nativeexamshelper.activities;
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
-import android.preference.EditTextPreference;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -18,13 +17,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.grudus.nativeexamshelper.R;
-import com.grudus.nativeexamshelper.dialogs.EnterTextDialog;
+import com.grudus.nativeexamshelper.database.ExamsDbHelper;
+import com.grudus.nativeexamshelper.dialogs.extensible.ConfirmDialog;
+import com.grudus.nativeexamshelper.dialogs.extensible.EnterTextDialog;
+import com.grudus.nativeexamshelper.dialogs.extensible.RadioDialog;
+import com.grudus.nativeexamshelper.helpers.ColorHelper;
 import com.grudus.nativeexamshelper.helpers.ThemeHelper;
-import com.grudus.nativeexamshelper.pojos.grades.Grade;
 import com.grudus.nativeexamshelper.pojos.grades.Grades;
+
+import rx.Subscription;
+import rx.schedulers.Schedulers;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -75,6 +79,8 @@ public class SettingsActivity extends AppCompatActivity {
         private final String GRADE_TYPE_KEY = MyApplication.getContext().getString(R.string.key_grades_type);
         private final String GRADE_DECIMAL_KEY = MyApplication.getContext().getString(R.string.key_grades_decimal);
 
+        private Subscription subscription;
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -95,10 +101,7 @@ public class SettingsActivity extends AppCompatActivity {
 
             view.setLayoutParams(params);
 
-            TypedValue typedValue = new TypedValue();
-            getActivity().getTheme().resolveAttribute(R.attr.background, typedValue, true);
-
-            getListView().setBackgroundColor(typedValue.data);
+            getListView().setBackgroundColor(ColorHelper.getThemeColor(getActivity(), R.attr.background));
 
         }
 
@@ -128,6 +131,9 @@ public class SettingsActivity extends AppCompatActivity {
             super.onPause();
             getPreferenceScreen().getSharedPreferences()
                     .unregisterOnSharedPreferenceChangeListener(this);
+
+            if (subscription != null && !subscription.isUnsubscribed())
+                subscription.unsubscribe();
         }
 
         @Override
@@ -135,13 +141,38 @@ public class SettingsActivity extends AppCompatActivity {
             if (preference.getKey().equals(USER_NAME_KEY)) {
                 new EnterTextDialog()
                         .addTitle(getString(R.string.pref_user_name))
+                        .addText(
+                                preference.getSharedPreferences().getString(USER_NAME_KEY, "")
+                        )
                         .addListener(text -> {
                             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
                             editor.putString(USER_NAME_KEY, text);
                             editor.commit();
                         })
-                        .show(getFragmentManager(), "qqqa");
+                        .show(getFragmentManager(), getString(R.string.tag_dialog_edit));
                 return false;
+            }
+
+            else if (preference.getKey().equals(GRADE_TYPE_KEY)) {
+
+                new ConfirmDialog()
+                        .addTitle(getString(R.string.dialog_confirm_pref_title))
+                        .addText(getString(R.string.dialog_confirm_pref_content))
+                        .addListener((dialog, which) -> {
+                            if (which == DialogInterface.BUTTON_POSITIVE)
+                                new RadioDialog()
+                                    .addTitle(getString(R.string.pref_grades))
+                                    .addDisplayedValues(getResources().getStringArray(R.array.pref_grades_entries))
+                                    .addSelectedItemIndex(PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt(GRADE_TYPE_KEY, 0))
+                                    .addListener(((selectedIndex, selectedValue) -> {
+                                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
+                                        editor.putInt(GRADE_TYPE_KEY, selectedIndex);
+                                        editor.commit();
+                                        Grades.setGradeMode(selectedIndex);
+                                    }))
+                                    .show(getFragmentManager(), getString(R.string.tag_dialog_radio));
+                        }).show(getFragmentManager(), getString(R.string.tag_dialog_confirm));
+
             }
             return super.onPreferenceTreeClick(preferenceScreen, preference);
         }
@@ -156,15 +187,20 @@ public class SettingsActivity extends AppCompatActivity {
                     ThemeHelper.changeToTheme(getActivity(), ThemeHelper.THEME_DEFAULT);
             }
 
-
-            else if (key.equals(GRADE_TYPE_KEY)) {
-                ListPreference pref = (ListPreference) findPreference(key);
-                Grades.setGradeMode(pref.getValue());
-            }
-
             else if (key.equals(GRADE_DECIMAL_KEY)) {
                 SwitchPreference pref = (SwitchPreference) findPreference(key);
                 Grades.enableDecimalsInGrades(!pref.isChecked());
+            }
+
+            else if (key.equals(GRADE_TYPE_KEY)) {
+                ExamsDbHelper helper = ExamsDbHelper.getInstance(getActivity());
+                helper.openDB();
+
+                subscription = helper.removeAllOldExams()
+                        .subscribeOn(Schedulers.io())
+                        .subscribe((howMany) -> {},
+                                error -> helper.closeDB(),
+                                helper::closeDB);
             }
 
         }

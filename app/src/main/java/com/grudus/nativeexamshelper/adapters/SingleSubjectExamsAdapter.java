@@ -16,6 +16,7 @@ import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.pojos.Subject;
+import com.grudus.nativeexamshelper.pojos.grades.Grades;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -75,16 +76,7 @@ public class SingleSubjectExamsAdapter extends RecyclerView.Adapter<SingleSubjec
     }
 
     private void bindGrade(SingleSubjectExamsViewHolder holder, double grade) {
-        String gradeString;
-
-        if (grade % 1 == 0)
-            gradeString = String.valueOf((int)grade);
-        else if (grade % 1 == 0.25)
-            gradeString = String.valueOf((int)grade) + "+";
-        else
-            gradeString = String.valueOf((int)(grade+1)) + "-";
-
-        holder.iconView.setText(gradeString);
+        holder.iconView.setText(Grades.getGradeAsString(grade));
     }
 
     private void bindColor(SingleSubjectExamsViewHolder holder, double grade) {

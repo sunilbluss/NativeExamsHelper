@@ -1,6 +1,10 @@
 package com.grudus.nativeexamshelper.helpers;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.support.annotation.AttrRes;
+import android.support.annotation.IdRes;
+import android.util.TypedValue;
 
 public class ColorHelper {
 
@@ -32,6 +36,12 @@ public class ColorHelper {
 
     public static String getHexColor(final int color) {
         return String.format("#%06X", (0xFFFFFF & color));
+    }
+
+    public static int getThemeColor(Context context, @AttrRes final int id) {
+        TypedValue typedValue = new TypedValue();
+        context.getTheme().resolveAttribute(id, typedValue, true);
+        return typedValue.data;
     }
 
 }

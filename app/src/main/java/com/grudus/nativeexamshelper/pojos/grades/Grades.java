@@ -7,8 +7,6 @@ import android.preference.PreferenceManager;
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.activities.MyApplication;
 
-import java.util.Random;
-
 public class Grades {
 
     private static Grade currentGrade;
@@ -20,8 +18,8 @@ public class Grades {
         Context context = MyApplication.getContext();
 
         String key = context.getString(R.string.key_grades_type);
-        String gradeType = PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(key, "0");
+        int gradeType = PreferenceManager.getDefaultSharedPreferences(context)
+                .getInt(key, 0);
         currentGrade = GradeFactory.getGrade(gradeType);
 
         key = context.getString(R.string.key_grades_decimal);
@@ -52,10 +50,6 @@ public class Grades {
         decimalsInGradesEnabled = enable;
     }
 
-    public static void setGradeMode(String entryValue) {
-        currentGrade = GradeFactory.getGrade(entryValue);
-    }
-
     public static double getFirstPassedGrade() {
         return currentGrade.getFirstPassedGrade();
     }
@@ -65,12 +59,7 @@ public class Grades {
     }
 
     public static String[] getAllPossibleGradesAsStrings() {
-        String[] grades = new String[currentGrade.getGrades().length];
-        for (int i = 0; i < currentGrade.getGrades().length; i++) {
-            grades[i] = (int) (currentGrade.getGrades()[i] + 0.5)
-                    + (currentGrade.getGrades()[i] % 1 == 0.25 ? "+" : (currentGrade.getGrades()[i] % 1 == 0.75 ? "-" : ""));
-        }
-        return grades;
+        return currentGrade.getGradesAsString();
     }
 
     public static boolean isInRange(double grade) {
@@ -78,8 +67,12 @@ public class Grades {
     }
 
 
-    //// TODO: 12.07.16 debug only
-    public static double getRandomGrade() {
-        return currentGrade.getGrades()[new Random().nextInt(currentGrade.getGrades().length)];
+    public static String getGradeAsString(double grade) {
+
+        for (int i = 0; i < getAllPossibleGrades().length; i++)
+            if (grade == getAllPossibleGrades()[i])
+                return getAllPossibleGradesAsStrings()[i];
+
+        return "";
     }
 }

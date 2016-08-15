@@ -149,10 +149,10 @@ public final class SubjectsQuery {
         );
     }
 
-    public static void resetGrades(SQLiteDatabase db)  {
+    public static int resetGrades(SQLiteDatabase db)  {
         ContentValues cv = new ContentValues(1);
         cv.put(SubjectsContract.SubjectEntry.HAS_GRADE_COLUMN, 0);
-        db.update(
+        return db.update(
                 SubjectsContract.SubjectEntry.TABLE_NAME,
                 cv,
                 null,

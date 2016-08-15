@@ -23,5 +23,14 @@ public abstract class Grade {
     public abstract double getFirstPassedGrade();
     public abstract double[] getGrades();
 
+    public String[] getGradesAsString() {
+        final int size = getGrades().length;
+        String[] strings = new String[size];
+        for (int i = 0; i < size; i++) {
+            strings[i] = String.valueOf(getGrades()[i]);
+        }
+        return strings;
+    }
+
 
 }

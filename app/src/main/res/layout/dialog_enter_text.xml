@@ -20,7 +20,6 @@
         android:id="@+id/dialog_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="dupa"
         android:textColor="?android:attr/textColor"/>
 
 </LinearLayout>

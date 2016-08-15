@@ -7,7 +7,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
@@ -121,10 +120,7 @@ public class EditSubjectDialog extends DialogFragment {
     }
 
     private void setButtonColors() {
-        TypedValue typedValue = new TypedValue();
-        getActivity().getTheme()
-                .resolveAttribute(R.attr.colorAccent, typedValue, true);
-        final int color = typedValue.data;
+        final int color = ColorHelper.getThemeColor(getActivity(), R.attr.colorAccent);
 
         final AlertDialog dialog = (AlertDialog) getDialog();
         dialog.getButton(DialogInterface.BUTTON_POSITIVE)
@@ -134,9 +130,10 @@ public class EditSubjectDialog extends DialogFragment {
     }
 
     private void setBackgroundColor() {
-        TypedValue typedValue = new TypedValue();
-        getActivity().getTheme().resolveAttribute(R.attr.dialogBackground, typedValue, true);
-        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(typedValue.data));
+        getDialog().getWindow()
+                .setBackgroundDrawable(new ColorDrawable(
+                        ColorHelper.getThemeColor(getActivity(), R.attr.dialogBackground)
+                ));
     }
 
 

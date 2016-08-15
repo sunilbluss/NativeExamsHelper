@@ -19,6 +19,7 @@ import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
 import com.grudus.nativeexamshelper.helpers.AnimationHelper;
+import com.grudus.nativeexamshelper.helpers.ColorHelper;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.helpers.TimeHelper;
 
@@ -54,14 +55,8 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
     }
 
     private void setUpBackgroundColors() {
-        TypedValue typedValue = new TypedValue();
-        Resources.Theme theme = context.getTheme();
-
-        theme.resolveAttribute(R.attr.selectedListItemBackgroundColor, typedValue, true);
-        selectedItemBackgroundColor = typedValue.data;
-
-        theme.resolveAttribute(R.attr.background, typedValue, true);
-        normalItemBackgroundColor = typedValue.data;
+        selectedItemBackgroundColor = ColorHelper.getThemeColor(context, R.attr.selectedListItemBackgroundColor);
+        normalItemBackgroundColor = ColorHelper.getThemeColor(context, R.attr.background);
     }
 
 

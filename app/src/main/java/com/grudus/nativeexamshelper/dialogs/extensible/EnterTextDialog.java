@@ -1,4 +1,4 @@
-package com.grudus.nativeexamshelper.dialogs;
+package com.grudus.nativeexamshelper.dialogs.extensible;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -6,17 +6,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.helpers.ColorHelper;
 
 
 public class EnterTextDialog extends DialogFragment {
@@ -27,6 +25,7 @@ public class EnterTextDialog extends DialogFragment {
     private OnTextReceivedListener listener;
 
     private String title;
+    private String preText = "";
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -43,6 +42,7 @@ public class EnterTextDialog extends DialogFragment {
     private void initViews(AlertDialog.Builder builder) {
         root = getActivity().getLayoutInflater().inflate(R.layout.dialog_enter_text, null);
         editText = (EditText) root.findViewById(R.id.dialog_edit_text);
+        editText.setText(preText);
         titleView = (TextView) root.findViewById(R.id.dialog_input_text_title);
 
         titleView.setText(title == null ? getString(R.string.dialog_enter_text_title) : title);
@@ -65,9 +65,8 @@ public class EnterTextDialog extends DialogFragment {
 
     private void setUpDialogColors() {
         AlertDialog dialog = (AlertDialog) getDialog();
-        TypedValue typedValue = new TypedValue();
-        getActivity().getTheme().resolveAttribute(R.attr.dialogBackground, typedValue, true);
-        final int color = typedValue.data;
+        final int color = ColorHelper.getThemeColor(getActivity(), R.attr.dialogBackground);
+
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(color));
 
     }
@@ -99,10 +98,7 @@ public class EnterTextDialog extends DialogFragment {
     }
 
     private void setUpButtonColors() {
-        TypedValue typedValue = new TypedValue();
-        getActivity().getTheme()
-                .resolveAttribute(R.attr.colorAccent, typedValue, true);
-        final int color = typedValue.data;
+        final int color = ColorHelper.getThemeColor(getActivity(), R.attr.colorAccent);
 
         final AlertDialog dialog = (AlertDialog) getDialog();
         dialog.getButton(DialogInterface.BUTTON_POSITIVE)
@@ -118,6 +114,11 @@ public class EnterTextDialog extends DialogFragment {
 
     public EnterTextDialog addTitle(String title) {
         this.title = title;
+        return this;
+    }
+
+    public EnterTextDialog addText(String text) {
+        this.preText = text;
         return this;
     }
 

@@ -66,6 +66,10 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public void openDBIfClosed() {
+        if (!database.isOpen())
+            database = this.getWritableDatabase();
+    }
 
     public void openDB() {
         database = this.getWritableDatabase();
@@ -89,6 +93,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public Observable<Cursor> getAllSubjectsSortByTitle() {
         return Observable.create(subscriber -> {
+            openDBIfClosed();
             subscriber.onNext(SubjectsQuery.getAllRecordsAndSortByTitle(database));
             subscriber.onCompleted();
         });
@@ -96,6 +101,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public Observable<Long> insertSubject(Subject subject) {
         return Observable.create(subscriber -> {
+            openDBIfClosed();
             subscriber.onNext(SubjectsQuery.insert(database, subject));
             subscriber.onCompleted();
         });
@@ -103,6 +109,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public Observable<Integer> refreshSubjects() {
         return Observable.create(subscriber -> {
+            openDBIfClosed();
             subscriber.onNext(SubjectsQuery.deleteAll(database));
             SubjectsQuery.setDefaultColors(context.getResources().getStringArray(R.array.defaultSubjectsColors));
             SubjectsQuery.setDefaultSubjects(context.getResources().getStringArray(R.array.default_subjects));
@@ -112,6 +119,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public Observable<Integer> updateSubject(Subject old, Subject _new) {
         return Observable.create(subscriber -> {
+            openDBIfClosed();
             subscriber.onNext(SubjectsQuery.update(database, old, _new));
             subscriber.onCompleted();
         });
@@ -119,6 +127,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public Observable<Integer> setSubjectHasGrade(Subject subject, boolean hasGrade) {
         return Observable.create(subscriber -> {
+            openDBIfClosed();
             subscriber.onNext(SubjectsQuery.setSubjectHasGrade(database, subject, hasGrade));
             subscriber.onCompleted();
         });
@@ -127,6 +136,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public Observable<Subject> findSubjectByTitle(String title) {
         return Observable.create(subscriber -> {
+            openDBIfClosed();
             subscriber.onNext(SubjectsQuery.findByTitle(database, title));
             subscriber.onCompleted();
         });
@@ -134,6 +144,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public Observable<Integer> removeSubject(String subjectTitle) {
         return Observable.create(subscriber -> {
+            openDBIfClosed();
             subscriber.onNext(SubjectsQuery.removeSubject(database, subjectTitle));
             subscriber.onCompleted();
         });
@@ -141,6 +152,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public Observable<Integer> removeAllExamsRelatedWithSubject(String subjectTitle) {
         return Observable.create(subscriber -> {
+            openDBIfClosed();
             subscriber.onNext(ExamsQuery.removeSubjectExams(database, subjectTitle));
             subscriber.onNext(OldExamsQuery.removeSubjectExams(database, subjectTitle));
             subscriber.onCompleted();
@@ -149,6 +161,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public Observable<Integer> removeAllOldSubjectExams(Subject subject) {
         return Observable.create(subscriber -> {
+            openDBIfClosed();
             subscriber.onNext(OldExamsQuery.removeSubjectExams(database, subject.getTitle()));
             subscriber.onNext(SubjectsQuery.setSubjectHasGrade(database, subject, false));
             subscriber.onCompleted();
@@ -159,6 +172,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public Observable<Long> insertExam(Exam exam) {
         return Observable.create(subscriber -> {
+            openDBIfClosed();
             subscriber.onNext(ExamsQuery.insert(database, exam));
             subscriber.onCompleted();
         });
@@ -166,6 +180,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public Observable<Cursor> getExamsOlderThan(long time) {
         return Observable.create(subscriber -> {
+            openDBIfClosed();
             subscriber.onNext(ExamsQuery.getAllExamsOlderThan(database, time));
             subscriber.onCompleted();
         });
@@ -175,6 +190,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public Observable<Cursor> getSubjectsWithGrade() {
         return Observable.create(subscriber -> {
+            openDBIfClosed();
            subscriber.onNext(SubjectsQuery.findSubjectsWithGradesAndSortBy(database, null));
             subscriber.onCompleted();
         });
@@ -182,6 +198,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public Observable<Cursor> getSubjectGrades(String subjectTitle) {
         return Observable.create(subscriber -> {
+            openDBIfClosed();
             subscriber.onNext(OldExamsQuery.findGradesAndSortBy(database, subjectTitle, null));
             subscriber.onCompleted();
         });
@@ -189,6 +206,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public Observable<Double> getGradesFromOrderedSubjectGrades(String subjectTitle) {
         return Observable.create(subscriber -> {
+            openDBIfClosed();
             Cursor cursor = OldExamsQuery.findGradesAndSortBy(database, subjectTitle, ExamsContract.OldExamEntry.GRADE_COLUMN);
             cursor.moveToFirst();
             // first returned item is size of the items
@@ -206,6 +224,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     private Observable<Boolean> removeExam(Exam exam) {
         return Observable.create(subscriber -> {
+            openDBIfClosed();
             subscriber.onNext(ExamsQuery.remove(database, exam));
             subscriber.onCompleted();
         });
@@ -213,6 +232,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     private Observable<Long> insertOldExam(OldExam exam) {
         return Observable.create(subscriber -> {
+            openDBIfClosed();
             subscriber.onNext(OldExamsQuery.insert(database, exam));
             subscriber.onCompleted();
         });
@@ -222,7 +242,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
     public Observable<Long> examBecomesOld(Exam exam, double grade) {
         final OldExam oldExam = new OldExam(null, exam.getInfo(), grade, exam.getDate());
         if (grade == Grade.EMPTY_GRADE) return Observable.empty();
-
+        openDBIfClosed();
 
         return findSubjectByTitle(exam.getSubject())
                 .flatMap(subject -> {
@@ -236,6 +256,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public Observable<Object> removeOldExam(long timeInMillis) {
         return Observable.create(subscriber -> {
+            openDBIfClosed();
             subscriber.onNext(OldExamsQuery.removeExam(database, timeInMillis));
             subscriber.onCompleted();
         })
@@ -245,6 +266,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public Observable<Cursor> getAllIncomingExamsSortByDate() {
         return Observable.create(subscriber -> {
+            openDBIfClosed();
             subscriber.onNext(ExamsQuery.getAllIncomingExamsAndSortByDate(database));
             subscriber.onCompleted();
         });
@@ -253,6 +275,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public Observable<Boolean> removeExam(long timeInMillis) {
         return Observable.create(subscriber -> {
+            openDBIfClosed();
             subscriber.onNext(ExamsQuery.remove(database, timeInMillis));
             subscriber.onCompleted();
         });
@@ -260,9 +283,18 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     public Observable<Integer> removeAllIncomingExams() {
         return Observable.create(subscriber -> {
+            openDBIfClosed();
             subscriber.onNext(ExamsQuery.removeAll(database));
             subscriber.onCompleted();
         });
     }
 
+    public Observable<Integer> removeAllOldExams() {
+        return Observable.create(subscriber -> {
+            openDBIfClosed();
+            subscriber.onNext(OldExamsQuery.removeAll(database));
+            subscriber.onNext(SubjectsQuery.resetGrades(database));
+            subscriber.onCompleted();
+        });
+    }
 }

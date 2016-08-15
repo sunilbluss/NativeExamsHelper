@@ -17,4 +17,13 @@ public class SchoolGrade extends Grade {
         return GRADES;
     }
 
+    @Override
+    public String[] getGradesAsString() {
+        String[] grades = new String[getGrades().length];
+        for (int i = 0; i < getGrades().length; i++) {
+            grades[i] = (int) (getGrades()[i] + 0.5)
+                    + (getGrades()[i] % 1 == 0.25 ? "+" : (getGrades()[i] % 1 == 0.75 ? "-" : ""));
+        }
+        return grades;
+    }
 }

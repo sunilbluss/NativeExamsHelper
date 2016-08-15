@@ -170,4 +170,10 @@ public class ExamsMainActivity extends AppCompatActivity{
         ((AddingExamFragment) viewPagerAdapter.getFragment(0)).closeDatabase();
         ((OldExamsFragment) viewPagerAdapter.getFragment(1)).closeDatabase();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        examsDbHelper.openDB();
+    }
 }
