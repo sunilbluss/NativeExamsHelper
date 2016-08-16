@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/bin_icon"
-            android:tint="@color/materialcolorpicker__white"
+            android:tint="@color/dark_textColorPrimary"
             android:id="@+id/list_item_adding_exam_bin"
             android:layout_gravity="center_vertical"/>
 
@@ -54,7 +54,7 @@
             android:text="5+"
             android:gravity="center"
             android:textSize="@dimen/list_item_circular_view_text_size"
-            android:textColor="@color/materialcolorpicker__lightgrey"
+            android:textColor="@color/dark_textColorSecondary"
             android:fontFamily="sans-serif-thin"/>
 
         <TextView

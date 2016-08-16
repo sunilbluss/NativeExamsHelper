@@ -3,6 +3,6 @@
 
     <item android:color="@color/dark_colorAccent" android:state_pressed="true"/>
 
-    <item android:color="@color/materialcolorpicker__grey" />
+    <item android:color="@android:color/darker_gray" />
 
 </selector>

@@ -115,7 +115,7 @@
     <string name="pref_user_name_sub">Pod tą nazwą będą Cię widzieć inni</string>
     <string name="pref_grades_group">Oceny</string>
     <string name="pref_grades">Rodzaj ocen</string>
-    <string name="pref_grades_sub">Określ rodzaj wyświetlanych ocen</string>
+    <string name="pref_grades_sub">Określ czy wyświetlane oceny są z zakresu studiów, czy nauczania podstawowego</string>
     <string name="pref_grades_decimal">Cząstkowe oceny jako całość</string>
     <string name="pref_grades_decimal_sub">Oceny cząstkowe (np. 3+) będą liczone w statystykach jako całe.
         W przeciwnym wypadku ± 0.25</string>

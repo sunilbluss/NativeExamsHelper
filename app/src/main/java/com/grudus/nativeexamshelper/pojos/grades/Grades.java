@@ -13,7 +13,6 @@ public class Grades {
 
     private static boolean decimalsInGradesEnabled;
 
-    // TODO: 12.07.16 change to user's choice
     static {
         Context context = MyApplication.getContext();
 

@@ -31,7 +31,6 @@ public class StatisticsTextFormatter {
         return " " + formatter.format(calculator.getMedian());
     }
 
-    // TODO: 04.07.16 change
     public static String getDominant() {
         if (calculator.getDominants() == null) return " " + noDominantText;
         String array = calculator.getDominants().toString();

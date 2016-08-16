@@ -45,7 +45,10 @@
         <item name="floatingButtonColor">@color/dark_colorAccent</item>
         <item name="iconColor">@color/dark_textColorPrimary</item>
         <item name="colorControlNormal">#9e9e9e</item>
+
         <item name="android:timePickerDialogTheme" tools:targetApi="lollipop">@style/TimePickerTheme</item>
+        <item name="android:datePickerDialogTheme" tools:targetApi="lollipop">@style/DatePickerTheme</item>
+
         <item name="selectedListItemBackgroundColor">#313131</item>
         <item name="navigationViewBackground">@drawable/navigation_view_background_dark</item>
 
@@ -53,6 +56,10 @@
     </style>
 
     <style name="TimePickerTheme" parent="Theme.AppCompat.Dialog">
+        <item name="colorAccent">@color/dark_colorAccent</item>
+    </style>
+
+    <style name="DatePickerTheme" parent="Theme.AppCompat.Dialog">
         <item name="colorAccent">@color/dark_colorAccent</item>
     </style>
     
@@ -147,7 +154,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingBottom">@dimen/sse_grades_info_text_padding</item>
         <item name="android:textSize">@dimen/sse_average_text_size</item>
-        <item name="android:textColor">@color/materialcolorpicker__white</item>
+        <item name="android:textColor">@color/dark_textColorPrimary</item>
     </style>
 
 </resources>
