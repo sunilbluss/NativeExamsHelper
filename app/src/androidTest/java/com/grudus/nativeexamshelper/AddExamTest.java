@@ -95,7 +95,7 @@ public class AddExamTest {
                     return Observable.empty();
                 });
 
-        rule.getActivity().setDatabase(dbHelper);
+        ExamsDbHelper.setInstance(dbHelper);
     }
 
     @Before

@@ -63,7 +63,7 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    private void initDatabase() {
+    public void initDatabase() {
         examsDbHelper = ExamsDbHelper.getInstance(this);
         examsDbHelper.openDB();
     }
@@ -122,20 +122,10 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
                 .show(getFragmentManager(), getString(R.string.tag_dialog_add_new_subject));
     }
 
-    public void setExamsDbHelper(ExamsDbHelper examsDbHelper) {
-        this.examsDbHelper.closeDB();
-        this.examsDbHelper = examsDbHelper;
-        this.examsDbHelper.openDB();
-
-        subscription =
-                this.examsDbHelper.getAllSubjectsSortByTitle()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(cursor -> {
-                            adapter.changeCursor(cursor);
-                            adapter.notifyDataSetChanged();
-                        });
+    public SubjectsAdapter getAdapter() {
+        return adapter;
     }
+
 
     @Override
     public void onBackPressed() {

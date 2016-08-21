@@ -197,10 +197,6 @@ public class AddExamActivity extends AppCompatActivity {
         this.timeDialog = timeDialog;
     }
 
-    public void setDatabase(ExamsDbHelper dbHelper) {
-        this.db = dbHelper;
-    }
-
     public void startTesting() {
         test = true;
     }
