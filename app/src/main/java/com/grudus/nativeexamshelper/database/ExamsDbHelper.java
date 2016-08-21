@@ -34,9 +34,12 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
 
     private static ExamsDbHelper instance;
 
-    private ExamsDbHelper(Context context) {
+
+    @Deprecated // test only
+    public ExamsDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
+        instance = this;
         Log.d(TAG, "ExamsDbHelper() constructor");
     }
 
@@ -45,6 +48,13 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
             instance = new ExamsDbHelper(context.getApplicationContext());
         return instance;
     }
+
+    @Deprecated //test only
+    public static void setInstance(ExamsDbHelper examsDbHelper) {
+        instance = examsDbHelper;
+    }
+
+
 
     @Override
     public void onCreate(SQLiteDatabase db) {

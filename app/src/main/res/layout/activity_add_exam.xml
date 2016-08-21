@@ -14,7 +14,8 @@
     <include layout="@layout/toolbar" />
 
     <RelativeLayout
-        style="@style/UserInputLayoutStyle">
+        style="@style/UserInputLayoutStyle"
+        android:id="@+id/add_exam_layout_content">
 
         <ImageView
             style="@style/ImageIconAddExamTheme"

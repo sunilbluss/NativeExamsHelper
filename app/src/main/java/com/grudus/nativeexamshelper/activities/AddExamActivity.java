@@ -45,6 +45,10 @@ public class AddExamActivity extends AppCompatActivity {
     private CalendarDialogHelper calendarDialog;
     private TimeDialogHelper timeDialog;
 
+    private ExamsDbHelper db;
+
+    private boolean test = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ThemeHelper.onActivityCreateSetTheme(this);
@@ -55,8 +59,10 @@ public class AddExamActivity extends AppCompatActivity {
         toolbar.setTitle(getResources().getString(R.string.add_new_exam_toolbar_text));
         setListenerToDeleteTextViewFocus();
 
-        calendarDialog = new CalendarDialogHelper(this, this::updateDateView);
-        timeDialog = new TimeDialogHelper(this, this::updateTimeView);
+        if (calendarDialog == null)
+            calendarDialog = new CalendarDialogHelper(this, this::updateDateView);
+        if (timeDialog == null)
+            timeDialog = new TimeDialogHelper(this, this::updateTimeView);
     }
 
     private void setListenerToDeleteTextViewFocus() {
@@ -91,7 +97,8 @@ public class AddExamActivity extends AppCompatActivity {
 
     @OnClick(R.id.add_exam_date_input)
     void showDatePicker() {
-        calendarDialog.showDialog();
+        if (!test)
+            calendarDialog.showDialog();
     }
 
     @OnClick(R.id.add_exam_time_input)
@@ -154,7 +161,8 @@ public class AddExamActivity extends AppCompatActivity {
     }
 
     private void addToDatabase(Exam exam) {
-        final ExamsDbHelper db = ExamsDbHelper.getInstance(this);
+        if (db == null)
+            db = ExamsDbHelper.getInstance(this);
         db.openDB();
 
         db.insertExam(exam)
@@ -181,4 +189,19 @@ public class AddExamActivity extends AppCompatActivity {
         findViewById(R.id.add_exam_layout).requestFocus();
     }
 
+    public void setCalendarDialog(CalendarDialogHelper calendarDialog) {
+        this.calendarDialog = calendarDialog;
+    }
+
+    public void setTimeDialog(TimeDialogHelper timeDialog) {
+        this.timeDialog = timeDialog;
+    }
+
+    public void setDatabase(ExamsDbHelper dbHelper) {
+        this.db = dbHelper;
+    }
+
+    public void startTesting() {
+        test = true;
+    }
 }
