@@ -140,5 +140,6 @@
 
     <string name="button_confirm_yes">Tak</string>
     <string name="button_confirm_no">Nie</string>
+    <string name="toolbar_main_title">Egzaminy</string>
 
 </resources>

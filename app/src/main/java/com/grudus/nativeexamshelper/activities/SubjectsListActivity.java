@@ -76,6 +76,7 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
                 .subscribe(cursor -> {
                     adapter = new SubjectsAdapter(cursor, SubjectsListActivity.this, SubjectsListActivity.this);
                     recyclerView.setAdapter(adapter);
+                    recyclerView.setHasFixedSize(true);
                     recyclerView.setLayoutManager(new LinearLayoutManager(SubjectsListActivity.this));
                 });
 

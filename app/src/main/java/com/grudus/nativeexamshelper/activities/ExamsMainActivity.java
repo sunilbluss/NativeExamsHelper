@@ -59,8 +59,7 @@ public class ExamsMainActivity extends AppCompatActivity{
 
         initViewPager();
         setUpToolbar();
-        setNavigationViewHeaderSize();
-        setUpNavigationViewListener();
+        setUpNavigationView();
 
         DateHelper.setDateFormat(getResources().getString(R.string.date_format));
 
@@ -87,6 +86,7 @@ public class ExamsMainActivity extends AppCompatActivity{
 
 
     private void setUpToolbar() {
+        toolbar.setTitle(getString(R.string.toolbar_main_title));
         setSupportActionBar(toolbar);
 
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(
@@ -106,6 +106,13 @@ public class ExamsMainActivity extends AppCompatActivity{
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.hamburger_icon);
+    }
+
+
+    private void setUpNavigationView() {
+        setNavigationViewHeaderSize();
+        setUpNavigationViewListener();
+        navigationView.getMenu().getItem(1).setChecked(true);
     }
 
     private void setNavigationViewHeaderSize() {
