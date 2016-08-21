@@ -122,6 +122,20 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
                 .show(getFragmentManager(), getString(R.string.tag_dialog_add_new_subject));
     }
 
+    public void setExamsDbHelper(ExamsDbHelper examsDbHelper) {
+        this.examsDbHelper.closeDB();
+        this.examsDbHelper = examsDbHelper;
+        this.examsDbHelper.openDB();
+
+        subscription =
+                this.examsDbHelper.getAllSubjectsSortByTitle()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(cursor -> {
+                            adapter.changeCursor(cursor);
+                            adapter.notifyDataSetChanged();
+                        });
+    }
 
     @Override
     public void onBackPressed() {
