@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
-import com.grudus.nativeexamshelper.dialogs.extensible.EnterTextDialog;
+import com.grudus.nativeexamshelper.dialogs.reusable.EnterTextDialog;
 import com.grudus.nativeexamshelper.dialogs.SelectSubjectDialog;
 import com.grudus.nativeexamshelper.helpers.CalendarDialogHelper;
 import com.grudus.nativeexamshelper.helpers.DateHelper;

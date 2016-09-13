@@ -148,15 +148,11 @@ public class ExamsMainActivity extends AppCompatActivity{
                     ThemeHelper.changeToTheme(ExamsMainActivity.this, ThemeHelper.nextTheme());
                     break;
 
-                case R.id.menu_item_deleteAll:
-                    ((AddingExamFragment) viewPagerAdapter.getFragment(0)).removeAll();
-                    break;
-
-                case R.id.menu_item_refresh_subjects:
-                    examsDbHelper.refreshSubjects()
-                            .subscribeOn(Schedulers.io())
-                            .subscribe();
-                    break;
+//                case R.id.menu_item_refresh_subjects:
+//                    examsDbHelper.refreshSubjects()
+//                            .subscribeOn(Schedulers.io())
+//                            .subscribe();
+//                    break;
 
                 case R.id.menu_item_edit_subjects:
                     this.startActivity(new Intent(getApplicationContext(), SubjectsListActivity.class));

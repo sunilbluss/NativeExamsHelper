@@ -1,4 +1,4 @@
-package com.grudus.nativeexamshelper.dialogs.extensible;
+package com.grudus.nativeexamshelper.dialogs.reusable;
 
 import android.app.Dialog;
 import android.app.DialogFragment;

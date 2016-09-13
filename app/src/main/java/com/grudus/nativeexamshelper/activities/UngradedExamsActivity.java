@@ -10,7 +10,7 @@ import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.adapters.ItemClickListener;
 import com.grudus.nativeexamshelper.adapters.UngradedExamsAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
-import com.grudus.nativeexamshelper.dialogs.extensible.RadioDialog;
+import com.grudus.nativeexamshelper.dialogs.reusable.RadioDialog;
 import com.grudus.nativeexamshelper.helpers.ThemeHelper;
 import com.grudus.nativeexamshelper.pojos.Exam;
 import com.grudus.nativeexamshelper.pojos.grades.Grades;

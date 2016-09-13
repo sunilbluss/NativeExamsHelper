@@ -20,14 +20,15 @@ import android.widget.ListView;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
-import com.grudus.nativeexamshelper.dialogs.extensible.ConfirmDialog;
-import com.grudus.nativeexamshelper.dialogs.extensible.EnterTextDialog;
-import com.grudus.nativeexamshelper.dialogs.extensible.RadioDialog;
+import com.grudus.nativeexamshelper.dialogs.reusable.ConfirmDialog;
+import com.grudus.nativeexamshelper.dialogs.reusable.EnterTextDialog;
+import com.grudus.nativeexamshelper.dialogs.reusable.RadioDialog;
 import com.grudus.nativeexamshelper.helpers.ColorHelper;
 import com.grudus.nativeexamshelper.helpers.ThemeHelper;
 import com.grudus.nativeexamshelper.pojos.grades.Grades;
 
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -78,6 +79,8 @@ public class SettingsActivity extends AppCompatActivity {
         private final String USER_NAME_KEY = MyApplication.getContext().getString(R.string.key_user_name);
         private final String GRADE_TYPE_KEY = MyApplication.getContext().getString(R.string.key_grades_type);
         private final String GRADE_DECIMAL_KEY = MyApplication.getContext().getString(R.string.key_grades_decimal);
+        private final String FABRIC_EXAMS_KEY = MyApplication.getContext().getString(R.string.key_fabric_exams);
+        private final String FABRIC_SUBJECTS_KEY = MyApplication.getContext().getString(R.string.key_fabric_subjects);
 
         private Subscription subscription;
 
@@ -91,6 +94,12 @@ public class SettingsActivity extends AppCompatActivity {
         public void onViewCreated(View view, Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
 
+            setMargins(view);
+            getListView().setBackgroundColor(ColorHelper.getThemeColor(getActivity(), R.attr.background));
+
+        }
+
+        private void setMargins(View view) {
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
 
             TypedValue tv = new TypedValue();
@@ -100,9 +109,6 @@ public class SettingsActivity extends AppCompatActivity {
             }
 
             view.setLayoutParams(params);
-
-            getListView().setBackgroundColor(ColorHelper.getThemeColor(getActivity(), R.attr.background));
-
         }
 
         private ListView getListView() {
@@ -199,6 +205,18 @@ public class SettingsActivity extends AppCompatActivity {
                 subscription = helper.removeAllOldExams()
                         .subscribeOn(Schedulers.io())
                         .subscribe((howMany) -> {},
+                                error -> helper.closeDB(),
+                                helper::closeDB);
+            }
+
+            else if (key.equals(FABRIC_EXAMS_KEY)) {
+                ExamsDbHelper helper = ExamsDbHelper.getInstance(getActivity());
+                subscription =
+                        helper.removeAllIncomingExams()
+                        .flatMap(integer -> helper.removeAllOldExams())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(i -> {},
                                 error -> helper.closeDB(),
                                 helper::closeDB);
             }

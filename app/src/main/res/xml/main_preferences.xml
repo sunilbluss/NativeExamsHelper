@@ -41,4 +41,20 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:key="@string/key_fabric_group"
+        android:title="@string/pref_fabric_group">
+
+        <Preference
+            android:title="@string/pref_fabric_exams"
+            android:summary="@string/pref_fabric_exams_sub"
+            android:key="@string/key_fabric_exams" />
+
+        <Preference
+            android:title="@string/pref_fabric_subjects"
+            android:summary="@string/pref_fabric_subjects_sub"
+            android:key="@string/key_fabric_subjects" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

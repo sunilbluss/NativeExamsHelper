@@ -1,4 +1,4 @@
-package com.grudus.nativeexamshelper.dialogs.extensible;
+package com.grudus.nativeexamshelper.dialogs.reusable;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -27,7 +27,7 @@ public class RadioDialog extends DialogFragment {
     private String[] values;
     private String title;
 
-    private int selectedItemIndex = 0;
+    private int selectedItemIndex = -1;
 
     private View root;
     private RadioGroup radio;

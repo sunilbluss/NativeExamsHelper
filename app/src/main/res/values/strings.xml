@@ -141,5 +141,15 @@
     <string name="button_confirm_yes">Tak</string>
     <string name="button_confirm_no">Nie</string>
     <string name="toolbar_main_title">Egzaminy</string>
+    <string name="key_fabric_subjects">pref_fabric_subjects</string>
+    <string name="pref_fabric_subjects_sub">Usuwa wszelkie zmiany w przedmiotach i przywraca domyślne wartości</string>
+    <string name="pref_fabric_subjects">Przywróć domyślne przedmioty</string>
+    <string name="key_fabric_exams">key_fabric_exams</string>
+    <string name="pref_fabric_exams_sub">Czyści informacje zarówno o nadchodzących, jak i o napisanych egzaminach</string>
+    <string name="pref_fabric_exams">Usuń wszystkie egzaminy</string>
+    <string name="pref_fabric_group">Ustawienia fabryczne</string>
+    <string name="key_fabric_group">qqq</string>
+    <string name="menu_item_about">O aplikacji</string>
+    <string name="menu_item_exams">Egzaminy</string>
 
 </resources>

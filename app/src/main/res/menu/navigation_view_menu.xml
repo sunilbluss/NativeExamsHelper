@@ -10,7 +10,7 @@
         android:icon="@drawable/statistics_icon" />
 
         <item android:id="@+id/menu_item_exams"
-            android:title="Egzaminy"
+            android:title="@string/menu_item_exams"
             android:icon="@drawable/exams_icon"
             android:checked="true"/>
 
@@ -19,18 +19,14 @@
 
     <group android:id="@+id/menu_group_edit" android:checkableBehavior="single">
 
-        <item android:id="@+id/menu_item_deleteAll"
-            android:title="@string/toolbar_delete_all"
-            android:icon="@drawable/bin_icon"
-            />
-
-        <item android:id="@+id/menu_item_refresh_subjects"
-            android:title="@string/toolbar_refresh_subjects"
-            android:icon="@drawable/refresh_icon"/>
 
         <item android:id="@+id/menu_item_edit_subjects"
             android:title="@string/toolbar_edit_subjects"
             android:icon="@drawable/info_icon"/>
+
+        <item android:id="@+id/menu_item_change_theme"
+            android:title="@string/toolbar_change_theme"
+            android:icon="@drawable/change_theme_icon"/>
 
     </group>
 
@@ -41,9 +37,11 @@
             android:title="@string/toolbar_settings"
             android:icon="@drawable/settings_icon" />
 
-        <item android:id="@+id/menu_item_change_theme"
-            android:title="@string/toolbar_change_theme"
-            android:icon="@drawable/change_theme_icon"/>
+        <item android:id="@+id/menu_item_info"
+            android:title="@string/menu_item_about"
+            android:icon="@android:drawable/ic_dialog_info" />
+
+
 
     </group>
 
