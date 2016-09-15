@@ -105,7 +105,6 @@
     <string name="dialog_confirm_pref_content">Pamiętaj! Zmiany tym polu spowodują usunięcie wszystkich napisanych egzaminów. Kontynuwać?</string>
 
 
-
     <!--preferences-->
     <string name="title_activity_settings">Ustawienia</string>
     <string name="pref_desing_group">Wygląd</string>
@@ -131,7 +130,7 @@
         <item>Oceny szkolne</item>
         <item>Oceny studenckie</item>
     </string-array>
-    
+
     <string-array name="pref_grades_entryValues">
         <item>0</item>
         <item>1</item>

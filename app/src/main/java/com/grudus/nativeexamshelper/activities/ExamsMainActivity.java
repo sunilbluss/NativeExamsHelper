@@ -148,6 +148,10 @@ public class ExamsMainActivity extends AppCompatActivity{
                     ThemeHelper.changeToTheme(ExamsMainActivity.this, ThemeHelper.nextTheme());
                     break;
 
+                case R.id.menu_item_web:
+                    this.startActivity(new Intent(getApplicationContext(), LoginPageActivity.class));
+                    break;
+
 //                case R.id.menu_item_refresh_subjects:
 //                    examsDbHelper.refreshSubjects()
 //                            .subscribeOn(Schedulers.io())

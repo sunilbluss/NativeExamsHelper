@@ -5,14 +5,19 @@
 
     <group android:id="@+id/menu_group_profile" android:checkableBehavior="single">
 
-    <item android:id="@+id/menu_item_statistics"
-        android:title="@string/toolbar_statistics"
-        android:icon="@drawable/statistics_icon" />
+        <item android:id="@+id/menu_item_statistics"
+            android:title="@string/toolbar_statistics"
+            android:icon="@drawable/statistics_icon" />
 
         <item android:id="@+id/menu_item_exams"
             android:title="@string/menu_item_exams"
             android:icon="@drawable/exams_icon"
             android:checked="true"/>
+
+        <item android:id="@+id/menu_item_web"
+            android:title="Synchronizuj"
+            android:icon="@android:drawable/stat_notify_sync"
+            />
 
     </group>
 
