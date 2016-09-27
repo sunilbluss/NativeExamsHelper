@@ -34,14 +34,23 @@ import java.net.URLEncoder;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.Response;
+import retrofit2.Retrofit;
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class LoginPageActivity extends AppCompatActivity {
 
     private static final String TAG = "@@@@@@@@@@@@@" + LoginPageActivity.class.getSimpleName();
+    private final String AUTH_HEADER = this.getString(R.string.net_auth_header);
+
+    private Subscription subscription;
+    private RetrofitMain retrofit;
+
+
     @BindView(R.id.login_view_login)
     AutoCompleteTextView loginTextView;
     
@@ -61,6 +70,8 @@ public class LoginPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_page);
         ButterKnife.bind(this);
+
+        retrofit = new RetrofitMain(this);
     }
 
 
@@ -77,7 +88,7 @@ public class LoginPageActivity extends AppCompatActivity {
 
         user = new User(userName);
 
-        new RetrofitMain(this)
+        subscription = retrofit
                 .tryToLogin(userName, password)
                 .subscribeOn(Schedulers.io())
                 .subscribe(response -> {
@@ -85,7 +96,7 @@ public class LoginPageActivity extends AppCompatActivity {
                     Log.e(TAG, "connect: body is: " + response.body());
                     Log.e(TAG, "connect: headers are: " + response.headers());
 
-                   String token = response.headers().get("X-AUTH-TOKEN");
+                    String token = response.headers().get(AUTH_HEADER);
                     user.setToken(token);
 
                 }, error -> Log.e(TAG, "connect: " + error.getMessage(), error));
@@ -99,16 +110,25 @@ public class LoginPageActivity extends AppCompatActivity {
 
 
         // TODO: 27.09.16 rewrite
-        new RetrofitMain(this)
+        if (user == null) user = new User("username");
+        subscription = new RetrofitMain(this)
                 .getUserInfo(user.getUsername(), user.getToken())
                 .subscribeOn(Schedulers.io())
         .subscribe(response -> {
-            Log.e(TAG, "connect: response " + response.body());
+            Log.e(TAG, "connect: status is " + response.code());
+            Log.e(TAG, "connect: body is: " + response.body());
+            Log.e(TAG, "connect: headers are: " + response.headers());
 
         }, error -> Log.e(TAG, "connect: " + error.getMessage(), error));
 
     }
 
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (subscription != null && subscription.isUnsubscribed())
+            subscription.unsubscribe();
+    }
 }
 

@@ -85,5 +85,18 @@ public class User {
         public void setEmpty(boolean empty) {
             this.empty = empty;
         }
+
+
+        @Override
+        public String toString() {
+            return "JsonUser{" +
+                    "username='" + username + '\'' +
+                    ", id=" + id +
+                    ", email='" + email + '\'' +
+                    ", enabled=" + enabled +
+                    ", date=" + date +
+                    ", empty=" + empty +
+                    '}';
+        }
     }
 }
