@@ -10,6 +10,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.helpers.internet.RetrofitMain;
+import com.grudus.nativeexamshelper.pojos.User;
 
 import org.json.JSONException;
 
@@ -39,7 +41,7 @@ import rx.schedulers.Schedulers;
 
 public class LoginPageActivity extends AppCompatActivity {
 
-    private static final String TAG = "@@@@@@@@@@@@@";
+    private static final String TAG = "@@@@@@@@@@@@@" + LoginPageActivity.class.getSimpleName();
     @BindView(R.id.login_view_login)
     AutoCompleteTextView loginTextView;
     
@@ -51,6 +53,8 @@ public class LoginPageActivity extends AppCompatActivity {
     
     @BindView(R.id.login_view_registry_button)
     Button registerButton;
+
+    private User user;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,166 +66,49 @@ public class LoginPageActivity extends AppCompatActivity {
 
     @OnClick(R.id.login_view_login_button)
     public void tryToLogIn() {
-        String userName = loginTextView.getText().toString();
-        String password = passwordView.getText().toString();
+        String userName = loginTextView.getText().toString().trim();
+        String password = passwordView.getText().toString().trim();
 
-        if (userName.trim().isEmpty() || password.trim().isEmpty()) {
+
+        if (userName.isEmpty() || password.isEmpty()) {
             Toast.makeText(LoginPageActivity.this, "Musisz podać dane", Toast.LENGTH_SHORT).show();
             return;
         }
 
-    }
+        user = new User(userName);
 
-    // TODO: 16.09.16  CLEAN THIS CODE 
+        new RetrofitMain(this)
+                .tryToLogin(userName, password)
+                .subscribeOn(Schedulers.io())
+                .subscribe(response -> {
+                    Log.e(TAG, "connect: status is " + response.code());
+                    Log.e(TAG, "connect: body is: " + response.body());
+                    Log.e(TAG, "connect: headers are: " + response.headers());
+
+                   String token = response.headers().get("X-AUTH-TOKEN");
+                    user.setToken(token);
+
+                }, error -> Log.e(TAG, "connect: " + error.getMessage(), error));
+
+
+    }
 
 
     @OnClick(R.id.login_view_registry_button)
     public void connect() {
-        Log.e(TAG, "connect: start");
-        loginSpring()
-//                .flatMap(new Func1<String, Observable<?>>() {
-//                    @Override
-//                    public Observable<?> call(String s) {
-//                        Log.e(TAG, "after login in connect method " + s);
-//                        return getData();
-//                    }
-//                })
+
+
+        // TODO: 27.09.16 rewrite
+        new RetrofitMain(this)
+                .getUserInfo(user.getUsername(), user.getToken())
                 .subscribeOn(Schedulers.io())
-                .subscribe(s -> Log.e(TAG, "after retrieved data in connect method: " + s),
-                        error -> Log.e(TAG, "ERROR", error));
+        .subscribe(response -> {
+            Log.e(TAG, "connect: response " + response.body());
+
+        }, error -> Log.e(TAG, "connect: " + error.getMessage(), error));
+
     }
 
-    private Observable<String> loginSpring() {
-        return Observable.create(new Observable.OnSubscribe<String>() {
-            @Override
-            public void call(Subscriber<? super String> subscriber) {
-                final String BASE_URL = "http://192.168.43.112:8080/post";
-
-                String data = null;
-                try {
-                    Log.e(TAG, "call: try in " + BASE_URL);
-                    data = URLEncoder.encode("username", "UTF-8")
-                            + "=" + URLEncoder.encode("admin", "UTF-8");
-
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-
-                String text = "";
-                BufferedReader reader = null;
-
-                // Send data
-                try {
-
-                    // Defined URL  where to send data
-                    URL url = new URL(BASE_URL);
-
-                    // Send POST data request
-
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setDoOutput(true);
-                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-                    wr.write(data);
-                    wr.flush();
-
-                    // Get the server response
-
-                    Log.e(TAG, "call: conn status " + conn.getResponseCode());
-                    Log.e(TAG, "call: conn mess " + conn.getResponseMessage());
-
-                    reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                    StringBuilder sb = new StringBuilder();
-                    String line = null;
-
-                    // Read Server Response
-                    while ((line = reader.readLine()) != null) {
-                        // Append server response in string
-                        sb.append(line + "\n");
-                    }
-
-
-                    text = sb.toString();
-                    Log.e(TAG, "call: text: " + text);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                } finally {
-                    try {
-
-                        reader.close();
-                    } catch (Exception ex) {
-                    }
-                }
-
-                Log.e(TAG, "loginSpring returns " + text);
-                // Show response on activity
-                subscriber.onNext(text);
-            }
-
-        });
-    }
-
-    private Observable<String> getData() {
-        return Observable.create(new Observable.OnSubscribe<String>() {
-             @Override
-             public void call(Subscriber<? super String> subscriber) {
-
-
-                 HttpURLConnection urlConnection = null;
-                 BufferedReader reader = null;
-
-                 String toReturn = null;
-
-                 final String BASE_URL = "http://192.168.43.112:8080/users";
-
-                 try {
-                     Log.e(TAG, "getData start try " + BASE_URL);
-                     URL url = new URL(Uri.parse(BASE_URL).toString());
-
-                     urlConnection = (HttpURLConnection) url.openConnection();
-                     urlConnection.setRequestMethod("GET");
-                     urlConnection.connect();
-
-
-                     Log.e(TAG, "call: konekt");
-
-                     InputStream inputStream = urlConnection.getInputStream();
-                     StringBuffer buffer = new StringBuffer();
-
-                     reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                     String line;
-                     while ((line = reader.readLine()) != null) {
-                         // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                         // But it does make debugging a *lot* easier if you print out the completed
-                         // buffer for debugging.
-                         buffer.append(line).append("\n");
-                     }
-
-                     toReturn = buffer.toString();
-                     Log.e(TAG, "getData returns " + toReturn);
-
-
-                 } catch (IOException e) {
-                     e.printStackTrace();
-                 } finally {
-                     if (urlConnection != null) {
-                         urlConnection.disconnect();
-                     }
-                     if (reader != null) {
-                         try {
-                             reader.close();
-                         } catch (final IOException e) {
-                             Log.e("@@@@@@@@@", "Error closing stream", e);
-                         }
-                     }
-                    subscriber.onNext(toReturn);
-                 }
-
-             }
-
-
-        });
-    }
 
 }
 

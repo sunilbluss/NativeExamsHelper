@@ -151,4 +151,11 @@
     <string name="menu_item_about">O aplikacji</string>
     <string name="menu_item_exams">Egzaminy</string>
 
+
+
+
+    <!--INTERNET-->
+    <string name="net_host" translatable="false">http://192.168.0.103:8080</string>
+
+
 </resources>
