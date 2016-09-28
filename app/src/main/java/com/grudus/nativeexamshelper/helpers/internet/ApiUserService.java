@@ -1,9 +1,8 @@
 package com.grudus.nativeexamshelper.helpers.internet;
 
 
-import com.grudus.nativeexamshelper.pojos.User;
+import com.grudus.nativeexamshelper.pojos.JsonUser;
 
-import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -16,7 +15,7 @@ import rx.Observable;
 public interface ApiUserService {
 
     @GET("/api/user/{username}")
-    Observable<Response<User.JsonUser>> getUser(@Path("username") String username, @Header("X-AUTH-TOKEN") String token);
+    Observable<Response<JsonUser>> getUser(@Path("username") String username, @Header("X-AUTH-TOKEN") String token);
 
     @POST("/login")
     @FormUrlEncoded

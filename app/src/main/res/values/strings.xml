@@ -112,6 +112,7 @@
     <string name="pref_user_group">Użytkownik</string>
     <string name="pref_user_name">Nazwa użytkownika</string>
     <string name="pref_user_name_sub">Pod tą nazwą będą Cię widzieć inni</string>
+
     <string name="pref_grades_group">Oceny</string>
     <string name="pref_grades">Rodzaj ocen</string>
     <string name="pref_grades_sub">Określ czy wyświetlane oceny są z zakresu studiów, czy nauczania podstawowego</string>
@@ -121,9 +122,15 @@
 
     <!--preference keys-->
     <string name="key_night_mode">pref_night_mode</string>
-    <string name="key_user_name">pref_user_name</string>
     <string name="key_grades_type">pref_grades_type</string>
     <string name="key_grades_decimal">pref_grades_decimal</string>
+
+    <string name="key_user_name">pref_user_name</string>
+    <string name="key_user_auth_token">pref_user_auth_token</string>
+    <string name="key_user_is_logged">pref_user_is_logged</string>
+    <string name="key_user_id">pref_user_id</string>
+
+
 
     <!--preference grade type-->
     <string-array name="pref_grades_entries">
@@ -152,6 +159,11 @@
     <string name="menu_item_exams">Egzaminy</string>
 
 
+    <!--login activity-->
+    <string name="toast_empty_creditionals">Musisz podac dane</string>
+    <string name="toast_server_error">Nie mozna polaczyc sie z serverem</string>
+    <string name="toast_successful_login">Logowanie przebiegło pomyślnie</string>
+    <string name="toast_unexpected_error">Wystąpił niespodziewany błąd</string>
 
 
     <!--INTERNET-->

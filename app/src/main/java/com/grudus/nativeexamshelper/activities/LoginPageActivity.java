@@ -1,9 +1,7 @@
 package com.grudus.nativeexamshelper.activities;
 
-import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,41 +9,28 @@ import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.helpers.internet.RetrofitMain;
-import com.grudus.nativeexamshelper.pojos.User;
+import com.grudus.nativeexamshelper.pojos.UserPreferences;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import okhttp3.Response;
-import retrofit2.Retrofit;
-import rx.Observable;
-import rx.Subscriber;
+import retrofit2.Response;
 import rx.Subscription;
-import rx.functions.Func1;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class LoginPageActivity extends AppCompatActivity {
 
     private static final String TAG = "@@@@@@@@@@@@@" + LoginPageActivity.class.getSimpleName();
-    private final String AUTH_HEADER = this.getString(R.string.net_auth_header);
+    private String AUTH_HEADER;
 
     private Subscription subscription;
     private RetrofitMain retrofit;
@@ -63,7 +48,7 @@ public class LoginPageActivity extends AppCompatActivity {
     @BindView(R.id.login_view_registry_button)
     Button registerButton;
 
-    private User user;
+    private UserPreferences userPreferences;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,55 +56,93 @@ public class LoginPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login_page);
         ButterKnife.bind(this);
 
+        AUTH_HEADER = getString(R.string.net_auth_header);
         retrofit = new RetrofitMain(this);
+
+        userPreferences = new UserPreferences(this);
     }
 
 
     @OnClick(R.id.login_view_login_button)
     public void tryToLogIn() {
-        String userName = loginTextView.getText().toString().trim();
+        String username = loginTextView.getText().toString().trim();
         String password = passwordView.getText().toString().trim();
 
 
-        if (userName.isEmpty() || password.isEmpty()) {
-            Toast.makeText(LoginPageActivity.this, "Musisz podać dane", Toast.LENGTH_SHORT).show();
+        if (username.isEmpty() || password.isEmpty()) {
+            Toast.makeText(LoginPageActivity.this, getString(R.string.toast_empty_creditionals), Toast.LENGTH_SHORT).show();
             return;
         }
 
-        user = new User(userName);
 
         subscription = retrofit
-                .tryToLogin(userName, password)
+                .tryToLogin(username, password)
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {
-                    Log.e(TAG, "connect: status is " + response.code());
-                    Log.e(TAG, "connect: body is: " + response.body());
-                    Log.e(TAG, "connect: headers are: " + response.headers());
+                    final int code = response.code();
+                    if (code != HttpsURLConnection.HTTP_OK) {
+                        tryToShowErrorMessage(response);
+                        return;
+                    }
 
-                    String token = response.headers().get(AUTH_HEADER);
-                    user.setToken(token);
+                    commitLogin(response);
+                    userPreferences.changeUsername(username);
 
-                }, error -> Log.e(TAG, "connect: " + error.getMessage(), error));
+                }, error -> showMessage(getString(R.string.toast_server_error)));
 
+    }
 
+    private void commitLogin(Response<Void> response) {
+        String token = response.headers().get(AUTH_HEADER);
+
+        final UserPreferences.User user = userPreferences.getLoggedUser();
+
+        if (!user.getToken().equals(token))
+            userPreferences.changeToken(token);
+
+        userPreferences.changeLoginStatus(true);
+
+        Toast.makeText(LoginPageActivity.this, getString(R.string.toast_successful_login), Toast.LENGTH_SHORT).show();
+    }
+
+    private void tryToShowErrorMessage(Response<?> response) {
+        try {
+            showError(response);
+        } catch (IOException | JSONException e) {
+            showMessage(getString(R.string.toast_unexpected_error));
+        }
+    }
+
+    private void showError(Response<?> response) throws IOException, JSONException {
+        final String jsonMessage = response.errorBody().string();
+        final String errorMessage = new JSONObject(jsonMessage).getString("message");
+        showMessage(errorMessage);
+    }
+
+    private void showMessage(String message) {
+        Toast.makeText(LoginPageActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 
 
     @OnClick(R.id.login_view_registry_button)
     public void connect() {
 
+        final UserPreferences.User user = userPreferences.getLoggedUser();
 
-        // TODO: 27.09.16 rewrite
-        if (user == null) user = new User("username");
         subscription = new RetrofitMain(this)
                 .getUserInfo(user.getUsername(), user.getToken())
                 .subscribeOn(Schedulers.io())
-        .subscribe(response -> {
-            Log.e(TAG, "connect: status is " + response.code());
-            Log.e(TAG, "connect: body is: " + response.body());
-            Log.e(TAG, "connect: headers are: " + response.headers());
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(response -> {
+                    if (response.code() != HttpURLConnection.HTTP_OK) {
+                        tryToShowErrorMessage(response);
+                        return;
+                    }
 
-        }, error -> Log.e(TAG, "connect: " + error.getMessage(), error));
+                    showMessage("Hello, " + response.body().getUsername());
+
+                }, error -> showMessage(getString(R.string.toast_server_error)));
 
     }
 
