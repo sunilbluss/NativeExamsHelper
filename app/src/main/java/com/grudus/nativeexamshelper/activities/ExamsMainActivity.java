@@ -11,10 +11,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -29,10 +25,10 @@ import com.grudus.nativeexamshelper.adapters.ViewPagerAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.helpers.ThemeHelper;
+import com.grudus.nativeexamshelper.pojos.UserPreferences;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.schedulers.Schedulers;
 
 public class ExamsMainActivity extends AppCompatActivity{
 
@@ -149,9 +145,14 @@ public class ExamsMainActivity extends AppCompatActivity{
                     break;
 
                 case R.id.menu_item_web:
-                    this.startActivity(new Intent(getApplicationContext(), LoginPageActivity.class));
+                    Class type = new UserPreferences(this).getLoggedUser().isLogged() ? SyncActivity.class : LoginPageActivity.class;
+                    this.startActivity(new Intent(getApplicationContext(), type));
                     break;
 
+                case R.id.menu_item_statistics:
+                    new UserPreferences(this).changeLoginStatus(false);
+                    Toast.makeText(ExamsMainActivity.this, "Logout", Toast.LENGTH_SHORT).show();
+                    break;
 //                case R.id.menu_item_refresh_subjects:
 //                    examsDbHelper.refreshSubjects()
 //                            .subscribeOn(Schedulers.io())

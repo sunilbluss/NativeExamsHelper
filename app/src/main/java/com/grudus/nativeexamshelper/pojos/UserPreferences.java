@@ -64,10 +64,12 @@ public class UserPreferences {
     }
 
     public void changeLoginStatus(boolean isLogged) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                .edit()
-                .putBoolean(KEY_IS_LOGGED, isLogged)
-                .commit();
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context)
+                .edit();
+        editor.putBoolean(KEY_IS_LOGGED, isLogged);
+        if (!isLogged)
+            editor.putString(KEY_TOKEN, "");
+        editor.apply();
     }
 
 

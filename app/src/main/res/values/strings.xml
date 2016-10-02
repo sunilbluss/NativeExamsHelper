@@ -131,7 +131,6 @@
     <string name="key_user_id">pref_user_id</string>
 
 
-
     <!--preference grade type-->
     <string-array name="pref_grades_entries">
         <item>Oceny szkolne</item>
@@ -167,6 +166,7 @@
 
 
     <!--INTERNET-->
+    <!--<string name="net_host" translatable="false">http://192.168.43.112:8080</string>-->
     <string name="net_host" translatable="false">http://192.168.0.103:8080</string>
     <string name="net_auth_header" translatable="false">X-AUTH-TOKEN</string>
 

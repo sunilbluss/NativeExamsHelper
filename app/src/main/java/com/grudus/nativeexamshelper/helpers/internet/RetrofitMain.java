@@ -2,13 +2,16 @@ package com.grudus.nativeexamshelper.helpers.internet;
 
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.pojos.JsonExam;
 import com.grudus.nativeexamshelper.pojos.JsonUser;
 
 import java.util.Date;
+import java.util.List;
 
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -43,11 +46,16 @@ public class RetrofitMain {
     }
 
     public Observable<Response<JsonUser>> getUserInfo(String username, String header) {
+        Log.d("@@@@@@@@RETRO", "getUserInfo: " + username + ". " + header);
         return userService.getUser(username, header);
     }
 
     public Observable<Response<Void>> tryToLogin(String username, String password) {
         return userService.login(username, password);
+    }
+
+    public Observable<Response<List<JsonExam>>> getUserExams(String username, String header) {
+        return userService.getUserExams(username, header);
     }
 
 

@@ -8,14 +8,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.helpers.ToastHelper;
 import com.grudus.nativeexamshelper.helpers.internet.RetrofitMain;
 import com.grudus.nativeexamshelper.pojos.UserPreferences;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -49,6 +44,7 @@ public class LoginPageActivity extends AppCompatActivity {
     Button registerButton;
 
     private UserPreferences userPreferences;
+    private ToastHelper toastHelper;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +56,7 @@ public class LoginPageActivity extends AppCompatActivity {
         retrofit = new RetrofitMain(this);
 
         userPreferences = new UserPreferences(this);
+        toastHelper = new ToastHelper(this);
     }
 
 
@@ -82,14 +79,14 @@ public class LoginPageActivity extends AppCompatActivity {
                 .subscribe(response -> {
                     final int code = response.code();
                     if (code != HttpsURLConnection.HTTP_OK) {
-                        tryToShowErrorMessage(response);
+                        toastHelper.tryToShowErrorMessage(response);
                         return;
                     }
 
                     commitLogin(response);
                     userPreferences.changeUsername(username);
 
-                }, error -> showMessage(getString(R.string.toast_server_error)));
+                }, error -> toastHelper.showErrorMessage(getString(R.string.toast_server_error), error));
 
     }
 
@@ -106,43 +103,9 @@ public class LoginPageActivity extends AppCompatActivity {
         Toast.makeText(LoginPageActivity.this, getString(R.string.toast_successful_login), Toast.LENGTH_SHORT).show();
     }
 
-    private void tryToShowErrorMessage(Response<?> response) {
-        try {
-            showError(response);
-        } catch (IOException | JSONException e) {
-            showMessage(getString(R.string.toast_unexpected_error));
-        }
-    }
-
-    private void showError(Response<?> response) throws IOException, JSONException {
-        final String jsonMessage = response.errorBody().string();
-        final String errorMessage = new JSONObject(jsonMessage).getString("message");
-        showMessage(errorMessage);
-    }
-
-    private void showMessage(String message) {
-        Toast.makeText(LoginPageActivity.this, message, Toast.LENGTH_SHORT).show();
-    }
-
 
     @OnClick(R.id.login_view_registry_button)
     public void connect() {
-
-        final UserPreferences.User user = userPreferences.getLoggedUser();
-
-        subscription = new RetrofitMain(this)
-                .getUserInfo(user.getUsername(), user.getToken())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(response -> {
-                    if (response.code() != HttpURLConnection.HTTP_OK) {
-                        tryToShowErrorMessage(response);
-                        return;
-                    }
-
-                    showMessage("Hello, " + response.body().getUsername());
-
-                }, error -> showMessage(getString(R.string.toast_server_error)));
 
     }
 
