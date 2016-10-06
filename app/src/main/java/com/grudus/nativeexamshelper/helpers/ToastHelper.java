@@ -33,6 +33,7 @@ public class ToastHelper {
         final String jsonMessage = response.errorBody().string();
         final String errorMessage = new JSONObject(jsonMessage).getString("message");
         showMessage(errorMessage);
+        Log.e("@@@Error", "showError: " + errorMessage);
     }
 
     public void showMessage(String message) {

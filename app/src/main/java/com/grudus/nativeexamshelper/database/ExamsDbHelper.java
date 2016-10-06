@@ -73,7 +73,6 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + ExamsContract.ExamEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + SubjectsContract.SubjectEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + ExamsContract.OldExamEntry.TABLE_NAME);
-        onCreate(db);
     }
 
     public void openDBIfClosed() {

@@ -166,8 +166,8 @@
 
 
     <!--INTERNET-->
-    <!--<string name="net_host" translatable="false">http://192.168.43.112:8080</string>-->
-    <string name="net_host" translatable="false">http://192.168.0.103:8080</string>
+    <string name="net_host" translatable="false">http://192.168.43.112:8080</string>
+    <!--<string name="net_host" translatable="false">http://192.168.0.103:8080</string>-->
     <string name="net_auth_header" translatable="false">X-AUTH-TOKEN</string>
 
 </resources>

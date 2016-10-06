@@ -1,15 +1,17 @@
-package com.grudus.nativeexamshelper.helpers.internet;
+package com.grudus.nativeexamshelper.net;
 
 
 import android.content.Context;
-import android.util.Log;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.pojos.JsonExam;
+import com.grudus.nativeexamshelper.pojos.JsonSubject;
 import com.grudus.nativeexamshelper.pojos.JsonUser;
+import com.grudus.nativeexamshelper.pojos.UserPreferences;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +26,7 @@ public class RetrofitMain {
     private final Context context;
     private final String BASE_URL;
     private final Retrofit retrofit;
+    private final UserPreferences userPreferences;
 
     private ApiUserService userService;
 
@@ -43,19 +46,26 @@ public class RetrofitMain {
                 .build();
 
         userService = this.retrofit.create(ApiUserService.class);
+        userPreferences = new UserPreferences(context);
     }
 
-    public Observable<Response<JsonUser>> getUserInfo(String username, String header) {
-        Log.d("@@@@@@@@RETRO", "getUserInfo: " + username + ". " + header);
-        return userService.getUser(username, header);
+    public Observable<Response<JsonUser>> getUserInfo() {
+        UserPreferences.User user = userPreferences.getLoggedUser();
+        return userService.getUser(user.getUsername(), user.getToken());
     }
 
     public Observable<Response<Void>> tryToLogin(String username, String password) {
         return userService.login(username, password);
     }
 
-    public Observable<Response<List<JsonExam>>> getUserExams(String username, String header) {
-        return userService.getUserExams(username, header);
+    public Observable<Response<List<JsonExam>>> getUserExams() {
+        UserPreferences.User user = userPreferences.getLoggedUser();
+        return userService.getUserExams(user.getUsername(), user.getToken());
+    }
+
+    public Observable<Response<Void>> insertSubjects(ArrayList<JsonSubject> subjects) {
+        UserPreferences.User user = userPreferences.getLoggedUser();
+        return userService.insertSubjects(user.getUsername(), user.getToken(), subjects);
     }
 
 

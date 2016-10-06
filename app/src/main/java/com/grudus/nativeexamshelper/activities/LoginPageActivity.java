@@ -9,7 +9,7 @@ import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.helpers.ToastHelper;
-import com.grudus.nativeexamshelper.helpers.internet.RetrofitMain;
+import com.grudus.nativeexamshelper.net.RetrofitMain;
 import com.grudus.nativeexamshelper.pojos.UserPreferences;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -18,6 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit2.Response;
+import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -72,22 +73,35 @@ public class LoginPageActivity extends AppCompatActivity {
         }
 
 
+       logInToServer(username, password);
+    }
+
+    private void logInToServer(String username, String password) {
         subscription = retrofit
                 .tryToLogin(username, password)
+                .flatMap(response -> {
+                    if (response.code() != HttpsURLConnection.HTTP_OK) {
+                        toastHelper.tryToShowErrorMessage(response);
+                        return Observable.empty();
+                    }
+
+                    commitLogin(response);
+
+                    return retrofit.getUserInfo();
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {
-                    final int code = response.code();
-                    if (code != HttpsURLConnection.HTTP_OK) {
+                    if (response.code() != HttpsURLConnection.HTTP_OK) {
                         toastHelper.tryToShowErrorMessage(response);
                         return;
                     }
 
-                    commitLogin(response);
-                    userPreferences.changeUsername(username);
+                    userPreferences.changeId(response.body().getId());
+                    userPreferences.changeUsername(response.body().getUsername());
+                    toastHelper.showMessage(getString(R.string.toast_successful_login));
 
                 }, error -> toastHelper.showErrorMessage(getString(R.string.toast_server_error), error));
-
     }
 
     private void commitLogin(Response<Void> response) {
@@ -99,13 +113,11 @@ public class LoginPageActivity extends AppCompatActivity {
             userPreferences.changeToken(token);
 
         userPreferences.changeLoginStatus(true);
-
-        Toast.makeText(LoginPageActivity.this, getString(R.string.toast_successful_login), Toast.LENGTH_SHORT).show();
     }
 
 
     @OnClick(R.id.login_view_registry_button)
-    public void connect() {
+    public void register() {
 
     }
 

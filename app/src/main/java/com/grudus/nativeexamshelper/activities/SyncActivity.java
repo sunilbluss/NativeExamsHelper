@@ -8,8 +8,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.database.converters.CursorToArrayConverter;
 import com.grudus.nativeexamshelper.helpers.ToastHelper;
-import com.grudus.nativeexamshelper.helpers.internet.RetrofitMain;
+import com.grudus.nativeexamshelper.net.RetrofitMain;
 import com.grudus.nativeexamshelper.pojos.JsonExam;
 import com.grudus.nativeexamshelper.pojos.JsonUser;
 import com.grudus.nativeexamshelper.pojos.UserPreferences;
@@ -61,7 +62,7 @@ public class SyncActivity extends AppCompatActivity {
 
     private void tryToReceiveData() {
         subscription = retrofit
-                .getUserInfo(user.getUsername(), user.getToken())
+                .getUserInfo()
                 .flatMap(response -> {
                     if (response.code() != HttpURLConnection.HTTP_OK) {
                         toastHelper.tryToShowErrorMessage(response);
@@ -70,8 +71,11 @@ public class SyncActivity extends AppCompatActivity {
 
                     this.jsonUser = response.body();
                     Log.d(TAG, "tryToReceiveData: response: " + jsonUser);
-                    return retrofit.getUserExams(user.getUsername(), user.getToken());
+
+                    return new CursorToArrayConverter(getApplicationContext()).getAllSubjectsAsJson();
                 })
+                .flatMap(array -> retrofit.insertSubjects(array))
+                .flatMap(response -> retrofit.getUserExams())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {
@@ -80,19 +84,20 @@ public class SyncActivity extends AppCompatActivity {
                         return;
                     }
                     List<JsonExam> exams = response.body();
-                    Log.d(TAG, "tryToReceiveData: exams " + exams );
+
 
                     showInfo();
                     showExams(exams);
-
                 }, error -> toastHelper.showErrorMessage(getString(R.string.toast_server_error), error));
+
     }
+
 
     private void showExams(List<JsonExam> exams) {
         LinearLayout parent = (LinearLayout) usernameView.getParent();
         for (int i = 0; i < exams.size(); i++) {
             TextView tv = new TextView(parent.getContext());
-            tv.setText(exams.get(i).getSubject().getTitle() + ", " + exams.get(i).getDate());
+            tv.setText(exams.get(i).toString());
             tv.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             parent.addView(tv);
         }

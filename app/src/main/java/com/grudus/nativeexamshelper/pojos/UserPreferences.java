@@ -46,21 +46,21 @@ public class UserPreferences {
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
                 .putString(KEY_USERNAME, username)
-                .commit();
+                .apply();
     }
 
     public void changeId(Long id) {
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
                 .putLong(KEY_ID, id)
-                .commit();
+                .apply();
     }
 
     public void changeToken(String token) {
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
                 .putString(KEY_TOKEN, token)
-                .commit();
+                .apply();
     }
 
     public void changeLoginStatus(boolean isLogged) {

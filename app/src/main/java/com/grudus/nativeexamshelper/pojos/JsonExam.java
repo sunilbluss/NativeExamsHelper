@@ -4,21 +4,22 @@ package com.grudus.nativeexamshelper.pojos;
 import java.util.Date;
 
 public class JsonExam {
-
     private Long id;
+    private Long subjectId;
+    private Long userId;
     private String examInfo;
     private Date date;
 
-    private JsonSubject subject;
-
-    public JsonExam() {
-    }
-
-    public JsonExam(Long id, String examInfo, Date date, JsonSubject subject) {
+    public JsonExam(Long id, Long subjectId, Long userId, String examInfo, Date date) {
         this.id = id;
+        this.subjectId = subjectId;
+        this.userId = userId;
         this.examInfo = examInfo;
         this.date = date;
-        this.subject = subject;
+    }
+
+    public JsonExam() {
+
     }
 
     public Long getId() {
@@ -27,6 +28,22 @@ public class JsonExam {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(Long subjectId) {
+        this.subjectId = subjectId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getExamInfo() {
@@ -45,21 +62,14 @@ public class JsonExam {
         this.date = date;
     }
 
-    public JsonSubject getSubject() {
-        return subject;
-    }
-
-    public void setSubject(JsonSubject subject) {
-        this.subject = subject;
-    }
-
     @Override
     public String toString() {
-        return "JsonExam{" +
+        return "JsonAndroidExam{" +
                 "id=" + id +
+                ", subjectId=" + subjectId +
+                ", userId=" + userId +
                 ", examInfo='" + examInfo + '\'' +
                 ", date=" + date +
-                ", subject=" + subject +
                 '}';
     }
 }
