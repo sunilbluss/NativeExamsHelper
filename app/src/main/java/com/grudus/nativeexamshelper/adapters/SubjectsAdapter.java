@@ -105,12 +105,12 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
 
     public void removeFromDbAndChangeCursor(int adapterPosition) {
         ExamsDbHelper db = ExamsDbHelper.getInstance(context);
-        cursor.moveToPosition(adapterPosition);
 
-        db.removeSubject(cursor.getString(SubjectsContract.SubjectEntry.TITLE_COLUMN_INDEX))
+
+        db.updateSubjectSetChangeDelete(getItem(adapterPosition))
                 .flatMap(howManyDeleted -> {
                     if (howManyDeleted == 0) return Observable.empty();
-                    return db.getAllSubjectsSortByTitle();
+                    return db.getAllSubjectsWithoutDeleteChangeSortByTitle();
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

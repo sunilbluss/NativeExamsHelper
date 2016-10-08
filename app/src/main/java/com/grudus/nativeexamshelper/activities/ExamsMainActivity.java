@@ -11,14 +11,12 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.activities.fragments.AddingExamFragment;
 import com.grudus.nativeexamshelper.activities.fragments.OldExamsFragment;
@@ -27,7 +25,6 @@ import com.grudus.nativeexamshelper.adapters.ViewPagerAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.helpers.ThemeHelper;
-import com.grudus.nativeexamshelper.pojos.JsonSubject;
 import com.grudus.nativeexamshelper.pojos.UserPreferences;
 
 import butterknife.BindView;
@@ -61,10 +58,6 @@ public class ExamsMainActivity extends AppCompatActivity{
         setUpNavigationView();
 
         DateHelper.setDateFormat(getResources().getString(R.string.date_format));
-
-        JsonSubject sub = new JsonSubject(1L, 12L, "mata", "#fa3131");
-        Log.e(TAG, "onCreate: " + new Gson().toJson(sub));
-        Log.e(TAG, "onCreate: " + sub.toString());
 
     }
 

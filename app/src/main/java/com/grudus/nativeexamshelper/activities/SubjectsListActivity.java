@@ -1,18 +1,16 @@
 package com.grudus.nativeexamshelper.activities;
 
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
-import com.grudus.nativeexamshelper.activities.touchhelpers.ItemRemoveCallback;
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.activities.touchhelpers.ItemRemoveCallback;
 import com.grudus.nativeexamshelper.adapters.ItemClickListener;
 import com.grudus.nativeexamshelper.adapters.SubjectsAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
@@ -70,7 +68,7 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
 
     private void populateList() {
         subscription =
-            examsDbHelper.getAllSubjectsSortByTitle()
+            examsDbHelper.getAllSubjectsWithoutDeleteChangeSortByTitle()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(cursor -> {
@@ -88,8 +86,9 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
         new EditSubjectDialog()
                 .addSubject(subject)
                 .addListener(editedSubject ->
-                    subscription = examsDbHelper.updateSubject(subject, editedSubject)
-                            .flatMap(howMany -> examsDbHelper.getAllSubjectsSortByTitle())
+                    subscription = examsDbHelper.updateSubjectChange(subject, SubjectsContract.CHANGE_UPDATED)
+                        .flatMap(howMany -> examsDbHelper.updateSubject(subject, editedSubject))
+                            .flatMap(howMany -> examsDbHelper.getAllSubjectsWithoutDeleteChangeSortByTitle())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(cursor -> {
@@ -105,7 +104,7 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
         new EditSubjectDialog()
                 .addListener((editedSubject ->
                     subscription = examsDbHelper.insertSubject(editedSubject)
-                            .flatMap(id -> examsDbHelper.getAllSubjectsSortByTitle())
+                            .flatMap(id -> examsDbHelper.getAllSubjectsWithoutDeleteChangeSortByTitle())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(cursor -> {

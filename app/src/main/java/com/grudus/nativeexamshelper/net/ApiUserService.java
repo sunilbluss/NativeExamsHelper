@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Response;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -32,7 +33,7 @@ public interface ApiUserService {
     Observable<Response<List<JsonExam>>> getUserExams(@Path("username") String username, @Header(HEADER_TOKEN) String token);
 
     @POST("api/user/{username}/subjects")
-    @FormUrlEncoded
-    Observable<Response<Void>> insertSubjects(@Path("username") String username, @Header(HEADER_TOKEN) String token, @Field("subjects[]") ArrayList<JsonSubject> subjects);
+    Observable<Response<Void>> insertSubjects(@Path("username") String username, @Header(HEADER_TOKEN) String token,
+                                              @Body ArrayList<JsonSubject> subjects);
 
 }

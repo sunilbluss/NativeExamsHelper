@@ -44,7 +44,7 @@ public class SelectSubjectDialog extends DialogFragment implements ItemClickList
         recyclerView = (RecyclerView) root.findViewById(R.id.subjects_recycler_view);
         ExamsDbHelper.getInstance(getActivity()).openDB();
         ExamsDbHelper.getInstance(getActivity())
-                .getAllSubjectsSortByTitle()
+                .getAllSubjectsWithoutDeleteChangeSortByTitle()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(cursor -> {

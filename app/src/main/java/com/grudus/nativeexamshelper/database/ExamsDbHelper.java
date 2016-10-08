@@ -27,7 +27,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
     public static final String TAG = "@@@ Main DB HELPER @@@";
 
     public static final String DATABASE_NAME = "ExamsHelper.db";
-    public static final int DATABASE_VERSION = 7;
+    public static final int DATABASE_VERSION = 11;
 
     private SQLiteDatabase database;
     private Context context;
@@ -73,6 +73,8 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + ExamsContract.ExamEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + SubjectsContract.SubjectEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + ExamsContract.OldExamEntry.TABLE_NAME);
+
+        onCreate(db);
     }
 
     public void openDBIfClosed() {
@@ -104,6 +106,14 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         return Observable.create(subscriber -> {
             openDBIfClosed();
             subscriber.onNext(SubjectsQuery.getAllRecordsAndSortByTitle(database));
+            subscriber.onCompleted();
+        });
+    }
+
+    public Observable<Cursor> getAllSubjectsWithoutDeleteChangeSortByTitle() {
+        return Observable.create(subscriber -> {
+            openDBIfClosed();
+            subscriber.onNext(SubjectsQuery.getAllRecordsWithoutDeleteChangeSortByTitle(database));
             subscriber.onCompleted();
         });
     }
@@ -151,6 +161,10 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         });
     }
 
+    public Observable<Integer> updateSubjectSetChangeDelete(Subject subject) {
+        return updateSubjectChange(subject, SubjectsContract.CHANGE_DELETED);
+    }
+
     public Observable<Integer> removeSubject(String subjectTitle) {
         return Observable.create(subscriber -> {
             openDBIfClosed();
@@ -173,6 +187,31 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
             openDBIfClosed();
             subscriber.onNext(OldExamsQuery.removeSubjectExams(database, subject.getTitle()));
             subscriber.onNext(SubjectsQuery.setSubjectHasGrade(database, subject, false));
+            subscriber.onCompleted();
+        });
+    }
+
+    public Observable<Cursor> getAllSubjectsWithChange() {
+        return Observable.create(subscriber -> {
+            openDBIfClosed();
+            subscriber.onNext(SubjectsQuery.findChangedSubjects(database));
+            subscriber.onCompleted();
+        });
+    }
+
+    public Observable<Integer> updateSubjectChange(Subject subject, String change) {
+        return Observable.create(subscriber -> {
+            openDBIfClosed();
+            subscriber.onNext(SubjectsQuery.updateChange(database, subject, change));
+            subscriber.onCompleted();
+        });
+    }
+
+    public Observable<Integer> updateSubjectChangesToNull() {
+        return Observable.create(subscriber -> {
+            openDBIfClosed();
+            subscriber.onNext(SubjectsQuery.removeDeletedSubjects(database));
+            subscriber.onNext(SubjectsQuery.updateAllChangesToNull(database));
             subscriber.onCompleted();
         });
     }

@@ -30,10 +30,11 @@ public final class SubjectsQuery {
     public static int firstInsert(SQLiteDatabase db) {
         ContentValues[] firstValues = new ContentValues[defaultSubjects.length];
         for (int i = 0; i < firstValues.length; i++) {
-            firstValues[i] = new ContentValues(2);
+            firstValues[i] = new ContentValues(3);
             firstValues[i].put(SubjectsContract.SubjectEntry.TITLE_COLUMN, defaultSubjects[i]);
             firstValues[i].put(SubjectsContract.SubjectEntry.COLOR_COLUMN,
                     defaultColors[i]);
+            firstValues[i].put(SubjectsContract.SubjectEntry.CHANGE_COLUMN, SubjectsContract.CHANGE_CREATE);
 
             Log.i(ExamsMainActivity.TAG, "Color is " + defaultColors[i]);
         }
@@ -98,9 +99,10 @@ public final class SubjectsQuery {
     }
 
     public static long insert(SQLiteDatabase db, Subject subject) {
-        ContentValues contentValues = new ContentValues(2);
+        ContentValues contentValues = new ContentValues(3);
         contentValues.put(SubjectsContract.SubjectEntry.TITLE_COLUMN, subject.getTitle());
         contentValues.put(SubjectsContract.SubjectEntry.COLOR_COLUMN, subject.getColor());
+        contentValues.put(SubjectsContract.SubjectEntry.CHANGE_COLUMN, SubjectsContract.CHANGE_CREATE);
 
         return db.insert(SubjectsContract.SubjectEntry.TABLE_NAME, null, contentValues);
     }
@@ -112,9 +114,10 @@ public final class SubjectsQuery {
             return -1;
         }
 
-        ContentValues cv = new ContentValues(2);
+        ContentValues cv = new ContentValues(3);
         cv.put(SubjectsContract.SubjectEntry.TITLE_COLUMN, _new.getTitle());
         cv.put(SubjectsContract.SubjectEntry.COLOR_COLUMN, _new.getColor());
+        cv.put(SubjectsContract.SubjectEntry.CHANGE_COLUMN, SubjectsContract.CHANGE_UPDATED);
 
         return db.update(SubjectsContract.SubjectEntry.TABLE_NAME,
                 cv,
@@ -165,6 +168,65 @@ public final class SubjectsQuery {
                 SubjectsContract.SubjectEntry.TABLE_NAME,
                 SubjectsContract.SubjectEntry.TITLE_COLUMN + "=?",
                 new String[] {subjectTitle}
+        );
+    }
+
+    public static Cursor findChangedSubjects(SQLiteDatabase database) {
+        Cursor c = database.query(
+                SubjectsContract.SubjectEntry.TABLE_NAME,
+                SubjectsContract.SubjectEntry.ALL_COLUMNS,
+                SubjectsContract.SubjectEntry.CHANGE_COLUMN + " IS NOT NULL ",
+                null,
+                null,
+                null,
+                null
+        );
+
+        if (c != null)
+            c.moveToFirst();
+        return c;
+    }
+
+    public static Integer updateChange(SQLiteDatabase database, Subject subject, String change) {
+        ContentValues contentValues = new ContentValues(1);
+        contentValues.put(SubjectsContract.SubjectEntry.CHANGE_COLUMN, change);
+        return database.update(
+                SubjectsContract.SubjectEntry.TABLE_NAME,
+                contentValues,
+                SubjectsContract.SubjectEntry.TITLE_COLUMN + " = ?",
+                new String[] {subject.getTitle()}
+        );
+    }
+
+    public static Integer updateAllChangesToNull(SQLiteDatabase database) {
+        ContentValues values = new ContentValues(1);
+
+        values.put(SubjectsContract.SubjectEntry.CHANGE_COLUMN, (String) null);
+
+        return database.update(SubjectsContract.SubjectEntry.TABLE_NAME,
+                values,
+                SubjectsContract.SubjectEntry.CHANGE_COLUMN + " IS NOT NULL",
+                null);
+
+    }
+
+    public static Cursor getAllRecordsWithoutDeleteChangeSortByTitle(SQLiteDatabase database) {
+        return database.query(
+                SubjectsContract.SubjectEntry.TABLE_NAME,
+                SubjectsContract.SubjectEntry.ALL_COLUMNS,
+                SubjectsContract.SubjectEntry.CHANGE_COLUMN + " IS NULL OR " + SubjectsContract.SubjectEntry.CHANGE_COLUMN + " != ?",
+                new String[] {SubjectsContract.CHANGE_DELETED},
+                null,
+                null,
+                SubjectsContract.SubjectEntry.TITLE_COLUMN
+        );
+    }
+
+    public static Integer removeDeletedSubjects(SQLiteDatabase database) {
+        return database.delete(
+                SubjectsContract.SubjectEntry.TABLE_NAME,
+                SubjectsContract.SubjectEntry.CHANGE_COLUMN + " = ?",
+                new String[] {SubjectsContract.CHANGE_DELETED}
         );
     }
 }

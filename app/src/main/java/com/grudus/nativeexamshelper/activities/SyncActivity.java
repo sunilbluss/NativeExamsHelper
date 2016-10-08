@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.converters.CursorToArrayConverter;
 import com.grudus.nativeexamshelper.helpers.ToastHelper;
 import com.grudus.nativeexamshelper.net.RetrofitMain;
@@ -15,6 +16,7 @@ import com.grudus.nativeexamshelper.pojos.JsonExam;
 import com.grudus.nativeexamshelper.pojos.JsonUser;
 import com.grudus.nativeexamshelper.pojos.UserPreferences;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.List;
 
@@ -37,6 +39,7 @@ public class SyncActivity extends AppCompatActivity {
     private RetrofitMain retrofit;
 
     private JsonUser jsonUser;
+    private ExamsDbHelper examsDbHelper;
 
     private Subscription subscription;
 
@@ -50,6 +53,7 @@ public class SyncActivity extends AppCompatActivity {
         preferences = new UserPreferences(this);
         user = preferences.getLoggedUser();
         retrofit = new RetrofitMain(this);
+        examsDbHelper = ExamsDbHelper.getInstance(this);
 
         tryToReceiveData();
     }
@@ -72,10 +76,21 @@ public class SyncActivity extends AppCompatActivity {
                     this.jsonUser = response.body();
                     Log.d(TAG, "tryToReceiveData: response: " + jsonUser);
 
-                    return new CursorToArrayConverter(getApplicationContext()).getAllSubjectsAsJson();
+                    return new CursorToArrayConverter(getApplicationContext()).getChangedSubjectsAsJson();
                 })
                 .flatMap(array -> retrofit.insertSubjects(array))
-                .flatMap(response -> retrofit.getUserExams())
+                .flatMap(response -> {
+                    if (response.code() == HttpURLConnection.HTTP_OK) {
+                        return examsDbHelper.updateSubjectChangesToNull();
+                    }
+                    try {
+                        Log.e(TAG, "tryToReceiveData: " + response.errorBody().string());
+                    } catch (IOException e) {
+                        Log.e(TAG, "tryToReceiveData: ", e);
+                    }
+                    return Observable.empty();
+                })
+                .flatMap(howMany -> retrofit.getUserExams())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {

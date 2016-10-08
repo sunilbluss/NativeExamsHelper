@@ -1,13 +1,10 @@
 package com.grudus.nativeexamshelper.pojos;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import com.grudus.nativeexamshelper.helpers.ExceptionsHelper;
-import com.grudus.nativeexamshelper.R;
-import com.grudus.nativeexamshelper.activities.ExamsMainActivity;
 
 public class Subject implements Parcelable {
 
