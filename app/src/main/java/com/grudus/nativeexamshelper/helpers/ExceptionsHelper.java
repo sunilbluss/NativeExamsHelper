@@ -1,12 +1,28 @@
 package com.grudus.nativeexamshelper.helpers;
 
 
-import android.support.annotation.Nullable;
+import android.content.Context;
 import android.util.Log;
+
+import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.activities.MyApplication;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+
+import retrofit2.Response;
 
 public class ExceptionsHelper {
 
     private static final String TAG = "@@@ExceptionsHelper";
+    private static Context context;
+
+    static {
+        context = MyApplication.getContext().getApplicationContext();
+    }
 
     public static boolean stringsAreEmpty(String... strings) {
         for (String string : strings) {
@@ -20,6 +36,45 @@ public class ExceptionsHelper {
             }
         }
         return false;
+    }
+
+    public static void checkLoginResponse(Response<Void> response) {
+        String message;
+        if (response.code() != HttpURLConnection.HTTP_OK) {
+            try {
+                message = new JSONObject(response.errorBody().string()).getString("message");
+            } catch (JSONException | IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            if (message.contains("user"))
+                message = context.getString(R.string.toast_cannot_find_user_error);
+            else if (message.toLowerCase().contains("password"))
+                message = context.getString(R.string.toast_password_error);
+
+            throw new AuthenticationException(message);
+        }
+    }
+
+    public static void checkResponse(Response<?> response) {
+        String message;
+        if (response.code() != HttpURLConnection.HTTP_OK) {
+            try {
+                message = new JSONObject(response.errorBody().string()).getString("message");
+            } catch (JSONException | IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            throw new RuntimeException(message);
+        }
+    }
+
+    public static Context getContext() {
+        return context;
+    }
+
+    public static void setContext(Context context) {
+        ExceptionsHelper.context = context;
     }
 
 

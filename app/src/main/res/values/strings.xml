@@ -163,6 +163,8 @@
     <string name="toast_server_error">Nie mozna polaczyc sie z serverem</string>
     <string name="toast_successful_login">Logowanie przebiegło pomyślnie</string>
     <string name="toast_unexpected_error">Wystąpił niespodziewany błąd</string>
+    <string name="toast_cannot_find_user_error">Podany login nie istnieje</string>
+    <string name="toast_password_error">Podane hasło jest nieprawidłowe</string>
 
 
     <!--INTERNET-->

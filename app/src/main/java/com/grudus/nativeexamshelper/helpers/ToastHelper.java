@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.ConnectException;
 
 import retrofit2.Response;
 
@@ -41,7 +42,13 @@ public class ToastHelper {
     }
 
     public void showErrorMessage(String message, Throwable error) {
-        showMessage(message);
+        if (error instanceof ConnectException)
+            showMessage(context.getString(R.string.toast_server_error));
+        else if (error instanceof AuthenticationException)
+            showMessage(message);
+
+        else showMessage(message);
+
         Log.e("@@@ERROR", "showErrorMessage: ", error);
     }
 
