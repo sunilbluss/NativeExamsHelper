@@ -87,6 +87,11 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
         return new Subject(titleText, color);
     }
 
+    public Long getSubjectId(int position) {
+        cursor.moveToPosition(position);
+        return cursor.getLong(SubjectsContract.SubjectEntry.INDEX_COLUMN_INDEX);
+    }
+
     public void changeCursor(Cursor _new) {
         closeCursor();
         cursor = _new;

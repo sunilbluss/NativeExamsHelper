@@ -78,7 +78,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
     }
 
     public void openDBIfClosed() {
-        if (!database.isOpen())
+        if (database == null || !database.isOpen())
             database = this.getWritableDatabase();
     }
 

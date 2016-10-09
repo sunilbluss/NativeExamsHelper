@@ -1,7 +1,6 @@
 package com.grudus.nativeexamshelper.activities.fragments;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -90,12 +89,13 @@ public class AddingExamFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (!subscription.isUnsubscribed())
+        if (subscription != null && !subscription.isUnsubscribed())
             subscription.unsubscribe();
     }
 
     public void closeDatabase() {
-        adapter.closeDatabase();
+        if (adapter != null)
+            adapter.closeDatabase();
     }
 
 

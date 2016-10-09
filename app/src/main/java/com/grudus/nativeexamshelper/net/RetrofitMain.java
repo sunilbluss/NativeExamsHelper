@@ -68,5 +68,14 @@ public class RetrofitMain {
         return userService.insertSubjects(user.getUsername(), user.getToken(), subjects);
     }
 
+    public Observable<Response<Void>> updateSubject(JsonSubject subject) {
+        UserPreferences.User user = userPreferences.getLoggedUser();
+        return userService.updateSubject(user.getUsername(), subject.getTitle(), user.getToken(), subject);
+    }
 
+
+    public Observable<Response<Void>> addNewSubject(JsonSubject jsonSubject) {
+        UserPreferences.User user = userPreferences.getLoggedUser();
+        return userService.createSubject(user.getUsername(), user.getToken(), jsonSubject);
+    }
 }

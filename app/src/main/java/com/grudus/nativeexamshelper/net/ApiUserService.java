@@ -15,6 +15,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import rx.Observable;
 
@@ -36,4 +37,10 @@ public interface ApiUserService {
     Observable<Response<Void>> insertSubjects(@Path("username") String username, @Header(HEADER_TOKEN) String token,
                                               @Body ArrayList<JsonSubject> subjects);
 
+    @PUT("api/user/{username}/subjects/{title}")
+    Observable<Response<Void>> updateSubject(@Path("username") String username, @Path("title") String title,
+                                             @Header(HEADER_TOKEN) String token, @Body JsonSubject subject);
+
+    @POST("api/user/{username}/subjects/add")
+    Observable<Response<Void>> createSubject(@Path("username") String username, @Header(HEADER_TOKEN) String token, @Body JsonSubject jsonSubject);
 }

@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 
 import retrofit2.Response;
 
@@ -42,7 +43,7 @@ public class ToastHelper {
     }
 
     public void showErrorMessage(String message, Throwable error) {
-        if (error instanceof ConnectException)
+        if (error instanceof ConnectException || error instanceof SocketTimeoutException)
             showMessage(context.getString(R.string.toast_server_error));
         else if (error instanceof AuthenticationException)
             showMessage(message);

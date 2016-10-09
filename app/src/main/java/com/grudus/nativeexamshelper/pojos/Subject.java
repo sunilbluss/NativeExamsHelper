@@ -114,6 +114,4 @@ public class Subject implements Parcelable {
         }
     };
 
-
-
 }

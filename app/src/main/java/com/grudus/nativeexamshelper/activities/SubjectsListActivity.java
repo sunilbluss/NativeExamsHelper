@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.View;
 
 import com.grudus.nativeexamshelper.R;
@@ -16,12 +17,18 @@ import com.grudus.nativeexamshelper.adapters.SubjectsAdapter;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.subjects.SubjectsContract;
 import com.grudus.nativeexamshelper.dialogs.EditSubjectDialog;
+import com.grudus.nativeexamshelper.helpers.JsonObjectHelper;
 import com.grudus.nativeexamshelper.helpers.ThemeHelper;
+import com.grudus.nativeexamshelper.helpers.ToastHelper;
+import com.grudus.nativeexamshelper.net.RetrofitMain;
+import com.grudus.nativeexamshelper.pojos.JsonSubject;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Response;
+import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -37,7 +44,11 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
     private ExamsDbHelper examsDbHelper;
     private SubjectsAdapter adapter;
 
-    private Subscription subscription;
+    private Subscription subscriptionDB;
+    private Subscription subscriptionNet;
+    private RetrofitMain retrofitMain;
+
+    private ToastHelper toastHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +64,9 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
         populateList();
         
         initSwipeListener();
+
+        retrofitMain = new RetrofitMain(this);
+        toastHelper = new ToastHelper(this);
     }
 
     private void initSwipeListener() {
@@ -67,7 +81,7 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
     }
 
     private void populateList() {
-        subscription =
+        subscriptionDB =
             examsDbHelper.getAllSubjectsWithoutDeleteChangeSortByTitle()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -86,24 +100,44 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
         new EditSubjectDialog()
                 .addSubject(subject)
                 .addListener(editedSubject ->
-                    subscription = examsDbHelper.updateSubjectChange(subject, SubjectsContract.CHANGE_UPDATED)
+                    subscriptionDB = examsDbHelper.updateSubjectChange(subject, SubjectsContract.CHANGE_UPDATED)
                         .flatMap(howMany -> examsDbHelper.updateSubject(subject, editedSubject))
                             .flatMap(howMany -> examsDbHelper.getAllSubjectsWithoutDeleteChangeSortByTitle())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(cursor -> {
                                 adapter.changeCursor(cursor);
-                                adapter.notifyItemChanged(position);
-                            }))
+                                if (subject.getTitle().equals(adapter.getItem(position)))
+                                    adapter.notifyItemChanged(position);
+                                else
+                                    adapter.notifyDataSetChanged();
+
+                                subscriptionNet = tryToSendDataToTheServer(editedSubject, position, SubjectsContract.CHANGE_UPDATED);
+
+                            }, error -> toastHelper.showErrorMessage("Błąd", error)))
                 .show(getFragmentManager(), getString(R.string.tag_dialog_edit_subject));
     }
 
+    private Subscription tryToSendDataToTheServer(Subject subject, int adapterPosition, String change) {
+        JsonSubject jsonSubject = new JsonObjectHelper(this)
+                .subjectObjectToJsonSubject(subject, adapter.getSubjectId(adapterPosition), change);
+
+        Observable<Response<Void>> observable = change.equals(SubjectsContract.CHANGE_UPDATED) ? retrofitMain.updateSubject(jsonSubject)
+                : retrofitMain.addNewSubject(jsonSubject);
+
+        return observable
+                .flatMap((response) -> examsDbHelper.updateSubjectChange(subject, null))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(howMany -> Log.d(TAG, "tryToSendDataToTheServer: send to server " + howMany),
+                        error -> Log.e(TAG, "tryToSendDataToTheServer: errrr", error));
+    }
 
     @OnClick(R.id.floating_button_add_subject)
     public void addSubject() {
         new EditSubjectDialog()
                 .addListener((editedSubject ->
-                    subscription = examsDbHelper.insertSubject(editedSubject)
+                    subscriptionDB = examsDbHelper.insertSubject(editedSubject)
                             .flatMap(id -> examsDbHelper.getAllSubjectsWithoutDeleteChangeSortByTitle())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
@@ -117,6 +151,10 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
                                     } while (cursor.moveToNext());
                                     adapter.changeCursor(cursor);
                                     adapter.notifyItemInserted(position - 1);
+                                    subscriptionNet = tryToSendDataToTheServer(
+                                            editedSubject,
+                                            position - 1,
+                                            SubjectsContract.CHANGE_CREATE);
                                 }
                 })))
                 .show(getFragmentManager(), getString(R.string.tag_dialog_add_new_subject));
@@ -138,8 +176,10 @@ public class SubjectsListActivity extends AppCompatActivity implements ItemClick
         super.onPause();
         examsDbHelper.closeDB();
         adapter.closeCursor();
-        if (!subscription.isUnsubscribed())
-            subscription.unsubscribe();
+        if (subscriptionDB != null && !subscriptionDB.isUnsubscribed())
+            subscriptionDB.unsubscribe();
+        if (subscriptionNet != null && !subscriptionNet.isUnsubscribed())
+            subscriptionNet.unsubscribe();
     }
 
 }
