@@ -28,7 +28,9 @@ public class RetrofitMain {
     private final Retrofit retrofit;
     private final UserPreferences userPreferences;
 
-    private ApiUserService userService;
+    private final ApiUserService userService;
+    private final ApiSubjectService subjectService;
+    private final ApiExamService examService;
 
     public RetrofitMain(Context context) {
         this.context = context.getApplicationContext();
@@ -46,7 +48,10 @@ public class RetrofitMain {
                 .build();
 
         userService = this.retrofit.create(ApiUserService.class);
+        subjectService = this.retrofit.create(ApiSubjectService.class);
+        examService = this.retrofit.create(ApiExamService.class);
         userPreferences = new UserPreferences(context);
+
     }
 
     public Observable<Response<JsonUser>> getUserInfo() {
@@ -60,22 +65,22 @@ public class RetrofitMain {
 
     public Observable<Response<List<JsonExam>>> getUserExams() {
         UserPreferences.User user = userPreferences.getLoggedUser();
-        return userService.getUserExams(user.getUsername(), user.getToken());
+        return examService.getUserExams(user.getUsername(), user.getToken());
     }
 
     public Observable<Response<Void>> insertSubjects(ArrayList<JsonSubject> subjects) {
         UserPreferences.User user = userPreferences.getLoggedUser();
-        return userService.insertSubjects(user.getUsername(), user.getToken(), subjects);
+        return subjectService.insertSubjects(user.getUsername(), user.getToken(), subjects);
     }
 
     public Observable<Response<Void>> updateSubject(JsonSubject subject) {
         UserPreferences.User user = userPreferences.getLoggedUser();
-        return userService.updateSubject(user.getUsername(), subject.getTitle(), user.getToken(), subject);
+        return subjectService.updateSubject(user.getUsername(), subject.getId(), user.getToken(), subject);
     }
 
 
     public Observable<Response<Void>> addNewSubject(JsonSubject jsonSubject) {
         UserPreferences.User user = userPreferences.getLoggedUser();
-        return userService.createSubject(user.getUsername(), user.getToken(), jsonSubject);
+        return subjectService.createSubject(user.getUsername(), user.getToken(), jsonSubject);
     }
 }
