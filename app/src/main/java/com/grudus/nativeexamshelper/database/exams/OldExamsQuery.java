@@ -3,7 +3,6 @@ package com.grudus.nativeexamshelper.database.exams;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -30,16 +29,6 @@ public class OldExamsQuery {
 
         return db.insert(ExamsContract.OldExamEntry.TABLE_NAME, null, contentValues);
     }
-
-    public static void randomInsert(SQLiteDatabase db) {
-        ContentValues cv = new ContentValues(4);
-        cv.put(ExamsContract.OldExamEntry.SUBJECT_COLUMN, "Matematyka");
-        cv.put(ExamsContract.OldExamEntry.INFO_COLUMN, "Pochodne");
-        cv.put(ExamsContract.OldExamEntry.DATE_COLUMN, System.currentTimeMillis());
-        cv.put(ExamsContract.OldExamEntry.GRADE_COLUMN, "4");
-        db.insert(ExamsContract.OldExamEntry.TABLE_NAME, null, cv);
-    }
-
 
     public static Cursor findGradesAndSortBy(SQLiteDatabase db, @NonNull String subjectTitle, @Nullable String sort) {
         Cursor c = db.query(

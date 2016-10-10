@@ -27,7 +27,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
     public static final String TAG = "@@@ Main DB HELPER @@@";
 
     public static final String DATABASE_NAME = "ExamsHelper.db";
-    public static final int DATABASE_VERSION = 11;
+    public static final int DATABASE_VERSION = 12;
 
     private SQLiteDatabase database;
     private Context context;
@@ -62,7 +62,7 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         db.execSQL(ExamsContract.ExamEntry.CREATE_TABLE_QUERY);
         db.execSQL(SubjectsContract.SubjectEntry.CREATE_TABLE_QUERY);
         db.execSQL(ExamsContract.OldExamEntry.CREATE_TABLE_QUERY);
-        OldExamsQuery.randomInsert(db);
+
         SubjectsQuery.setDefaultSubjects(context.getResources().getStringArray(R.array.default_subjects));
         SubjectsQuery.setDefaultColors(context.getResources().getStringArray(R.array.defaultSubjectsColors));
         SubjectsQuery.firstInsert(db);
@@ -211,12 +211,20 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         return Observable.create(subscriber -> {
             openDBIfClosed();
             subscriber.onNext(SubjectsQuery.removeDeletedSubjects(database));
-            subscriber.onNext(SubjectsQuery.updateAllChangesToNull(database));
             subscriber.onCompleted();
         });
     }
 
 //    Exams part *********************************
+
+    public Observable<Integer> updateExamsChangeToNull() {
+        return Observable.create(subscriber -> {
+            openDBIfClosed();
+            subscriber.onNext(ExamsQuery.updateChangesToNull(database));
+            subscriber.onCompleted();
+        });
+
+    }
 
     public Observable<Long> insertExam(Exam exam) {
         return Observable.create(subscriber -> {
@@ -345,4 +353,17 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
             subscriber.onCompleted();
         });
     }
+
+    public Observable<Cursor> getAllExamsWithChange() {
+        return Observable.create(subscriber -> {
+            openDBIfClosed();
+            subscriber.onNext(ExamsQuery.getAllExamsWithChange(database));
+            subscriber.onCompleted();
+        });
+    }
+
+    public Subject findSubjectByTitlePLAIN(String string) {
+        return SubjectsQuery.findByTitle(database, string);
+    }
+
 }

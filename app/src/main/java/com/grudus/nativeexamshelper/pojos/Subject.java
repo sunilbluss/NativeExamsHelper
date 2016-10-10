@@ -10,6 +10,7 @@ public class Subject implements Parcelable {
 
     private String title;
     private String color;
+    private Long id;
 
     private static final String EMPTY = "grudus_sub_empty";
 
@@ -18,6 +19,13 @@ public class Subject implements Parcelable {
             setDefaultValues();
             return;
         }
+        this.title = title;
+        this.color = color;
+    }
+
+    @Deprecated
+    public Subject(Long id, String title, String color) {
+        this.id = id;
         this.title = title;
         this.color = color;
     }
@@ -114,4 +122,7 @@ public class Subject implements Parcelable {
         }
     };
 
+    public Long getId() {
+        return id;
+    }
 }

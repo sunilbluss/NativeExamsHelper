@@ -3,11 +3,14 @@ package com.grudus.nativeexamshelper.net;
 
 import com.grudus.nativeexamshelper.pojos.JsonExam;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Response;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import rx.Observable;
 
@@ -20,4 +23,6 @@ public interface ApiExamService {
     @GET(BASE_URL)
     Observable<Response<List<JsonExam>>> getUserExams(@Path("username") String username, @Header(HEADER_TOKEN) String token);
 
+    @POST(BASE_URL)
+    Observable<Response<Void>> insertSubjects(@Path("username") String username, @Header(HEADER_TOKEN) String token, @Body ArrayList<JsonExam> array);
 }

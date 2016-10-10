@@ -6,11 +6,13 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.converters.CursorToArrayConverter;
+import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.helpers.ExceptionsHelper;
 import com.grudus.nativeexamshelper.helpers.ToastHelper;
 import com.grudus.nativeexamshelper.net.RetrofitMain;
@@ -18,6 +20,7 @@ import com.grudus.nativeexamshelper.pojos.JsonExam;
 import com.grudus.nativeexamshelper.pojos.JsonUser;
 import com.grudus.nativeexamshelper.pojos.UserPreferences;
 
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -67,6 +70,7 @@ public class SyncActivity extends AppCompatActivity {
     }
 
     private void tryToReceiveData() {
+        Log.d(TAG, "tryToReceiveData: " );
         progressBarParent.setVisibility(View.VISIBLE);
         subscription = retrofit
                 .getUserInfo()
@@ -83,6 +87,13 @@ public class SyncActivity extends AppCompatActivity {
                     ExceptionsHelper.checkResponse(response);
                     return examsDbHelper.updateSubjectChangesToNull();
                 })
+                .flatMap(howMany -> examsDbHelper.updateSubjectChangesToNull())
+                .flatMap(howMany -> new CursorToArrayConverter(getApplicationContext()).getChangedExamsAsJson())
+                .flatMap(array -> {
+                    Log.d(TAG, "tryToReceiveData: " + array);
+                    return retrofit.insertExams(array);
+                })
+                .flatMap(response -> {ExceptionsHelper.checkResponse(response); return examsDbHelper.updateExamsChangeToNull();})
                 .flatMap(howMany -> retrofit.getUserExams())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -93,6 +104,8 @@ public class SyncActivity extends AppCompatActivity {
 
                     showInfo();
                     showExams(exams);
+
+
                 }, error -> {
                     toastHelper.showErrorMessage(getString(R.string.toast_server_error), error);
                     progressBarParent.setVisibility(View.GONE);
@@ -103,11 +116,29 @@ public class SyncActivity extends AppCompatActivity {
 
     private void showExams(List<JsonExam> exams) {
         LinearLayout parent = (LinearLayout) usernameView.getParent();
+        DateHelper.setDateFormat("dd/MM/yyyy HH:mm:ss");
+
+        ScrollView scrollView = new ScrollView(parent.getContext());
+        scrollView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        parent.addView(scrollView);
+
+        LinearLayout laj = new LinearLayout(scrollView.getContext());
+        laj.setLayoutParams(new ScrollView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        laj.setOrientation(LinearLayout.VERTICAL);
+        scrollView.addView(laj);
+
         for (int i = 0; i < exams.size(); i++) {
-            TextView tv = new TextView(parent.getContext());
-            tv.setText(exams.get(i).toString());
+            JsonExam exam = exams.get(i);
+            StringBuilder builder = new StringBuilder(String.valueOf(i)).append(") ");
+            Date date = jsonUser.getDate();
+
+            builder.append("SubjectId: ").append(exam.getSubjectId()).append("\n");
+            builder.append("Info: ").append(exam.getExamInfo()).append("\n");
+            builder.append("Time: ").append(DateHelper.getStringFromDate(exam.getDate())).append("\n").append("\n");
+            TextView tv = new TextView(laj.getContext());
+            tv.setText(builder.toString());
             tv.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            parent.addView(tv);
+            laj.addView(tv);
         }
     }
 

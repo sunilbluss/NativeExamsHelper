@@ -2,6 +2,7 @@ package com.grudus.nativeexamshelper.net;
 
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
@@ -11,15 +12,20 @@ import com.grudus.nativeexamshelper.pojos.JsonSubject;
 import com.grudus.nativeexamshelper.pojos.JsonUser;
 import com.grudus.nativeexamshelper.pojos.UserPreferences;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
+
+import static com.grudus.nativeexamshelper.activities.ExamsMainActivity.TAG;
 
 public class RetrofitMain {
 
@@ -38,8 +44,16 @@ public class RetrofitMain {
 
         GsonBuilder builder = new GsonBuilder();
 
-        builder.registerTypeHierarchyAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context1)
-                -> new Date(json.getAsJsonPrimitive().getAsLong()));
+        builder.registerTypeHierarchyAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context1) -> {
+            Log.e(TAG, "RetrofitMain: get json date: " + json.getAsString());
+            try {
+                return new SimpleDateFormat("dd/MM/yyyy, HH:mm:ss", Locale.ENGLISH).parse(json.getAsString());
+            } catch (ParseException e) {
+                return new Date(json.getAsJsonPrimitive().getAsLong());
+            }
+        });
+
+        builder.setDateFormat("dd/MM/yyyy, HH:mm:ss");
 
         this.retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -82,5 +96,11 @@ public class RetrofitMain {
     public Observable<Response<Void>> addNewSubject(JsonSubject jsonSubject) {
         UserPreferences.User user = userPreferences.getLoggedUser();
         return subjectService.createSubject(user.getUsername(), user.getToken(), jsonSubject);
+    }
+
+    public Observable<Response<Void>> insertExams(ArrayList<JsonExam> array) {
+        Log.d(TAG, "insertExams: " + array);
+        UserPreferences.User user = userPreferences.getLoggedUser();
+        return examService.insertSubjects(user.getUsername(), user.getToken(), array);
     }
 }

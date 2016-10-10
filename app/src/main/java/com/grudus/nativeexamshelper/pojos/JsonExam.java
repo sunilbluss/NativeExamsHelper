@@ -9,13 +9,15 @@ public class JsonExam {
     private Long userId;
     private String examInfo;
     private Date date;
+    private String change;
 
-    public JsonExam(Long id, Long subjectId, Long userId, String examInfo, Date date) {
+    public JsonExam(Long id, Long subjectId, Long userId, String examInfo, Date date, String change) {
         this.id = id;
         this.subjectId = subjectId;
         this.userId = userId;
         this.examInfo = examInfo;
         this.date = date;
+        this.change = change;
     }
 
     public JsonExam() {

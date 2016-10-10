@@ -5,18 +5,13 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
-import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.QueryHelper;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.pojos.Exam;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 public class ExamsQuery {
 
@@ -79,10 +74,11 @@ public class ExamsQuery {
     }
 
     public static long insert(SQLiteDatabase db, Exam exam) {
-        ContentValues contentValues = new ContentValues(3);
+        ContentValues contentValues = new ContentValues(4);
         contentValues.put(ExamsContract.ExamEntry.SUBJECT_COLUMN, exam.getSubject());
         contentValues.put(ExamsContract.ExamEntry.INFO_COLUMN, exam.getInfo());
         contentValues.put(ExamsContract.ExamEntry.DATE_COLUMN, DateHelper.getLongFromDate(exam.getDate()));
+        contentValues.put(ExamsContract.ExamEntry.CHANGE_COLUMN, ExamsContract.CHANGE_CREATE);
 
         return db.insert(ExamsContract.ExamEntry.TABLE_NAME, null, contentValues);
     }
@@ -108,5 +104,29 @@ public class ExamsQuery {
         return db.delete(ExamsContract.ExamEntry.TABLE_NAME,
                 ExamsContract.ExamEntry.SUBJECT_COLUMN + " = ?",
                 new String[] {subjectTitle});
+    }
+
+    public static Cursor getAllExamsWithChange(SQLiteDatabase database) {
+        return database.query(
+                ExamsContract.ExamEntry.TABLE_NAME,
+                ExamsContract.ExamEntry.ALL_COLUMNS,
+                ExamsContract.ExamEntry.CHANGE_COLUMN + " IS NOT NULL",
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
+    public static Integer updateChangesToNull(SQLiteDatabase database) {
+        ContentValues values = new ContentValues(1);
+        values.put(ExamsContract.ExamEntry.CHANGE_COLUMN, (String) null);
+
+        return database.update(
+                ExamsContract.ExamEntry.TABLE_NAME,
+                values,
+                null,
+                null
+        );
     }
 }
