@@ -2,12 +2,10 @@ package com.grudus.nativeexamshelper.adapters;
 
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.RecyclerView;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,16 +74,16 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
         position = position - getHeaderCount();
         cursor.moveToPosition(position);
 
-        final String subjectTitle = cursor.getString(ExamsContract.OldExamEntry.SUBJECT_COLUMN_INDEX);
+        final Long subjectId = cursor.getLong(ExamsContract.ExamEntry.SUBJECT_ID_COLUMN_INDEX);
 
-        findSubjectAndBindColor(holder, subjectTitle);
-        bindIconView(holder, subjectTitle);
-        bindSubjectView(holder, subjectTitle);
+        findSubjectAndBindColor(holder, subjectId);
+//        bindIconView(holder, subjectTitle);
+//        bindSubjectView(holder, subjectTitle);
 
     }
 
-    private void findSubjectAndBindColor(OldExamsViewHolder holder, String subjectTitle) {
-        dbHelper.findSubjectByTitle(subjectTitle)
+    private void findSubjectAndBindColor(OldExamsViewHolder holder, Long subjectId) {
+        dbHelper.findSubjectById(subjectId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subjectObject -> {
@@ -139,13 +137,13 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
     private void deleteAllSubjectExams(int adapterPosition) {
         final Subject subject = getSubjectAtPosition(adapterPosition);
 
-        dbHelper.removeAllOldSubjectExams(subject)
-                .flatMap(howMany -> dbHelper.getSubjectsWithGrade())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::changeCursor,
-                        onError -> {},
-                        () -> notifyItemRemoved(adapterPosition));
+//        dbHelper.removeAllOldSubjectExams(subject)
+//                .flatMap(howMany -> dbHelper.getSubjectsWithGrade())
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(this::changeCursor,
+//                        onError -> {},
+//                        () -> notifyItemRemoved(adapterPosition));
 
     }
 

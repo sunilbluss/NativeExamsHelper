@@ -32,11 +32,11 @@ public class GradeStatisticsCalculator {
     private int gradesColumnDatabaseIndex;
 
     private final Context context;
-    private final String subjectTitle;
+    private final Long subjectId;
 
 
-    public GradeStatisticsCalculator(Context context, String subjectTitle, double minimalGradeToPass) {
-        this.subjectTitle = subjectTitle;
+    public GradeStatisticsCalculator(Context context, Long subjectId, double minimalGradeToPass) {
+        this.subjectId = subjectId;
         this.context = context;
         gradesOccurrences = new HashMap<>();
         dominants = new ArrayList<>();
@@ -46,7 +46,7 @@ public class GradeStatisticsCalculator {
     public Observable<Double> startCalculating() {
 
         ExamsDbHelper db = ExamsDbHelper.getInstance(context);
-        return db.getGradesFromOrderedSubjectGrades(subjectTitle);
+        return db.getGradesFromOrderedSubjectGrades(subjectId);
     }
 
     public void calculate(double oneGrade) {

@@ -1,7 +1,7 @@
 package com.grudus.nativeexamshelper.activities;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -88,7 +88,7 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
 
     private void initRecyclerView() {
         subscription =
-        dbHelper.getSubjectGrades(subjectTitle)
+        dbHelper.getSubjectGrades(subject.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(cursor -> {
@@ -117,7 +117,7 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
 
 
     private void calculateAllStatistics() {
-        GradeStatisticsCalculator calculator = new GradeStatisticsCalculator(this, subjectTitle, Grades.getFirstPassedGrade());
+        GradeStatisticsCalculator calculator = new GradeStatisticsCalculator(this, subject.getId(), Grades.getFirstPassedGrade());
         setUpStatisticsTextFormatter(calculator);
 
         calculator.startCalculating()

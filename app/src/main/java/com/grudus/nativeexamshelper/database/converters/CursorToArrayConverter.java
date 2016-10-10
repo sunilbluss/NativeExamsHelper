@@ -86,7 +86,7 @@ public class CursorToArrayConverter {
                 new JsonExam(
                         cursor.getLong(ExamsContract.ExamEntry.INDEX_COLUMN_INDEX),
                         // TODO: 10.10.16 CHANGE, PLEASE
-                        examsDbHelper.findSubjectByTitlePLAIN(cursor.getString(ExamsContract.ExamEntry.SUBJECT_COLUMN_INDEX)).getId(),
+                        cursor.getLong(ExamsContract.ExamEntry.SUBJECT_ID_COLUMN_INDEX),
                         userId,
                         cursor.getString(ExamsContract.ExamEntry.INFO_COLUMN_INDEX),
                         new Date(cursor.getLong(ExamsContract.ExamEntry.DATE_COLUMN_INDEX)),

@@ -10,17 +10,12 @@ import android.util.Log;
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
 import com.grudus.nativeexamshelper.database.exams.ExamsQuery;
-import com.grudus.nativeexamshelper.database.exams.OldExamsQuery;
 import com.grudus.nativeexamshelper.database.subjects.SubjectsContract;
 import com.grudus.nativeexamshelper.database.subjects.SubjectsQuery;
 import com.grudus.nativeexamshelper.pojos.Exam;
-import com.grudus.nativeexamshelper.pojos.OldExam;
 import com.grudus.nativeexamshelper.pojos.Subject;
-import com.grudus.nativeexamshelper.pojos.grades.Grade;
 
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class ExamsDbHelper extends SQLiteOpenHelper {
 
@@ -61,7 +56,6 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         Log.d(TAG, "onCreate() ExamsDbHelper");
         db.execSQL(ExamsContract.ExamEntry.CREATE_TABLE_QUERY);
         db.execSQL(SubjectsContract.SubjectEntry.CREATE_TABLE_QUERY);
-        db.execSQL(ExamsContract.OldExamEntry.CREATE_TABLE_QUERY);
 
         SubjectsQuery.setDefaultSubjects(context.getResources().getStringArray(R.array.default_subjects));
         SubjectsQuery.setDefaultColors(context.getResources().getStringArray(R.array.defaultSubjectsColors));
@@ -72,7 +66,6 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + ExamsContract.ExamEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + SubjectsContract.SubjectEntry.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + ExamsContract.OldExamEntry.TABLE_NAME);
 
         onCreate(db);
     }
@@ -153,6 +146,15 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
     }
 
 
+
+    public Observable<Subject> findSubjectById(Long id) {
+        return Observable.create(subscriber -> {
+            openDBIfClosed();
+            subscriber.onNext(SubjectsQuery.findById(database, id));
+            subscriber.onCompleted();
+        });
+    }
+
     public Observable<Subject> findSubjectByTitle(String title) {
         return Observable.create(subscriber -> {
             openDBIfClosed();
@@ -173,23 +175,14 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         });
     }
 
-    public Observable<Integer> removeAllExamsRelatedWithSubject(String subjectTitle) {
+    public Observable<Integer> removeAllExamsRelatedWithSubject(Long subjectId) {
         return Observable.create(subscriber -> {
             openDBIfClosed();
-            subscriber.onNext(ExamsQuery.removeSubjectExams(database, subjectTitle));
-            subscriber.onNext(OldExamsQuery.removeSubjectExams(database, subjectTitle));
+            subscriber.onNext(ExamsQuery.removeSubjectExams(database, subjectId));
             subscriber.onCompleted();
         });
     }
 
-    public Observable<Integer> removeAllOldSubjectExams(Subject subject) {
-        return Observable.create(subscriber -> {
-            openDBIfClosed();
-            subscriber.onNext(OldExamsQuery.removeSubjectExams(database, subject.getTitle()));
-            subscriber.onNext(SubjectsQuery.setSubjectHasGrade(database, subject, false));
-            subscriber.onCompleted();
-        });
-    }
 
     public Observable<Cursor> getAllSubjectsWithChange() {
         return Observable.create(subscriber -> {
@@ -252,23 +245,23 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         });
     }
 
-    public Observable<Cursor> getSubjectGrades(String subjectTitle) {
+    public Observable<Cursor> getSubjectGrades(Long subjectId) {
         return Observable.create(subscriber -> {
             openDBIfClosed();
-            subscriber.onNext(OldExamsQuery.findGradesAndSortBy(database, subjectTitle, null));
+            subscriber.onNext(ExamsQuery.findGradesAndSortBy(database, subjectId, null));
             subscriber.onCompleted();
         });
     }
 
-    public Observable<Double> getGradesFromOrderedSubjectGrades(String subjectTitle) {
+    public Observable<Double> getGradesFromOrderedSubjectGrades(Long subjectId) {
         return Observable.create(subscriber -> {
             openDBIfClosed();
-            Cursor cursor = OldExamsQuery.findGradesAndSortBy(database, subjectTitle, ExamsContract.OldExamEntry.GRADE_COLUMN);
+            Cursor cursor = ExamsQuery.findGradesAndSortBy(database, subjectId, ExamsContract.ExamEntry.GRADE_COLUMN);
             cursor.moveToFirst();
             // first returned item is size of the items
             subscriber.onNext((double)cursor.getCount());
             do {
-                double temp = cursor.getDouble(ExamsContract.OldExamEntry.GRADE_COLUMN_INDEX);
+                double temp = cursor.getDouble(ExamsContract.ExamEntry.GRADE_COLUMN_INDEX);
                 subscriber.onNext(temp);
                 Log.d(TAG, "getGradesFromOrderedSubjectGrades: kursor");
             } while (cursor.moveToNext());
@@ -286,39 +279,19 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         });
     }
 
-    private Observable<Long> insertOldExam(OldExam exam) {
-        return Observable.create(subscriber -> {
-            openDBIfClosed();
-            subscriber.onNext(OldExamsQuery.insert(database, exam));
-            subscriber.onCompleted();
-        });
-    }
 
 
-    public Observable<Long> examBecomesOld(Exam exam, double grade) {
-        final OldExam oldExam = new OldExam(null, exam.getInfo(), grade, exam.getDate());
-        if (grade == Grade.EMPTY_GRADE) return Observable.empty();
+    public Observable<Integer> updateExamSetGrade(Exam exam, double grade) {
         openDBIfClosed();
 
-        return findSubjectByTitle(exam.getSubject())
-                .flatMap(subject -> {
-                    if (subject == null) return Observable.empty();
-                    oldExam.setSubject(subject);
-                    return setSubjectHasGrade(subject, true);
-                })
-                .flatMap((updatedRows) -> removeExam(exam))
-                .flatMap((success) -> insertOldExam(oldExam));
+        return findSubjectById(exam.getSubjectId())
+                .flatMap(subject -> setSubjectHasGrade(subject, true))
+                .flatMap((updatedRows) -> Observable.create(subscriber -> {
+                    subscriber.onNext(ExamsQuery.updateSetGrade(database, exam, grade));
+                    subscriber.onCompleted();
+                }));
     }
 
-    public Observable<Object> removeOldExam(long timeInMillis) {
-        return Observable.create(subscriber -> {
-            openDBIfClosed();
-            subscriber.onNext(OldExamsQuery.removeExam(database, timeInMillis));
-            subscriber.onCompleted();
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
 
     public Observable<Cursor> getAllIncomingExamsSortByDate() {
         return Observable.create(subscriber -> {
@@ -345,14 +318,6 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         });
     }
 
-    public Observable<Integer> removeAllOldExams() {
-        return Observable.create(subscriber -> {
-            openDBIfClosed();
-            subscriber.onNext(OldExamsQuery.removeAll(database));
-            subscriber.onNext(SubjectsQuery.resetGrades(database));
-            subscriber.onCompleted();
-        });
-    }
 
     public Observable<Cursor> getAllExamsWithChange() {
         return Observable.create(subscriber -> {
@@ -362,8 +327,5 @@ public class ExamsDbHelper extends SQLiteOpenHelper {
         });
     }
 
-    public Subject findSubjectByTitlePLAIN(String string) {
-        return SubjectsQuery.findByTitle(database, string);
-    }
 
 }

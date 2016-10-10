@@ -4,6 +4,7 @@ package com.grudus.nativeexamshelper.database.exams;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.grudus.nativeexamshelper.database.QueryHelper;
@@ -63,7 +64,8 @@ public class ExamsQuery {
         ArrayList<Exam> exams =  new ArrayList<>();
         do {
             exams.add(new Exam(
-                    c.getString(ExamsContract.ExamEntry.SUBJECT_COLUMN_INDEX),
+                    c.getLong(ExamsContract.ExamEntry.INDEX_COLUMN_INDEX),
+                    c.getLong(ExamsContract.ExamEntry.SUBJECT_ID_COLUMN_INDEX),
                     c.getString(ExamsContract.ExamEntry.INDEX_COLUMN_INDEX),
                     new Date(c.getLong(ExamsContract.ExamEntry.DATE_COLUMN_INDEX))
             ));
@@ -73,9 +75,24 @@ public class ExamsQuery {
         return exams;
     }
 
+    public static Cursor findGradesAndSortBy(SQLiteDatabase db, @NonNull Long subjectId, @Nullable String sort) {
+        Cursor c = db.query(
+                ExamsContract.ExamEntry.TABLE_NAME,
+                ExamsContract.ExamEntry.ALL_COLUMNS,
+                ExamsContract.ExamEntry.SUBJECT_ID_COLUMN + " = ?",
+                new String[] {subjectId.toString()},
+                null,
+                null,
+                sort
+        );
+
+        if (c != null) c.moveToFirst();
+        return c;
+    }
+
     public static long insert(SQLiteDatabase db, Exam exam) {
         ContentValues contentValues = new ContentValues(4);
-        contentValues.put(ExamsContract.ExamEntry.SUBJECT_COLUMN, exam.getSubject());
+        contentValues.put(ExamsContract.ExamEntry.SUBJECT_ID_COLUMN, exam.getSubjectId());
         contentValues.put(ExamsContract.ExamEntry.INFO_COLUMN, exam.getInfo());
         contentValues.put(ExamsContract.ExamEntry.DATE_COLUMN, DateHelper.getLongFromDate(exam.getDate()));
         contentValues.put(ExamsContract.ExamEntry.CHANGE_COLUMN, ExamsContract.CHANGE_CREATE);
@@ -100,10 +117,10 @@ public class ExamsQuery {
                 null);
     }
 
-    public static int removeSubjectExams(SQLiteDatabase db, String subjectTitle) {
+    public static int removeSubjectExams(SQLiteDatabase db, Long subjectId) {
         return db.delete(ExamsContract.ExamEntry.TABLE_NAME,
-                ExamsContract.ExamEntry.SUBJECT_COLUMN + " = ?",
-                new String[] {subjectTitle});
+                ExamsContract.ExamEntry.SUBJECT_ID_COLUMN + " = ?",
+                new String[] {subjectId.toString()});
     }
 
     public static Cursor getAllExamsWithChange(SQLiteDatabase database) {
@@ -115,6 +132,18 @@ public class ExamsQuery {
                 null,
                 null,
                 null
+        );
+    }
+
+    public static Integer updateSetGrade(SQLiteDatabase database, Exam exam, double grade) {
+        ContentValues contentValues = new ContentValues(1);
+        contentValues.put(ExamsContract.ExamEntry.GRADE_COLUMN, grade);
+
+        return database.update(
+                ExamsContract.ExamEntry.TABLE_NAME,
+                contentValues,
+                ExamsContract.ExamEntry._ID + " = ?",
+                new String[] {exam.getId().toString()}
         );
     }
 

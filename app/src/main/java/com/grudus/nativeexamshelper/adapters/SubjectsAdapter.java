@@ -123,7 +123,7 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
                         onError -> {},
                         () -> notifyItemRemoved(adapterPosition));
 
-        db.removeAllExamsRelatedWithSubject(cursor.getString(SubjectsContract.SubjectEntry.TITLE_COLUMN_INDEX))
+        db.removeAllExamsRelatedWithSubject(cursor.getLong(SubjectsContract.SubjectEntry.INDEX_COLUMN_INDEX))
                 .subscribeOn(Schedulers.io())
                 .subscribe();
     }

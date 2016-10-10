@@ -17,9 +17,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
-import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.dialogs.reusable.ConfirmDialog;
 import com.grudus.nativeexamshelper.dialogs.reusable.EnterTextDialog;
 import com.grudus.nativeexamshelper.dialogs.reusable.RadioDialog;
@@ -28,8 +28,6 @@ import com.grudus.nativeexamshelper.helpers.ThemeHelper;
 import com.grudus.nativeexamshelper.pojos.grades.Grades;
 
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -199,27 +197,29 @@ public class SettingsActivity extends AppCompatActivity {
             }
 
             else if (key.equals(GRADE_TYPE_KEY)) {
-                ExamsDbHelper helper = ExamsDbHelper.getInstance(getActivity());
-                helper.openDB();
-
-                subscription = helper.removeAllOldExams()
-                        .subscribeOn(Schedulers.io())
-                        .subscribe((howMany) -> {},
-                                error -> helper.closeDB(),
-                                helper::closeDB);
+                Toast.makeText(getActivity(), "Nic sie nie dzieje", Toast.LENGTH_SHORT).show();
+//                ExamsDbHelper helper = ExamsDbHelper.getInstance(getActivity());
+//                helper.openDB();
+//
+//                subscription = helper.removeAllOldExams()
+//                        .subscribeOn(Schedulers.io())
+//                        .subscribe((howMany) -> {},
+//                                error -> helper.closeDB(),
+//                                helper::closeDB);
             }
 
-            else if (key.equals(FABRIC_EXAMS_KEY)) {
-                ExamsDbHelper helper = ExamsDbHelper.getInstance(getActivity());
-                subscription =
-                        helper.removeAllIncomingExams()
-                        .flatMap(integer -> helper.removeAllOldExams())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(i -> {},
-                                error -> helper.closeDB(),
-                                helper::closeDB);
-            }
+            else if (key.equals(FABRIC_EXAMS_KEY))
+                Toast.makeText(getActivity(), "Rowniez nic sie nie dzieje", Toast.LENGTH_SHORT).show();
+//                ExamsDbHelper helper = ExamsDbHelper.getInstance(getActivity());
+//                subscription =
+//                        helper.removeAllIncomingExams()
+//                        .flatMap(integer -> helper.removeAllOldExams())
+//                        .subscribeOn(Schedulers.io())
+//                        .observeOn(AndroidSchedulers.mainThread())
+//                        .subscribe(i -> {},
+//                                error -> helper.closeDB(),
+//                                helper::closeDB);
+//            }
 
         }
 

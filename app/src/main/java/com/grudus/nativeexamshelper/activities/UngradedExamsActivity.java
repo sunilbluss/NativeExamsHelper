@@ -1,7 +1,7 @@
 package com.grudus.nativeexamshelper.activities;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -85,7 +85,7 @@ public class UngradedExamsActivity extends AppCompatActivity implements ItemClic
             Exam exam = adapter.getExamByPosition(position);
 
             subscription =
-                    dbHelper.examBecomesOld(exam, Double.valueOf(selectedValue))
+                    dbHelper.updateExamSetGrade(exam, Double.valueOf(selectedValue))
                             .flatMap((id) -> dbHelper.getExamsOlderThan(System.currentTimeMillis()))
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())

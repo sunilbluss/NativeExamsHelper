@@ -1,13 +1,11 @@
 package com.grudus.nativeexamshelper.adapters;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,12 +70,12 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
     public void onBindViewHolder(ExamsViewHolder holder, int position) {
         cursor.moveToPosition(position);
 
-        String subjectTitle = cursor.getString(ExamsContract.ExamEntry.SUBJECT_COLUMN_INDEX);
+        long id = cursor.getLong(ExamsContract.ExamEntry.SUBJECT_ID_COLUMN_INDEX);
         long dateLong = cursor.getLong(ExamsContract.ExamEntry.DATE_COLUMN_INDEX);
 
-        findSubjectAndBindColor(holder, subjectTitle);
-        bindIconView(holder, subjectTitle);
-        bindSubjectView(holder, subjectTitle);
+        findSubjectAndBindColor(holder, id);
+//        bindIconView(holder, subjectTitle);
+//        bindSubjectView(holder, subjectTitle);
         bindDateView(holder, dateLong);
 
         bindExpandedLayout(holder, dateLong);
@@ -90,8 +88,8 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
         ((TextView)holder.expandedLayout.findViewById(R.id.list_item_expanded_info)).setText(info);
     }
 
-    private void findSubjectAndBindColor(ExamsViewHolder holder, String subjectTitle) {
-        dbHelper.findSubjectByTitle(subjectTitle)
+    private void findSubjectAndBindColor(ExamsViewHolder holder, long subjectId) {
+        dbHelper.findSubjectById(subjectId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subjectObject -> {

@@ -14,8 +14,8 @@ import android.widget.Toast;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
-import com.grudus.nativeexamshelper.dialogs.reusable.EnterTextDialog;
 import com.grudus.nativeexamshelper.dialogs.SelectSubjectDialog;
+import com.grudus.nativeexamshelper.dialogs.reusable.EnterTextDialog;
 import com.grudus.nativeexamshelper.helpers.CalendarDialogHelper;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.helpers.ThemeHelper;
@@ -135,7 +135,7 @@ public class AddExamActivity extends AppCompatActivity {
             info = getString(R.string.sse_default_exam_info);
 
 
-        addToDatabase(new Exam(subject, info, correctDate));
+        addToDatabase(subject, info, correctDate);
         startPreviousActivity();
     }
 
@@ -160,12 +160,13 @@ public class AddExamActivity extends AppCompatActivity {
         return true;
     }
 
-    private void addToDatabase(Exam exam) {
+    private void addToDatabase(String subjectTitle, String info, Date correctDate) {
         if (db == null)
             db = ExamsDbHelper.getInstance(this);
         db.openDB();
 
-        db.insertExam(exam)
+        db.findSubjectByTitle(subjectTitle)
+                .flatMap(subject -> db.insertExam(Exam.getExamWithoutId(subject.getId(), info, correctDate)))
                 .subscribeOn(Schedulers.io())
                 .subscribe(action -> db.closeDB(), error -> db.closeDB());
 

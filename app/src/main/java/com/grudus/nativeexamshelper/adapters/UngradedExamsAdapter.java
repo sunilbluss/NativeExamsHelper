@@ -42,7 +42,7 @@ public class UngradedExamsAdapter extends RecyclerView.Adapter<UngradedExamsAdap
     public void onBindViewHolder(UngradedExamViewHolder holder, int position) {
         cursor.moveToPosition(position);
 
-        String subject = cursor.getString(ExamsContract.ExamEntry.SUBJECT_COLUMN_INDEX);
+        String subject = String.valueOf(cursor.getLong(ExamsContract.ExamEntry.SUBJECT_ID_COLUMN_INDEX));
 
         bindTextView(holder, subject);
         bindInfoView(holder);
@@ -77,11 +77,12 @@ public class UngradedExamsAdapter extends RecyclerView.Adapter<UngradedExamsAdap
 
     public Exam getExamByPosition(int position) {
         cursor.moveToPosition(position);
-        String subject = cursor.getString(ExamsContract.ExamEntry.SUBJECT_COLUMN_INDEX);
+        Long id = cursor.getLong(ExamsContract.ExamEntry.INDEX_COLUMN_INDEX);
+        Long subjectId = cursor.getLong(ExamsContract.ExamEntry.SUBJECT_ID_COLUMN_INDEX);
         String info = cursor.getString(ExamsContract.ExamEntry.INFO_COLUMN_INDEX);
         Date date = new Date(cursor.getLong(ExamsContract.ExamEntry.DATE_COLUMN_INDEX));
 
-        return new Exam(subject, info, date);
+        return new Exam(id, subjectId, info, date);
     }
 
     public void closeCursor() {

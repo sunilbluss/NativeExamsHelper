@@ -71,13 +71,13 @@ public final class SubjectsQuery {
     }
 
     @Nullable
-    public static Subject findByTitle(SQLiteDatabase db, String title) {
+    public static Subject findById(SQLiteDatabase db, Long id) {
         Cursor c = db
                 .query(
                         SubjectsContract.SubjectEntry.TABLE_NAME,
                         SubjectsContract.SubjectEntry.ALL_COLUMNS,
                         SubjectsContract.SubjectEntry.TITLE_COLUMN + "=?",
-                        new String[] {title},
+                        new String[] {id.toString()},
                         null,
                         null,
                         null
@@ -111,7 +111,7 @@ public final class SubjectsQuery {
 
 
     public static int update(SQLiteDatabase db, Subject old, Subject _new) {
-        if (findByTitle(db, old.getTitle()) == null) {
+        if (findById(db, old.getId()) == null) {
             Log.e(ExamsDbHelper.TAG, "update: " + old + " doesn't exists");
             return -1;
         }
@@ -230,5 +230,30 @@ public final class SubjectsQuery {
                 SubjectsContract.SubjectEntry.CHANGE_COLUMN + " = ?",
                 new String[] {SubjectsContract.CHANGE_DELETED}
         );
+    }
+
+    public static Subject findByTitle(SQLiteDatabase database, String title) {
+        Cursor cursor = database.query(
+                SubjectsContract.SubjectEntry.TABLE_NAME,
+                SubjectsContract.SubjectEntry.ALL_COLUMNS,
+                SubjectsContract.SubjectEntry.TITLE_COLUMN + " = ?",
+                new String[] {title},
+                null,
+                null,
+                null
+        );
+
+        if (cursor == null)
+            return Subject.empty();
+
+        cursor.moveToFirst();
+        Subject subject = new Subject(
+                cursor.getLong(SubjectsContract.SubjectEntry.INDEX_COLUMN_INDEX),
+                cursor.getString(SubjectsContract.SubjectEntry.TITLE_COLUMN_INDEX),
+                cursor.getString(SubjectsContract.SubjectEntry.COLOR_COLUMN_INDEX)
+        );
+
+        cursor.close();
+        return subject;
     }
 }

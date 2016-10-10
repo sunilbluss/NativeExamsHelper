@@ -20,8 +20,6 @@ import com.grudus.nativeexamshelper.pojos.grades.Grades;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 
 public class SingleSubjectExamsAdapter extends RecyclerView.Adapter<SingleSubjectExamsAdapter.SingleSubjectExamsViewHolder> {
@@ -54,7 +52,7 @@ public class SingleSubjectExamsAdapter extends RecyclerView.Adapter<SingleSubjec
     public void onBindViewHolder(SingleSubjectExamsViewHolder holder, int position) {
 
         cursor.moveToPosition(position);
-        double grade = cursor.getDouble(ExamsContract.OldExamEntry.GRADE_COLUMN_INDEX);
+        double grade = cursor.getDouble(ExamsContract.ExamEntry.GRADE_COLUMN_INDEX);
         
         bindDate(holder);
         bindSubjectInfo(holder);
@@ -63,14 +61,14 @@ public class SingleSubjectExamsAdapter extends RecyclerView.Adapter<SingleSubjec
     }
 
     private void bindDate(SingleSubjectExamsViewHolder holder) {
-        final long date = cursor.getLong(ExamsContract.OldExamEntry.DATE_COLUMN_INDEX);
+        final long date = cursor.getLong(ExamsContract.ExamEntry.DATE_COLUMN_INDEX);
         holder.dateView.setText(
                 DateHelper.getReadableDataFromLong(date));
 
     }
 
     private void bindSubjectInfo(SingleSubjectExamsViewHolder holder) {
-        String subjectInfo = cursor.getString(ExamsContract.OldExamEntry.INFO_COLUMN_INDEX);
+        String subjectInfo = cursor.getString(ExamsContract.ExamEntry.INFO_COLUMN_INDEX);
         boolean isEmpty = subjectInfo == null || subjectInfo.replaceAll("\\s+", "").isEmpty();
         holder.infoView.setText(isEmpty ? defaultInfo : subjectInfo);
     }
@@ -99,21 +97,21 @@ public class SingleSubjectExamsAdapter extends RecyclerView.Adapter<SingleSubjec
     }
 
     private void deleteExamAtPosition(int adapterPosition) {
-        cursor.moveToPosition(adapterPosition);
-        final long time = cursor.getLong(ExamsContract.OldExamEntry.DATE_COLUMN_INDEX);
-        final String subjectTitle = cursor.getString(ExamsContract.OldExamEntry.SUBJECT_COLUMN_INDEX);
-
-        examsDbHelper.removeOldExam(time)
-                .flatMap(o -> examsDbHelper.getSubjectGrades(subjectTitle))
-                .flatMap(cursor -> {
-                    changeCursor(cursor);
-                    return examsDbHelper.setSubjectHasGrade(subject, cursor.moveToFirst());
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(howMany -> {},
-                        onError -> {},
-                        () -> notifyItemRemoved(adapterPosition));
+//        cursor.moveToPosition(adapterPosition);
+//        final long examId = cursor.getLong(ExamsContract.ExamEntry.INDEX_COLUMN_INDEX);
+//        final long subjectId = cursor.getLong(ExamsContract.ExamEntry.SUBJECT_ID_COLUMN_INDEX);
+//
+//        examsDbHelper.removeOldExam(time)
+//                .flatMap(o -> examsDbHelper.getSubjectGrades(subjectTitle))
+//                .flatMap(cursor -> {
+//                    changeCursor(cursor);
+//                    return examsDbHelper.setSubjectHasGrade(subject, cursor.moveToFirst());
+//                })
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(howMany -> {},
+//                        onError -> {},
+//                        () -> notifyItemRemoved(adapterPosition));
     }
 
     public void changeCursor(Cursor _new) {
