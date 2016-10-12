@@ -72,6 +72,10 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
 
     private void getIntentInformation() {
         subject = getIntent().getParcelableExtra(INTENT_SUBJECT_TAG);
+
+        if (subject.getId() == null)
+            throw new IllegalArgumentException("Id cannot be null! " + subject.toString());
+
         subjectTitle = subject.getTitle();
     }
 
@@ -88,7 +92,7 @@ public class SingleSubjectExamsActivity extends AppCompatActivity {
 
     private void initRecyclerView() {
         subscription =
-        dbHelper.getSubjectGrades(subject.getId())
+        dbHelper.getSubjectGradesWithoutDeleteChange(subject.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(cursor -> {

@@ -73,11 +73,9 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
         long id = cursor.getLong(ExamsContract.ExamEntry.SUBJECT_ID_COLUMN_INDEX);
         long dateLong = cursor.getLong(ExamsContract.ExamEntry.DATE_COLUMN_INDEX);
 
-        findSubjectAndBindColor(holder, id);
-//        bindIconView(holder, subjectTitle);
-//        bindSubjectView(holder, subjectTitle);
-        bindDateView(holder, dateLong);
+        findSubjectAndBindView(holder, id);
 
+        bindDateView(holder, dateLong);
         bindExpandedLayout(holder, dateLong);
 
     }
@@ -88,17 +86,23 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
         ((TextView)holder.expandedLayout.findViewById(R.id.list_item_expanded_info)).setText(info);
     }
 
-    private void findSubjectAndBindColor(ExamsViewHolder holder, long subjectId) {
+    private void findSubjectAndBindView(ExamsViewHolder holder, long subjectId) {
         dbHelper.findSubjectById(subjectId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subjectObject -> {
                     if (subjectObject != null) {
-                        GradientDrawable bg = (GradientDrawable) holder.iconView.getBackground();
-                        bg.setColor(Color.parseColor(subjectObject.getColor()));
-                        holder.iconView.setBackground(bg);
+                        setBackgroundColor(holder, subjectObject.getColor());
+                        bindIconView(holder, subjectObject.getTitle());
+                        bindSubjectView(holder, subjectObject.getTitle());
                     }
                 });
+    }
+
+    private void setBackgroundColor(ExamsViewHolder holder, String color) {
+        GradientDrawable bg = (GradientDrawable) holder.iconView.getBackground();
+        bg.setColor(Color.parseColor(color));
+        holder.iconView.setBackground(bg);
     }
 
     private void bindIconView(ExamsViewHolder holder, String subjectTitle) {
@@ -122,10 +126,10 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
     private void deleteRowAtPosition(final int adapterPosition) {
         cursor.moveToPosition(adapterPosition);
         dbHelper.openDB();
-        long millis = cursor.getLong(ExamsContract.ExamEntry.DATE_COLUMN_INDEX);
+        Long id = cursor.getLong(ExamsContract.ExamEntry.INDEX_COLUMN_INDEX);
 
-        dbHelper.removeExam(millis)
-                .flatMap(function -> dbHelper.getAllIncomingExamsSortByDate())
+        dbHelper.removeExam(id)
+                .flatMap(function -> dbHelper.getAllIncomingExamsWithoutDeleteChangeSortByDate())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(cursor -> {

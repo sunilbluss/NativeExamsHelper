@@ -33,7 +33,7 @@ public class Exam implements Parcelable {
     }
 
     public Exam(@NonNull Long id, @NonNull Long subjectId, String info, @NonNull Date date) {
-        this(id, subjectId, info, date, -1.0);
+        this(id, subjectId, info, date, Grades.EMPTY);
     }
 
     public Exam(@NonNull Long id, @NonNull Long subjectId, String info, @NonNull Date date, double grade) {

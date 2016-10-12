@@ -212,7 +212,7 @@ public class SettingsActivity extends AppCompatActivity {
                 Toast.makeText(getActivity(), "Rowniez nic sie nie dzieje", Toast.LENGTH_SHORT).show();
 //                ExamsDbHelper helper = ExamsDbHelper.getInstance(getActivity());
 //                subscription =
-//                        helper.removeAllIncomingExams()
+//                        helper.removeAllExams()
 //                        .flatMap(integer -> helper.removeAllOldExams())
 //                        .subscribeOn(Schedulers.io())
 //                        .observeOn(AndroidSchedulers.mainThread())

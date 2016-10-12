@@ -76,17 +76,16 @@ public final class SubjectsQuery {
                 .query(
                         SubjectsContract.SubjectEntry.TABLE_NAME,
                         SubjectsContract.SubjectEntry.ALL_COLUMNS,
-                        SubjectsContract.SubjectEntry.TITLE_COLUMN + "=?",
+                        SubjectsContract.SubjectEntry._ID + " = ? ",
                         new String[] {id.toString()},
                         null,
                         null,
                         null
                 );
-        if (c == null)
-            return null;
+
         if (!c.moveToFirst()) {
             c.close();
-            return null;
+            throw new NullPointerException("Cannot find subject with id " + id);
         }
 
         Subject subject = new Subject(c.getLong(SubjectsContract.SubjectEntry.INDEX_COLUMN_INDEX),

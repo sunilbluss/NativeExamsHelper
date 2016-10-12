@@ -84,7 +84,9 @@ public class SubjectsAdapter extends RecyclerView.Adapter<SubjectsAdapter.Subjec
         cursor.moveToPosition(position);
         String color = cursor.getString(SubjectsContract.SubjectEntry.COLOR_COLUMN_INDEX);
         String titleText = cursor.getString(SubjectsContract.SubjectEntry.TITLE_COLUMN_INDEX);
-        return new Subject(titleText, color);
+        Long id = cursor.getLong(SubjectsContract.SubjectEntry.INDEX_COLUMN_INDEX);
+
+        return new Subject(id, titleText, color);
     }
 
     public Long getSubjectId(int position) {

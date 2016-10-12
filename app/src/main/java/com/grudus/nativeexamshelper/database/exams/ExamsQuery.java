@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.grudus.nativeexamshelper.database.QueryHelper;
+import com.grudus.nativeexamshelper.database.subjects.SubjectsContract;
 import com.grudus.nativeexamshelper.helpers.DateHelper;
 import com.grudus.nativeexamshelper.pojos.Exam;
 
@@ -16,13 +17,13 @@ import java.util.Date;
 
 public class ExamsQuery {
 
-    public static Cursor getAllIncomingExamsAndSortByDate(SQLiteDatabase db) {
+    public static Cursor getAllIncomingExamsWithoutDeleteChangeAndSortByDate(SQLiteDatabase db) {
         long time = System.currentTimeMillis();
         Cursor c = db.query(
                 ExamsContract.ExamEntry.TABLE_NAME,
                 ExamsContract.ExamEntry.ALL_COLUMNS,
-                ExamsContract.ExamEntry.DATE_COLUMN + ">?",
-                new String[] {time + ""},
+                ExamsContract.ExamEntry.DATE_COLUMN + " > ? AND " + ExamsContract.ExamEntry.CHANGE_COLUMN + " != ?",
+                new String[] {Long.toString(time), SubjectsContract.CHANGE_DELETED},
                 null,
                 null,
                 ExamsContract.ExamEntry.DATE_COLUMN
@@ -32,12 +33,12 @@ public class ExamsQuery {
         return c;
     }
 
-    public static Cursor getAllExamsOlderThan(SQLiteDatabase db, long time) {
+    public static Cursor getAllExamsWithoutDeleteChangeOlderThan(SQLiteDatabase db, long time) {
         Cursor c = db.query(
                 ExamsContract.ExamEntry.TABLE_NAME,
                 ExamsContract.ExamEntry.ALL_COLUMNS,
-                ExamsContract.ExamEntry.DATE_COLUMN + "<?",
-                new String[] {time + ""},
+                ExamsContract.ExamEntry.DATE_COLUMN + " < ?" + " AND " + ExamsContract.ExamEntry.CHANGE_COLUMN + " != ?",
+                new String[] {Long.toString(time), ExamsContract.CHANGE_DELETED},
                 null,
                 null,
                 null
@@ -59,7 +60,7 @@ public class ExamsQuery {
 
     @Nullable
     public static ArrayList<Exam> getAllExamsOlderThanAsArray(SQLiteDatabase db, long time) {
-        Cursor c = getAllExamsOlderThan(db, time);
+        Cursor c = getAllExamsWithoutDeleteChangeOlderThan(db, time);
 
         ArrayList<Exam> exams =  new ArrayList<>();
         do {
@@ -75,12 +76,12 @@ public class ExamsQuery {
         return exams;
     }
 
-    public static Cursor findGradesAndSortBy(SQLiteDatabase db, @NonNull Long subjectId, @Nullable String sort) {
+    public static Cursor findGradesWithoutDeleteChangeAndSortBy(SQLiteDatabase db, @NonNull Long subjectId, @Nullable String sort) {
         Cursor c = db.query(
                 ExamsContract.ExamEntry.TABLE_NAME,
                 ExamsContract.ExamEntry.ALL_COLUMNS,
-                ExamsContract.ExamEntry.SUBJECT_ID_COLUMN + " = ?",
-                new String[] {subjectId.toString()},
+                ExamsContract.ExamEntry.SUBJECT_ID_COLUMN + " = ?" + " AND " + ExamsContract.ExamEntry.CHANGE_COLUMN + " != ?",
+                new String[] {subjectId.toString(), ExamsContract.CHANGE_DELETED},
                 null,
                 null,
                 sort
@@ -100,16 +101,12 @@ public class ExamsQuery {
         return db.insert(ExamsContract.ExamEntry.TABLE_NAME, null, contentValues);
     }
 
-    public static boolean remove(SQLiteDatabase db, long timeInMillis) {
-        final String WHERE = ExamsContract.ExamEntry.DATE_COLUMN + " = ?";
+    public static int remove(SQLiteDatabase db, Long id) {
         return db.delete(ExamsContract.ExamEntry.TABLE_NAME,
-                WHERE,
-                new String[] {timeInMillis + ""}) > 0;
+                ExamsContract.ExamEntry._ID + " = ?",
+                new String[] {id.toString()});
     }
 
-    public static boolean remove(SQLiteDatabase db, Exam exam) {
-        return remove(db, DateHelper.getLongFromDate(exam.getDate()));
-    }
 
     public static int removeAll(SQLiteDatabase db) {
         return db.delete(ExamsContract.ExamEntry.TABLE_NAME,
@@ -154,6 +151,26 @@ public class ExamsQuery {
         return database.update(
                 ExamsContract.ExamEntry.TABLE_NAME,
                 values,
+                null,
+                null
+        );
+    }
+
+    public static Integer removeExamsWithChangeDelete(SQLiteDatabase database) {
+        return database.delete(
+                ExamsContract.ExamEntry.TABLE_NAME,
+                ExamsContract.ExamEntry.CHANGE_COLUMN + " = ",
+                new String[] {ExamsContract.CHANGE_DELETED}
+        );
+    }
+
+    public static Cursor findGradesWithoutGradesAndWithoutDeleteChange(SQLiteDatabase database) {
+        return database.query(
+                ExamsContract.ExamEntry.TABLE_NAME,
+                ExamsContract.ExamEntry.ALL_COLUMNS,
+                ExamsContract.ExamEntry.CHANGE_COLUMN + " != ? AND " + ExamsContract.ExamEntry.GRADE_COLUMN + " < ?",
+                new String[] {ExamsContract.CHANGE_DELETED, String.valueOf(0)},
+                null,
                 null,
                 null
         );

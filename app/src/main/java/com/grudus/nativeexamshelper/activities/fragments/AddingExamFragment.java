@@ -75,7 +75,7 @@ public class AddingExamFragment extends Fragment {
 
     private void populateRecyclerView() {
         subscription =
-            examsDbHelper.getAllIncomingExamsSortByDate()
+            examsDbHelper.getAllIncomingExamsWithoutDeleteChangeSortByDate()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(cursor -> {
@@ -101,7 +101,7 @@ public class AddingExamFragment extends Fragment {
 
     public void removeAll() {
         subscription =
-                examsDbHelper.removeAllIncomingExams()
+                examsDbHelper.removeAllExams()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(howManyRows -> {

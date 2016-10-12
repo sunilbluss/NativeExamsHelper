@@ -9,6 +9,8 @@ import com.grudus.nativeexamshelper.activities.MyApplication;
 
 public class Grades {
 
+    public static final double EMPTY = -1D;
+
     private static Grade currentGrade;
 
     private static boolean decimalsInGradesEnabled;
@@ -62,7 +64,7 @@ public class Grades {
     }
 
     public static boolean isInRange(double grade) {
-        return currentGrade.isInRange(grade);
+        return currentGrade.isInRange(grade) || grade == EMPTY;
     }
 
 

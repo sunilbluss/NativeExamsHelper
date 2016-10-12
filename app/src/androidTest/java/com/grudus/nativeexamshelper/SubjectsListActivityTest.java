@@ -53,9 +53,9 @@ public class SubjectsListActivityTest {
 
     private static final int RECYCLER_VIEW_ID = R.id.subjects_recycler_view;
 
-    private final Subject SUBJECT_0 = new Subject("Math", "#123456");
-    private final Subject SUBJECT_1 = new Subject("Physics", "#19a5ac");
-    private final Subject SUBJECT_2 = new Subject("Computer Science", "#666666");
+    private final Subject SUBJECT_0 = Subject.subjectWithoutId("Math", "#123456");
+    private final Subject SUBJECT_1 = Subject.subjectWithoutId("Physics", "#19a5ac");
+    private final Subject SUBJECT_2 = Subject.subjectWithoutId("Computer Science", "#666666");
 
     private final Subject[] SUBJECTS = {SUBJECT_0, SUBJECT_1, SUBJECT_2};
 
@@ -201,7 +201,7 @@ public class SubjectsListActivityTest {
 
         onView(is(instanceOf(FloatingActionButton.class))).perform(click());
 
-        Subject newOne = new Subject("Babilon", "#32bbf2");
+        Subject newOne = Subject.subjectWithoutId("Babilon", "#32bbf2");
 
         onView(withId(R.id.edit_subject_title)).perform(typeText(newOne.getTitle()), closeSoftKeyboard());
         onView(allOf(is(instanceOf(Button.class)), withText(BUTTON_OK_TEXT))).perform(click());

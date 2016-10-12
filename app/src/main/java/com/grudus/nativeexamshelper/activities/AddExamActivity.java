@@ -59,10 +59,8 @@ public class AddExamActivity extends AppCompatActivity {
         toolbar.setTitle(getResources().getString(R.string.add_new_exam_toolbar_text));
         setListenerToDeleteTextViewFocus();
 
-        if (calendarDialog == null)
-            calendarDialog = new CalendarDialogHelper(this, this::updateDateView);
-        if (timeDialog == null)
-            timeDialog = new TimeDialogHelper(this, this::updateTimeView);
+        calendarDialog = new CalendarDialogHelper(this, this::updateDateView);
+        timeDialog = new TimeDialogHelper(this, this::updateTimeView);
     }
 
     private void setListenerToDeleteTextViewFocus() {

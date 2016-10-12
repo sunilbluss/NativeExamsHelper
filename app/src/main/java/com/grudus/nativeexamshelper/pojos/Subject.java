@@ -3,10 +3,13 @@ package com.grudus.nativeexamshelper.pojos;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.grudus.nativeexamshelper.helpers.ExceptionsHelper;
 
 public class Subject implements Parcelable {
+
+    private static final String TAG = "@@@@" + Subject.class.getSimpleName();
 
     private String title;
     private String color;
@@ -14,27 +17,35 @@ public class Subject implements Parcelable {
 
     private static final String EMPTY = "grudus_sub_empty";
 
-    public Subject(@NonNull String title, @NonNull String color) {
+    public Subject(@NonNull Long id, @NonNull String title, @NonNull String color) {
         if (ExceptionsHelper.stringsAreEmpty(title, color)) {
             setDefaultValues();
             return;
         }
-        this.title = title;
-        this.color = color;
-    }
-
-    @Deprecated
-    public Subject(Long id, String title, String color) {
         this.id = id;
         this.title = title;
         this.color = color;
+        Log.d(TAG, "Subject: full constructor" + this.toString());
+    }
+
+    private Subject(String title, String color) {
+        this.id = -1L;
+        this.title = title;
+        this.color = color;
+        Log.d(TAG, "Subject: constructor without id" + this.toString());
     }
 
     private Subject() {
         setDefaultValues();
+        Log.d(TAG, "Subject: empty constructor" + this.toString());
+    }
+
+    public static Subject subjectWithoutId(String title, String color) {
+        return new Subject(title, color);
     }
 
     private void setDefaultValues() {
+        this.id = -1L;
         this.color = "#4286F5";
         this.title = EMPTY;
     }
@@ -57,7 +68,7 @@ public class Subject implements Parcelable {
     }
 
     public Subject copy() {
-        return new Subject(title, color);
+        return new Subject(id, title, color);
     }
 
 
@@ -72,7 +83,11 @@ public class Subject implements Parcelable {
 
     @Override
     public String toString() {
-        return "Subject (" + title + ") object";
+        return "Subject {" +
+                "title='" + title + '\'' +
+                ", color='" + color + '\'' +
+                ", id=" + id +
+                '}';
     }
 
     @Override
@@ -81,7 +96,7 @@ public class Subject implements Parcelable {
         if (object == this) return true;
         if (this.getClass() != object.getClass()) return false;
         Subject that = (Subject) object;
-        return that.getTitle().equalsIgnoreCase(this.getTitle());
+        return that.getId().equals(id);
     }
 
     @Override
@@ -93,10 +108,13 @@ public class Subject implements Parcelable {
 
 
     public Subject(Parcel parcel) {
-        String[] data = new String[2];
+        String[] data = new String[3];
         parcel.readStringArray(data);
-        this.title = data[0];
-        this.color = data[1];
+        this.id = Long.parseLong(data[0]);
+        this.title = data[1];
+        this.color = data[2];
+
+        Log.d(TAG, "Subject: parcel " + this.toString());
     }
 
     @Override
@@ -106,7 +124,7 @@ public class Subject implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeStringArray(new String[] {title, color});
+        dest.writeStringArray(new String[] {id.toString(), title, color});
     }
 
 

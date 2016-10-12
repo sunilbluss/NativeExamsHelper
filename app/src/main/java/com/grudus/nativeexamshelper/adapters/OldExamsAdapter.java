@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import com.grudus.nativeexamshelper.R;
 import com.grudus.nativeexamshelper.database.ExamsDbHelper;
-import com.grudus.nativeexamshelper.database.exams.ExamsContract;
 import com.grudus.nativeexamshelper.database.subjects.SubjectsContract;
 import com.grudus.nativeexamshelper.helpers.AnimationHelper;
 import com.grudus.nativeexamshelper.helpers.ColorHelper;
@@ -74,25 +73,30 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
         position = position - getHeaderCount();
         cursor.moveToPosition(position);
 
-        final Long subjectId = cursor.getLong(ExamsContract.ExamEntry.SUBJECT_ID_COLUMN_INDEX);
+        final Long subjectId = cursor.getLong(SubjectsContract.SubjectEntry.INDEX_COLUMN_INDEX);
 
-        findSubjectAndBindColor(holder, subjectId);
-//        bindIconView(holder, subjectTitle);
-//        bindSubjectView(holder, subjectTitle);
+        findSubjectAndBindView(holder, subjectId);
 
     }
 
-    private void findSubjectAndBindColor(OldExamsViewHolder holder, Long subjectId) {
+    private void findSubjectAndBindView(OldExamsViewHolder holder, Long subjectId) {
         dbHelper.findSubjectById(subjectId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subjectObject -> {
                     if (subjectObject != null) {
-                        GradientDrawable bg = (GradientDrawable) holder.iconView.getBackground();
-                        bg.setColor(Color.parseColor(subjectObject.getColor()));
-                        holder.iconView.setBackground(bg);
+                        setBackgroundColor(holder, subjectObject.getColor());
+
+                        bindIconView(holder, subjectObject.getTitle());
+                        bindSubjectView(holder, subjectObject.getTitle());
                     }
                 });
+    }
+
+    private void setBackgroundColor(OldExamsViewHolder holder, String color) {
+        GradientDrawable bg = (GradientDrawable) holder.iconView.getBackground();
+        bg.setColor(Color.parseColor(color));
+        holder.iconView.setBackground(bg);
     }
 
     private void bindIconView(OldExamsViewHolder holder, String subjectTitle) {
@@ -108,8 +112,9 @@ public class OldExamsAdapter extends RecyclerView.Adapter<OldExamsAdapter.OldExa
         cursor.moveToPosition(adapterPosition - getHeaderCount());
         String subjectTitle = cursor.getString(SubjectsContract.SubjectEntry.TITLE_COLUMN_INDEX);
         String color = cursor.getString(SubjectsContract.SubjectEntry.COLOR_COLUMN_INDEX);
+        Long id = cursor.getLong(SubjectsContract.SubjectEntry.INDEX_COLUMN_INDEX);
 
-        return new Subject(subjectTitle, color);
+        return new Subject(id, subjectTitle, color);
     }
 
     public void changeCursor(Cursor _new) {

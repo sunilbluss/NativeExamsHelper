@@ -1,6 +1,5 @@
 package com.grudus.nativeexamshelper;
 
-import com.grudus.nativeexamshelper.helpers.ExceptionsHelper;
 import com.grudus.nativeexamshelper.pojos.Subject;
 
 import org.junit.After;
@@ -9,7 +8,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(JUnit4.class)
 public class SubjectUnitTest {
@@ -20,7 +21,7 @@ public class SubjectUnitTest {
 
     @Before
     public void init() {
-        subject = new Subject(TITLE, COLOR);
+        subject = Subject.subjectWithoutId(TITLE, COLOR);
     }
 
     @Test
@@ -42,7 +43,7 @@ public class SubjectUnitTest {
 
     @Test
     public void theSameSubjectButNotCopiedShouldBeEqual() {
-        Subject newOne = new Subject(TITLE, COLOR);
+        Subject newOne = Subject.subjectWithoutId(TITLE, COLOR);
         assertEquals(newOne, subject);
     }
 
@@ -54,14 +55,14 @@ public class SubjectUnitTest {
 
     @Test
     public void theSameSubjectButNotCopiedShouldHasTheSameHashCode() {
-        Subject newOne = new Subject(TITLE, COLOR);
+        Subject newOne = Subject.subjectWithoutId(TITLE, COLOR);
         assertEquals(newOne.hashCode(), subject.hashCode());
     }
 
 
     @Test(expected = Exception.class)
     public void newInstanceWithNullShouldThrowAnException() {
-        new Subject(null, null);
+        new Subject(null, null, null);
     }
 
     @Test(expected = Exception.class)

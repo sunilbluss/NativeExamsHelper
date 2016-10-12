@@ -56,12 +56,12 @@ public class UngradedExamsActivity extends AppCompatActivity implements ItemClic
 
     private void initRecyclerView() {
         subscription =
-            dbHelper.getExamsOlderThan(System.currentTimeMillis())
+            dbHelper.getExamsWithoutGradeWithoutDeleteChange()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(cursor -> {
                         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-                        adapter = new UngradedExamsAdapter(cursor, this);
+                        adapter = new UngradedExamsAdapter(getApplicationContext(), cursor, this);
                         recyclerView.setAdapter(adapter);
                         recyclerView.setHasFixedSize(true);
                     });
@@ -86,7 +86,7 @@ public class UngradedExamsActivity extends AppCompatActivity implements ItemClic
 
             subscription =
                     dbHelper.updateExamSetGrade(exam, Double.valueOf(selectedValue))
-                            .flatMap((id) -> dbHelper.getExamsOlderThan(System.currentTimeMillis()))
+                            .flatMap((id) -> dbHelper.getExamsWithoutDeleteChangeOlderThan(System.currentTimeMillis()))
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe((cursor) -> {

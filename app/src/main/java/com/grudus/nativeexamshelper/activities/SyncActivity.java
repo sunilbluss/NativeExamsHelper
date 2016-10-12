@@ -134,7 +134,7 @@ public class SyncActivity extends AppCompatActivity {
 
             builder.append("SubjectId: ").append(exam.getSubjectId()).append("\n");
             builder.append("Info: ").append(exam.getExamInfo()).append("\n");
-            builder.append("Time: ").append(DateHelper.getStringFromDate(exam.getDate())).append("\n").append("\n");
+            builder.append("Time: ").append(DateHelper.getStringFromDate(date)).append("\n").append("\n");
             TextView tv = new TextView(laj.getContext());
             tv.setText(builder.toString());
             tv.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));

@@ -102,7 +102,7 @@ public class SingleSubjectExamsAdapter extends RecyclerView.Adapter<SingleSubjec
 //        final long subjectId = cursor.getLong(ExamsContract.ExamEntry.SUBJECT_ID_COLUMN_INDEX);
 //
 //        examsDbHelper.removeOldExam(time)
-//                .flatMap(o -> examsDbHelper.getSubjectGrades(subjectTitle))
+//                .flatMap(o -> examsDbHelper.getSubjectGradesWithoutDeleteChange(subjectTitle))
 //                .flatMap(cursor -> {
 //                    changeCursor(cursor);
 //                    return examsDbHelper.setSubjectHasGrade(subject, cursor.moveToFirst());

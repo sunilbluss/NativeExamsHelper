@@ -1,6 +1,7 @@
 package com.grudus.nativeexamshelper.adapters;
 
 
+import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.grudus.nativeexamshelper.R;
+import com.grudus.nativeexamshelper.database.ExamsDbHelper;
 import com.grudus.nativeexamshelper.database.exams.ExamsContract;
 import com.grudus.nativeexamshelper.pojos.Exam;
 
@@ -16,19 +18,24 @@ import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class UngradedExamsAdapter extends RecyclerView.Adapter<UngradedExamsAdapter.UngradedExamViewHolder> {
 
     private Cursor cursor;
     private ItemClickListener listener;
 
+    private final ExamsDbHelper dbHelper;
+
     private int cursorSize = 0;
 
-    public UngradedExamsAdapter(Cursor cursor, ItemClickListener itemClickListener) {
+    public UngradedExamsAdapter(Context context, Cursor cursor, ItemClickListener itemClickListener) {
         this.cursor = cursor;
         this.listener = itemClickListener;
 
         cursorSize = cursor.getCount();
+        dbHelper = ExamsDbHelper.getInstance(context);
     }
 
     @Override
@@ -42,11 +49,21 @@ public class UngradedExamsAdapter extends RecyclerView.Adapter<UngradedExamsAdap
     public void onBindViewHolder(UngradedExamViewHolder holder, int position) {
         cursor.moveToPosition(position);
 
-        String subject = String.valueOf(cursor.getLong(ExamsContract.ExamEntry.SUBJECT_ID_COLUMN_INDEX));
+        Exam exam = getExamByPosition(position);
 
-        bindTextView(holder, subject);
-        bindInfoView(holder);
-        bindIcon(holder, subject);
+        bindViews(holder, exam);
+
+    }
+
+    private void bindViews(UngradedExamViewHolder holder, Exam exam) {
+        dbHelper.findSubjectById(exam.getSubjectId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subject -> {
+                    bindTextView(holder, subject.getTitle());
+                    bindInfoView(holder);
+                    bindIcon(holder, subject.getTitle());
+                });
     }
 
     private void bindTextView(UngradedExamViewHolder holder, String subject) {
