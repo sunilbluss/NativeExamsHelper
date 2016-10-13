@@ -11,4 +11,10 @@ Here are some previews:
 ![screen1](https://raw.githubusercontent.com/grudus/NativeExamsHelper/master/app/src/main/res/screens/device-2016-10-13-184423.png)
 ![screen2](https://raw.githubusercontent.com/grudus/NativeExamsHelper/master/app/src/main/res/screens/device-2016-10-13-184608.png)
 
+
+**ExamsHelper** uses RxJava and RxAndroid libraries for asynchrous calls to the database and to the server.
+Application also uses Retrofit api for receiving (and sending) data from (to) the server. Lastly, RetroLambda simplifies notation introducing lambda expressions. 
+
+
+
 I hope you will enjoy!
