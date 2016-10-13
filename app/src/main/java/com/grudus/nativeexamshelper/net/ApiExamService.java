@@ -20,7 +20,7 @@ public interface ApiExamService {
 
     String BASE_URL = com.grudus.nativeexamshelper.net.ApiUserService.BASE_URL + "/exams";
 
-    @GET(BASE_URL)
+    @GET("api/user/{username}/exams")
     Observable<Response<List<JsonExam>>> getUserExams(@Path("username") String username, @Header(HEADER_TOKEN) String token);
 
     @POST(BASE_URL)

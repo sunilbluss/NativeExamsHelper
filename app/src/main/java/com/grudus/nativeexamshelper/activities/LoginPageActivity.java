@@ -91,6 +91,7 @@ public class LoginPageActivity extends AppCompatActivity {
                 .flatMap(response -> {
                     ExceptionsHelper.checkLoginResponse(response);
 
+                    checkUsername(username);
                     commitLogin(response);
 
                     return retrofit.getUserInfo();
@@ -112,6 +113,10 @@ public class LoginPageActivity extends AppCompatActivity {
                     LoginPageActivity.this.finish();
                     this.startActivity(new Intent(getApplicationContext(), SyncActivity.class));
                 });
+    }
+
+    private void checkUsername(String username) {
+        userPreferences.changeUsername(username);
     }
 
     private void commitLogin(Response<Void> response) {

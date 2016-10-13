@@ -17,7 +17,7 @@ public interface ApiUserService {
     String HEADER_TOKEN = "X-AUTH-TOKEN";
     String BASE_URL = "/api/user/{username}";
 
-    @GET(BASE_URL)
+    @GET("/api/user/{username}")
     Observable<Response<JsonUser>> getUser(@Path("username") String username, @Header(HEADER_TOKEN) String token);
 
     @POST("/login")

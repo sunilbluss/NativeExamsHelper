@@ -65,7 +65,7 @@ public class ExceptionsHelper {
                 throw new RuntimeException(e);
             }
 
-            throw new RuntimeException(message);
+            throw new RuntimeException("Error " + response.code() + ": " + message);
         }
     }
 
